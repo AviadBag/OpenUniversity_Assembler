@@ -17,6 +17,7 @@ dictionary dictionary_create()
 
 dictionary_error dictionary_put(node **nod, char *key, void *data)
 {
+    /* The new node to add to the end of the list */
     node *new_node = malloc(sizeof(node));
     if (new_node == NULL)
         return NOT_ENOUGH_MEMORY;
@@ -38,4 +39,31 @@ dictionary_error dictionary_put(node **nod, char *key, void *data)
     }
 
     return SUCCESS;
+}
+
+dictionary_error dictionary_get(node *nod, char *key, void **data)
+{
+    while (nod != NULL)
+    {
+        if (nod->key == key)
+        {
+            *data = nod->data;
+            return SUCCESS;
+        }
+
+        nod = nod->next;
+    }
+
+    return KEY_DOES_NOT_EXIST;
+}
+
+void dictionary_free(node *nod)
+{
+    while (nod != NULL)
+    {
+        /* Holds the next node, because I won't be able to access it after I free the current node. */
+        node *next = nod->next;
+        free(nod);
+        nod = next;
+    }
 }
