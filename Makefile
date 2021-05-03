@@ -1,8 +1,9 @@
 BIN     := bin
 SRC     := src
+INCLUDE := include
 
 CC       := gcc
-CC_FLAG  := -Wall -ansi -pedantic -ggdb -I${SRC}
+CC_FLAG  := -Wall -ansi -pedantic -ggdb -I${INCLUDE}
 
 SOURCES := $(shell find ${SRC} -type f -name '*.c')
 
