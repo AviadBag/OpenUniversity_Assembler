@@ -6,7 +6,8 @@
 typedef enum e_instructions_table_status
 {
     SUCCESS,
-    INSTRUCTION_DOES_NOT_EXIST
+    INSTRUCTION_DOES_NOT_EXIST,
+    NOT_ENOUGH_MEMORY
 } instructions_table_status;
 
 typedef enum e_instruction_type
@@ -25,6 +26,12 @@ typedef struct s_instruction
     int number_of_operands;       /* How many operands does this instruction get? */
     operand_type *operands_types; /* An array of operands types, of length number_of_operands */
 } instruction;
+
+/**
+ * Initializes the instructions table.
+ * @return NOT_ENOUGH_MEMORY if it happens, else - SUCCESS
+ */
+instructions_table_status instructions_table_init();
 
 /**
  * Gives the instruction struct of the required instruction.
