@@ -1,3 +1,6 @@
+#ifndef _DICTIONARY_H
+#define _DICTIONARY_H
+
 /**
  * This module implements a simple dictionary, using a linked list.
  */
@@ -48,3 +51,5 @@ dictionary_error dictionary_get(dictionary d, char *key, void **data);
  * @param d The dictionary to realese.
  */
 void dictionary_free(dictionary d);
+
+#endif
