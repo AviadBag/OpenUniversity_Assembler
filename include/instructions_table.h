@@ -23,7 +23,7 @@ typedef struct s_instruction
 
 /**
  * Initializes the instructions table.
- * @return NOT_ENOUGH_MEMORY if it happens, else - SUCCESS
+ * @return NOT_ENOUGH_MEMORY if it happens, else - SUCCESS.
  */
 status instructions_table_init();
 
@@ -34,5 +34,10 @@ status instructions_table_init();
  * @retrun INSTRUCTION_DOES_NOT_EXIST if it happens, else - SUCCESS.
  */
 status instructions_table_get_instruction(char *name, instruction *inst);
+
+/**
+ * Frees the memory taken by the instructions table.
+ */
+void free_instructions_table();
 
 #endif
