@@ -26,7 +26,8 @@ typedef struct s_instruction
     int opcode;
 
     int number_of_operands;       /* How many operands does this instruction get? */
-    operand_type *operands_types; /* An array of operands types, of length number_of_operands */
+    /* An array of operands types, of length number_of_operands. NULL if there are no operands. */
+    operand_type *operands_types;
 } instruction;
 
 /**

@@ -137,6 +137,31 @@ static status add_I_instructions()
  */
 static status add_J_instructions()
 {
+    /* Operands types array for only one operand - register or labal. */
+    static operand_type register_or_label_operand_type[] = {LABEL_OR_REGISTER};
+
+    /* Operands types array for only one operand - labal. */
+    static operand_type label_operand_type[] = {LABEL};
+
+    instruction *jmp, *la, *call, *stop;
+
+    /* Fill all the instructions with data */
+    if (allocate_instruction(&jmp,  J, 30, 0, 2, register_or_label_operand_type) == NOT_ENOUGH_MEMORY
+     || allocate_instruction(&la,   J, 31, 0, 1, label_operand_type) == NOT_ENOUGH_MEMORY
+     || allocate_instruction(&call, J, 32, 0, 1, label_operand_type) == NOT_ENOUGH_MEMORY
+     || allocate_instruction(&stop, J, 63, 0, 0, NULL) == NOT_ENOUGH_MEMORY
+    )
+        return NOT_ENOUGH_MEMORY;
+
+    /* Put the instructions in the dictionary_ */
+    if (dictionary_put(&dict, "jmp",  (void*)jmp)  == NOT_ENOUGH_MEMORY
+     || dictionary_put(&dict, "la",   (void*)la)   == NOT_ENOUGH_MEMORY
+     || dictionary_put(&dict, "call", (void*)call) == NOT_ENOUGH_MEMORY
+     || dictionary_put(&dict, "stop", (void*)stop) == NOT_ENOUGH_MEMORY
+    )
+        return NOT_ENOUGH_MEMORY;
+
+    return SUCCESS;
 }
 
 status instructions_table_init()
