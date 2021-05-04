@@ -18,7 +18,7 @@ run: clean all
 	@./${BIN}/${EXECUTABLE}
 
 ${BIN}/${EXECUTABLE}: ${SOURCES} ${HEADERS}
-	${CC} ${CC_FLAG} -o $@ $<
+	${CC} ${CC_FLAG} -o $@ ${SOURCES}
 
 clean:
 	rm -f ${BIN}/*
