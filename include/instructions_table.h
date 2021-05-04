@@ -2,13 +2,7 @@
 #define _INSTRUCTIONS_TABLE_H
 
 #include "operand_type.h"
-
-typedef enum e_instructions_table_status
-{
-    SUCCESS,
-    INSTRUCTION_DOES_NOT_EXIST,
-    NOT_ENOUGH_MEMORY
-} instructions_table_status;
+#include "status.h"
 
 typedef enum e_instruction_type
 {
@@ -31,7 +25,7 @@ typedef struct s_instruction
  * Initializes the instructions table.
  * @return NOT_ENOUGH_MEMORY if it happens, else - SUCCESS
  */
-instructions_table_status instructions_table_init();
+status instructions_table_init();
 
 /**
  * Gives the instruction struct of the required instruction.
@@ -39,6 +33,6 @@ instructions_table_status instructions_table_init();
  * @param inst A pointer to where to put the instruction struct.
  * @retrun INSTRUCTION_DOES_NOT_EXIST if it happens, else - SUCCESS.
  */
-instructions_table_status instructions_table_get_instruction(char *name, instruction *inst);
+status instructions_table_get_instruction(char *name, instruction *inst);
 
 #endif
