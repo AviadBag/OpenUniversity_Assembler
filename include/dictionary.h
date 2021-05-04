@@ -2,8 +2,6 @@
  * This module implements a simple dictionary, using a linked list.
  */
 
-#include <error.h>
-
 struct s_dictionary_node
 {
     char *key;
