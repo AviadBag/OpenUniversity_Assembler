@@ -13,12 +13,12 @@ struct s_dictionary_node
     struct s_dictionary_node *next;
 };
 
-typedef enum e_dictionary_error
+typedef enum e_dictionary_status
 {
     NOT_ENOUGH_MEMORY,
     KEY_DOES_NOT_EXIST,
     SUCCESS
-} dictionary_error;
+} dictionary_status;
 
 typedef struct s_dictionary_node *dictionary;
 
@@ -35,7 +35,7 @@ dictionary dictionary_create();
  * @param data       The data itself.
  * @return           NOT_ENOUGH_MEMORY, if it happens. Else - SUCCESS.
  */
-dictionary_error dictionary_put(dictionary *d, char *key, void *data);
+dictionary_status dictionary_put(dictionary *d, char *key, void *data);
 
 /**
  * Retrives a value from the given dictionary, by the given key.
@@ -44,7 +44,7 @@ dictionary_error dictionary_put(dictionary *d, char *key, void *data);
  * @param data A pointer to where to put the retreived data in.
  * @return     KEY_DOES_NOT_EXIST, if it happens. Else - SUCCESS.
  */
-dictionary_error dictionary_get(dictionary d, char *key, void **data);
+dictionary_status dictionary_get(dictionary d, char *key, void **data);
 
 /**
  * Releases the memory taken by the given dictionary. (Doesn't realese the data or the keys.)
