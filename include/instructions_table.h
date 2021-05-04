@@ -39,6 +39,6 @@ instructions_table_status instructions_table_init();
  * @param inst A pointer to where to put the instruction struct.
  * @retrun INSTRUCTION_DOES_NOT_EXIST if it happens, else - SUCCESS.
  */
-instructions_table_status get_instruction(char *name, instruction *inst);
+instructions_table_status instructions_table_get_instruction(char *name, instruction *inst);
 
 #endif
