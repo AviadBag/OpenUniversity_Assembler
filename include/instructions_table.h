@@ -4,6 +4,14 @@
 #include "operand_type.h"
 #include "status.h"
 
+typedef enum e_operand_type
+{
+    REGISTER,
+    CONSTANT,
+    LABEL,
+    LABEL_OR_REGISTER
+} operand_type;
+
 typedef enum e_instruction_type
 {
     R,
