@@ -15,7 +15,7 @@ dictionary dictionary_create()
     return (node *)NULL; /* When head=null, the list is empty */
 }
 
-dictionary_error dictionary_put(node **nod, char *key, void *data)
+dictionary_status dictionary_put(node **nod, char *key, void *data)
 {
     /* The new node to add to the end of the list */
     node *new_node = malloc(sizeof(node));
@@ -41,7 +41,7 @@ dictionary_error dictionary_put(node **nod, char *key, void *data)
     return SUCCESS;
 }
 
-dictionary_error dictionary_get(node *nod, char *key, void **data)
+dictionary_status dictionary_get(node *nod, char *key, void **data)
 {
     while (nod != NULL)
     {
