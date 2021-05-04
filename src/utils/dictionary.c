@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <dictionary.h>
+#include "dictionary.h"
 
 /**
  * An important note:
