@@ -67,3 +67,13 @@ void dictionary_free(node *nod)
         nod = next;
     }
 }
+
+void for_each(node* nod, void (*callback)(char* key, void* data))
+{
+    while (nod != NULL)
+    {
+        callback(nod->key, nod->data);
+
+        nod = nod->next;
+    }
+}

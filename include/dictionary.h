@@ -47,4 +47,11 @@ status dictionary_get(dictionary d, char *key, void **data);
  */
 void dictionary_free(dictionary d);
 
+/**
+ * Calls the given callback with each entry of the table.
+ * @param d The dictionary to iterate on.
+ * @param callback The callback.
+ */
+void for_each(dictionary d, void (*callback)(char* key, void* data));
+
 #endif
