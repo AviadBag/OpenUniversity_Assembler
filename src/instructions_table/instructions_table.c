@@ -173,3 +173,11 @@ status instructions_table_init()
 
     return SUCCESS;
 }
+
+status instructions_table_get_instruction(char *name, instruction *inst)
+{
+    if (dictionary_get(dict, name, (void*)inst) == KEY_DOES_NOT_EXIST) 
+        return INSTRUCTION_DOES_NOT_EXIST;
+
+    return SUCCESS;
+}

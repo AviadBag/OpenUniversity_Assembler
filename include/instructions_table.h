@@ -1,7 +1,6 @@
 #ifndef _INSTRUCTIONS_TABLE_H
 #define _INSTRUCTIONS_TABLE_H
 
-#include "operand_type.h"
 #include "status.h"
 
 typedef enum e_operand_type
@@ -41,11 +40,13 @@ status instructions_table_init();
  * @param name The name of the instruction. (For example - "add").
  * @param inst A pointer to where to put the instruction struct.
  * @retrun INSTRUCTION_DOES_NOT_EXIST if it happens, else - SUCCESS.
+ * MUST BE CALLED AFTER instructions_table_init(0)!
  */
 status instructions_table_get_instruction(char *name, instruction *inst);
 
 /**
  * Frees the memory taken by the instructions table.
+ * MUST BE CALLED AFTER instructions_table_init(0)!
  */
 void free_instructions_table();
 
