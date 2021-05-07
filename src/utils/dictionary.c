@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "dictionary.h"
 
 /**
@@ -15,7 +16,7 @@ dictionary dictionary_create()
     return (node *)NULL; /* When head=null, the list is empty */
 }
 
-dictionary_status dictionary_put(node **nod, char *key, void *data)
+status dictionary_put(node **nod, char *key, void *data)
 {
     /* The new node to add to the end of the list */
     node *new_node = malloc(sizeof(node));
@@ -41,11 +42,11 @@ dictionary_status dictionary_put(node **nod, char *key, void *data)
     return SUCCESS;
 }
 
-dictionary_status dictionary_get(node *nod, char *key, void **data)
+status dictionary_get(node *nod, char *key, void **data)
 {
     while (nod != NULL)
     {
-        if (nod->key == key)
+        if (strcmp(nod->key, key) == 0)
         {
             *data = nod->data;
             return SUCCESS;
@@ -65,5 +66,15 @@ void dictionary_free(node *nod)
         node *next = nod->next;
         free(nod);
         nod = next;
+    }
+}
+
+void dictionary_for_each(node* nod, void (*callback)(char* key, void* data))
+{
+    while (nod != NULL)
+    {
+        callback(nod->key, nod->data);
+
+        nod = nod->next;
     }
 }

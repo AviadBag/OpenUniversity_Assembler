@@ -1,6 +1,8 @@
 #ifndef _DICTIONARY_H
 #define _DICTIONARY_H
 
+#include "status.h"
+
 /**
  * This module implements a simple dictionary, using a linked list.
  */
@@ -12,13 +14,6 @@ struct s_dictionary_node
 
     struct s_dictionary_node *next;
 };
-
-typedef enum e_dictionary_status
-{
-    NOT_ENOUGH_MEMORY,
-    KEY_DOES_NOT_EXIST,
-    SUCCESS
-} dictionary_status;
 
 typedef struct s_dictionary_node *dictionary;
 
@@ -35,7 +30,7 @@ dictionary dictionary_create();
  * @param data       The data itself.
  * @return           NOT_ENOUGH_MEMORY, if it happens. Else - SUCCESS.
  */
-dictionary_status dictionary_put(dictionary *d, char *key, void *data);
+status dictionary_put(dictionary *d, char *key, void *data);
 
 /**
  * Retrives a value from the given dictionary, by the given key.
@@ -44,12 +39,19 @@ dictionary_status dictionary_put(dictionary *d, char *key, void *data);
  * @param data A pointer to where to put the retreived data in.
  * @return     KEY_DOES_NOT_EXIST, if it happens. Else - SUCCESS.
  */
-dictionary_status dictionary_get(dictionary d, char *key, void **data);
+status dictionary_get(dictionary d, char *key, void **data);
 
 /**
  * Releases the memory taken by the given dictionary. (Doesn't realese the data or the keys.)
  * @param d The dictionary to realese.
  */
 void dictionary_free(dictionary d);
+
+/**
+ * Calls the given callback with each entry of the table.
+ * @param d The dictionary to iterate on.
+ * @param callback The callback.
+ */
+void dictionary_for_each(dictionary d, void (*callback)(char* key, void* data));
 
 #endif
