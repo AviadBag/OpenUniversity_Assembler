@@ -48,6 +48,6 @@ status instructions_table_get_instruction(char *name, instruction *inst);
  * Frees the memory taken by the instructions table.
  * MUST BE CALLED AFTER instructions_table_init(0)!
  */
-void free_instructions_table();
+void instructions_table_free();
 
 #endif

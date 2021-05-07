@@ -191,7 +191,7 @@ static void free_instruction(char* name, void* inst)
     free((instruction *)inst);
 }
 
-void free_instructions_table()
+void instructions_table_free()
 {
     dictionary_for_each(dict, free_instruction);
     dictionary_free(dict);
