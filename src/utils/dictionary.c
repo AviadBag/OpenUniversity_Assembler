@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "dictionary.h"
 
 /**
@@ -45,7 +46,7 @@ status dictionary_get(node *nod, char *key, void **data)
 {
     while (nod != NULL)
     {
-        if (nod->key == key)
+        if (strcmp(nod->key, key) == 0)
         {
             *data = nod->data;
             return SUCCESS;
