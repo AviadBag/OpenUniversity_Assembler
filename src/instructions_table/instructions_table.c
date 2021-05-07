@@ -146,10 +146,10 @@ static status add_J_instructions()
     instruction *jmp, *la, *call, *stop;
 
     /* Fill all the instructions with data */
-    if (allocate_instruction(&jmp,  J, 30, 0, 2, register_or_label_operand_type) == NOT_ENOUGH_MEMORY
-     || allocate_instruction(&la,   J, 31, 0, 1, label_operand_type) == NOT_ENOUGH_MEMORY
-     || allocate_instruction(&call, J, 32, 0, 1, label_operand_type) == NOT_ENOUGH_MEMORY
-     || allocate_instruction(&stop, J, 63, 0, 0, NULL) == NOT_ENOUGH_MEMORY
+    if (allocate_instruction(&jmp,  J, 0, 30, 2, register_or_label_operand_type) == NOT_ENOUGH_MEMORY
+     || allocate_instruction(&la,   J, 0, 31, 1, label_operand_type) == NOT_ENOUGH_MEMORY
+     || allocate_instruction(&call, J, 0, 32, 1, label_operand_type) == NOT_ENOUGH_MEMORY
+     || allocate_instruction(&stop, J, 0, 63, 0, NULL) == NOT_ENOUGH_MEMORY
     )
         return NOT_ENOUGH_MEMORY;
 
@@ -176,8 +176,12 @@ status instructions_table_init()
 
 status instructions_table_get_instruction(char *name, instruction *inst)
 {
-    if (dictionary_get(dict, name, (void*)inst) == KEY_DOES_NOT_EXIST) 
+    void* instruction_ptr; /* Will point to the retrived instruction */
+
+    if (dictionary_get(dict, name, &instruction_ptr) == KEY_DOES_NOT_EXIST)
         return INSTRUCTION_DOES_NOT_EXIST;
+
+    *inst = *((instruction *)instruction_ptr);
 
     return SUCCESS;
 }
