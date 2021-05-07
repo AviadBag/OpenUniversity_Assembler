@@ -69,7 +69,7 @@ void dictionary_free(node *nod)
     }
 }
 
-void for_each(node* nod, void (*callback)(char* key, void* data))
+void dictionary_for_each(node* nod, void (*callback)(char* key, void* data))
 {
     while (nod != NULL)
     {

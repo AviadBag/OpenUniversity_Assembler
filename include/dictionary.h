@@ -52,6 +52,6 @@ void dictionary_free(dictionary d);
  * @param d The dictionary to iterate on.
  * @param callback The callback.
  */
-void for_each(dictionary d, void (*callback)(char* key, void* data));
+void dictionary_for_each(dictionary d, void (*callback)(char* key, void* data));
 
 #endif
