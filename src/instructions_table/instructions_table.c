@@ -185,3 +185,14 @@ status instructions_table_get_instruction(char *name, instruction *inst)
 
     return SUCCESS;
 }
+
+static void free_instruction(char* name, void* inst)
+{
+    free((instruction *)inst);
+}
+
+void free_instructions_table()
+{
+    dictionary_for_each(dict, free_instruction);
+    dictionary_free(dict);
+}
