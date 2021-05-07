@@ -146,7 +146,7 @@ static status add_J_instructions()
     instruction *jmp, *la, *call, *stop;
 
     /* Fill all the instructions with data */
-    if (allocate_instruction(&jmp,  J, 0, 30, 2, register_or_label_operand_type) == NOT_ENOUGH_MEMORY
+    if (allocate_instruction(&jmp,  J, 0, 30, 1, register_or_label_operand_type) == NOT_ENOUGH_MEMORY
      || allocate_instruction(&la,   J, 0, 31, 1, label_operand_type) == NOT_ENOUGH_MEMORY
      || allocate_instruction(&call, J, 0, 32, 1, label_operand_type) == NOT_ENOUGH_MEMORY
      || allocate_instruction(&stop, J, 0, 63, 0, NULL) == NOT_ENOUGH_MEMORY
