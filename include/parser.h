@@ -7,13 +7,6 @@ typedef enum e_command_type
     INSTRUCTION /* For example: addi $9, -45, $8 */
 } command_type;
 
-typedef enum e_parser_status
-{
-    SYNTAX_ERROR,
-    EMPTY_LINE, /* Will be returned when the line is a comment or when it is empty */
-    SUCCESS
-} parser_status;
-
 typedef struct s_command
 {
     command_type type;   /* Tye type of the command */
