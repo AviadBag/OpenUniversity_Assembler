@@ -6,7 +6,9 @@ typedef enum e_status
     SUCCESS,
     NOT_ENOUGH_MEMORY,
     KEY_DOES_NOT_EXIST,
-    INSTRUCTION_DOES_NOT_EXIST
+    INSTRUCTION_DOES_NOT_EXIST,
+    SYNTAX_ERROR,
+    EMPTY_LINE
 } status;
 
 #endif
