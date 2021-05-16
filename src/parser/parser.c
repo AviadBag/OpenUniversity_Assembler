@@ -78,3 +78,20 @@ parser_status parser_parse(char *str, command *cmd)
 
     return PARSER_OK;
 }
+
+char* parser_status_to_string(parser_status status)
+{
+    switch (status)
+    {
+        case PARSER_SYNTAX_ERROR:
+            return "PARSER_SYNTAX_ERROR";
+        case PARSER_EMPTY_LINE:
+            return "PARSER_EMPTY_LINE";
+        case PARSER_OVERFLOW:
+            return "PARSER_OVERFLOW";
+        case PARSER_OK:
+            return "PARSER_OK";
+        default:
+            return "INVALID_PARSER_OBJECT";
+    }
+}
