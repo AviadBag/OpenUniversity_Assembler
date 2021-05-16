@@ -81,7 +81,7 @@ static parser_status parse_label(char **str, command *cmd)
  * @param str The command.
  * @return if empty.
  */
-static boolean is_empty(char* str)
+static boolean is_empty(char *str)
 {
     while (*str)
     {
@@ -101,14 +101,14 @@ static boolean is_empty(char* str)
  * @param str The command.
  * @return if too long.
  */
-static boolean is_too_long(char* str)
+static boolean is_too_long(char *str)
 {
     int length = 0;
     while (*str)
     {
         if (!isspace(*str))
             length++;
-        
+
         if (length > MAX_LINE)
             return true;
 
@@ -118,35 +118,87 @@ static boolean is_too_long(char* str)
     return false;
 }
 
+/**
+ * Parses the command name in the command. Increments the given string to after the command name.
+ * @param str     A pointer to the pointer of the string to parse.
+ * @param command The command object to parse into.
+ * @return PARSER_SYNTAX_ERROR or PARSER_NOT_ENOUGH_MEMORY or PARSER_OK.
+ */
+static parser_status parse_command_name(char **str, command *cmd)
+{
+    int command_name_length = 0, i;
+    char *ptr;
+
+    /* Jump to the first non-empty char */
+    while (isspace(**str) && **str)
+        (*str)++;
+
+    /* Find the length of the command name */
+    ptr = *str;
+    while (!isspace(*ptr) && *ptr)
+    {
+        command_name_length++;
+        ptr++;
+    }
+
+    if (command_name_length == 0)
+        /* There must be a command! */
+        return PARSER_SYNTAX_ERROR;
+
+    /* Allocate buffer for the command name */
+    cmd->command_name = malloc((command_name_length + 1) * sizeof(char));
+    if (cmd->command_name == NULL)
+        return PARSER_NOT_ENOUGH_MEMORY;
+
+    /* Fill! */
+    for (i = 0; i < command_name_length; i++)
+    {
+        cmd->command_name[i] = **str;
+        (*str)++;
+    }
+
+    /* Put terminating zero */
+    cmd->command_name[command_name_length] = '\0';
+
+    if (cmd->command_name[0] == '.')
+        cmd->type = DIRECTIVE;
+    else
+        cmd->type = INSTRUCTION;
+
+    return PARSER_OK;
+}
+
 parser_status parser_parse(char *str, command *cmd)
 {
     /* TODO: Print the errors!! */
 
-    parser_status parse_label_status;
+    parser_status status;
 
     if (is_empty(str))
         return PARSER_EMPTY;
     if (is_too_long(str))
         return PARSER_OVERFLOW;
-    if ((parse_label_status = parse_label(&str, cmd)) != PARSER_OK)
-        return parse_label_status;
+    if ((status = parse_label(&str, cmd)) != PARSER_OK)
+        return status;
+    if ((status = parse_command_name(&str, cmd)) != PARSER_OK)
+        return status;
 
     return PARSER_OK;
 }
 
-char* parser_status_to_string(parser_status status)
+char *parser_status_to_string(parser_status status)
 {
     switch (status)
     {
-        case PARSER_SYNTAX_ERROR:
-            return "PARSER_SYNTAX_ERROR";
-        case PARSER_EMPTY:
-            return "PARSER_EMPTY";
-        case PARSER_OVERFLOW:
-            return "PARSER_OVERFLOW";
-        case PARSER_OK:
-            return "PARSER_OK";
-        default:
-            return "INVALID_PARSER_OBJECT";
+    case PARSER_SYNTAX_ERROR:
+        return "PARSER_SYNTAX_ERROR";
+    case PARSER_EMPTY:
+        return "PARSER_EMPTY";
+    case PARSER_OVERFLOW:
+        return "PARSER_OVERFLOW";
+    case PARSER_OK:
+        return "PARSER_OK";
+    default:
+        return "INVALID_PARSER_OBJECT";
     }
 }
