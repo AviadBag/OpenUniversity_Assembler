@@ -141,7 +141,7 @@ static parser_status parse_command_name(char **str, command *cmd)
         ptr++;
     }
 
-    if (command_name_length == 0)
+    if (command_name_length == 0 || (command_name_length == 1 && **str == '.'))
         /* There must be a command! */
         return PARSER_SYNTAX_ERROR;
 
