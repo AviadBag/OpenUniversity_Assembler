@@ -1,8 +1,6 @@
 #ifndef _PARSER_H
 #define _PARSER_H
 
-#include "status.h"
-
 typedef enum e_command_type
 {
     DIRECTIVE,  /* For example: .entry LABEL */
@@ -18,12 +16,19 @@ typedef struct s_command
     char *label;         /* The label of that line; NULL if there is no label. */
 } command;
 
+typedef enum e_parser_status
+{
+    PARSER_SYNTAX_ERROR,
+    PARSER_EMPTY_LINE,
+    PARSER_OK
+} parser_status;
+
 /**
  * Parses the given string.
  * @param str The string to parse.
  * @param cmd A pointer to where to store the parsed command.
- * @return SYNTAX_ERROR or EMPTY_LINE or SUCCESS.
+ * @return PARSER_SYNTAX_ERROR or PARSER_EMPTY_LINE or PARSER_OK.
  */
-status parser_parse(char* str, command* cmd);
+parser_status parser_parse(char* str, command* cmd);
 
 #endif
