@@ -72,11 +72,33 @@ static parser_status parse_label(char **str, command *cmd)
     return PARSER_OK;
 }
 
+/**
+ * Checks if the command is empty or is a comment.
+ * @param str The command.
+ * @return if empty.
+ */
+static boolean is_empty(char* str)
+{
+    while (*str)
+    {
+        if (*str == ';')
+            return true;
+        else if (!isspace(*str))
+            return false;
+
+        str++;
+    }
+
+    return true;
+}
+
 parser_status parser_parse(char *str, command *cmd)
 {
     parser_status parse_label_status;
 
-    /* TODO: Check if empty */
+    if (is_empty(str))
+        return PARSER_EMPTY;
+
     if ((parse_label_status = parse_label(&str, cmd)) != PARSER_OK)
         return parse_label_status;
 
@@ -89,8 +111,8 @@ char* parser_status_to_string(parser_status status)
     {
         case PARSER_SYNTAX_ERROR:
             return "PARSER_SYNTAX_ERROR";
-        case PARSER_EMPTY_LINE:
-            return "PARSER_EMPTY_LINE";
+        case PARSER_EMPTY:
+            return "PARSER_EMPTY";
         case PARSER_OVERFLOW:
             return "PARSER_OVERFLOW";
         case PARSER_OK:
