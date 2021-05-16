@@ -1,8 +1,6 @@
 #ifndef _DICTIONARY_H
 #define _DICTIONARY_H
 
-#include "status.h"
-
 /**
  * This module implements a simple dictionary, using a linked list.
  */
@@ -17,6 +15,13 @@ struct s_dictionary_node
 
 typedef struct s_dictionary_node *dictionary;
 
+typedef enum e_dictionary_status
+{
+    DICTIONARY_NOT_ENOUGH_MEMORY,
+    DICTIONARY_KEY_DOES_NOT_EXIST,
+    DICTIONARY_OK
+} dictionary_status;
+
 /**
  * Creates an empty dictionary.
  * @return The empty dictionary.
@@ -28,18 +33,18 @@ dictionary dictionary_create();
  * @param dictionary The dictionary to put the new entry in.
  * @param key        The key of the data.
  * @param data       The data itself.
- * @return           NOT_ENOUGH_MEMORY, if it happens. Else - SUCCESS.
+ * @return           NOT_ENOUGH_MEMORY, if it happens. Else - DICTIONARY_OK.
  */
-status dictionary_put(dictionary *d, char *key, void *data);
+dictionary_status dictionary_put(dictionary *d, char *key, void *data);
 
 /**
  * Retrives a value from the given dictionary, by the given key.
  * @param d    The dictionary to retreive from.
  * @param key  The desired key.
  * @param data A pointer to where to put the retreived data in.
- * @return     KEY_DOES_NOT_EXIST, if it happens. Else - SUCCESS.
+ * @return     KEY_DOES_NOT_EXIST, if it happens. Else - DICTIONARY_OK.
  */
-status dictionary_get(dictionary d, char *key, void **data);
+dictionary_status dictionary_get(dictionary d, char *key, void **data);
 
 /**
  * Releases the memory taken by the given dictionary. (Doesn't realese the data or the keys.)

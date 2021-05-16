@@ -16,12 +16,12 @@ dictionary dictionary_create()
     return (node *)NULL; /* When head=null, the list is empty */
 }
 
-status dictionary_put(node **nod, char *key, void *data)
+dictionary_status dictionary_put(node **nod, char *key, void *data)
 {
     /* The new node to add to the end of the list */
     node *new_node = malloc(sizeof(node));
     if (new_node == NULL)
-        return NOT_ENOUGH_MEMORY;
+        return DICTIONARY_NOT_ENOUGH_MEMORY;
 
     new_node->key = key;
     new_node->data = data;
@@ -39,23 +39,23 @@ status dictionary_put(node **nod, char *key, void *data)
         tmp->next = new_node;
     }
 
-    return SUCCESS;
+    return DICTIONARY_OK;
 }
 
-status dictionary_get(node *nod, char *key, void **data)
+dictionary_status dictionary_get(node *nod, char *key, void **data)
 {
     while (nod != NULL)
     {
         if (strcmp(nod->key, key) == 0)
         {
             *data = nod->data;
-            return SUCCESS;
+            return DICTIONARY_OK;
         }
 
         nod = nod->next;
     }
 
-    return KEY_DOES_NOT_EXIST;
+    return DICTIONARY_KEY_DOES_NOT_EXIST;
 }
 
 void dictionary_free(node *nod)

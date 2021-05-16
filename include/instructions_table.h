@@ -1,8 +1,6 @@
 #ifndef _INSTRUCTIONS_TABLE_H
 #define _INSTRUCTIONS_TABLE_H
 
-#include "status.h"
-
 typedef enum e_operand_type
 {
     REGISTER,
@@ -29,20 +27,27 @@ typedef struct s_instruction
     operand_type *operands_types;
 } instruction;
 
+typedef enum e_instructions_table_status
+{
+    IT_NOT_ENOUGH_MEMORY, /* IT stands for Instructions Table. */
+    IT_INSTRUCTION_DOES_NOT_EXIST,
+    IT_OK
+} instructions_table_status;
+
 /**
  * Initializes the instructions table.
- * @return NOT_ENOUGH_MEMORY if it happens, else - SUCCESS.
+ * @return IT_NOT_ENOUGH_MEMORY if it happens, else - IT_OK.
  */
-status instructions_table_init();
+instructions_table_status instructions_table_init();
 
 /**
  * Gives the instruction struct of the required instruction.
  * @param name The name of the instruction. (For example - "add").
  * @param inst A pointer to where to put the instruction struct.
- * @retrun INSTRUCTION_DOES_NOT_EXIST if it happens, else - SUCCESS.
+ * @retrun  IT_INSTRUCTION_DOES_NOT_EXIST if it happens, else - IT_OK.
  * MUST BE CALLED AFTER instructions_table_init(0)!
  */
-status instructions_table_get_instruction(char *name, instruction *inst);
+instructions_table_status instructions_table_get_instruction(char *name, instruction *inst);
 
 /**
  * Frees the memory taken by the instructions table.
