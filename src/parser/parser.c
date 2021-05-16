@@ -34,27 +34,28 @@ static boolean has_label(char *str)
 static parser_status parse_label(char **str, command *cmd)
 {
     int label_length;
-    boolean is_empty;
 
     if (has_label(*str))
     {
+        /* Jump to the first non-empty char */
+        while (isspace(**str))
+            (*str)++;
+
+        if (**str == ':')
+            /* A label cannot be empty! */
+            return PARSER_SYNTAX_ERROR;
+
         label_length = 0;
-        is_empty = true;
         while (**str != ':')
         {
             label_length++;
             if (label_length > 31)
                 return PARSER_OVERFLOW;
 
-            if (!isspace(**str))
-                is_empty = false;
-
             cmd->label[label_length - 1] = **str;
             (*str)++;
         }
 
-        if (is_empty)
-            return PARSER_SYNTAX_ERROR;
         if (isspace(*(*str - 1)))
             /* The colon must be right after the label */
             return PARSER_SYNTAX_ERROR;
@@ -94,6 +95,8 @@ static boolean is_empty(char* str)
 
 parser_status parser_parse(char *str, command *cmd)
 {
+    /* TODO: Print the errors!! */
+
     parser_status parse_label_status;
 
     if (is_empty(str))
