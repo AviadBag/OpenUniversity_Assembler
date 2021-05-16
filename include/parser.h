@@ -21,7 +21,7 @@ typedef struct s_command
 typedef enum e_parser_status
 {
     PARSER_SYNTAX_ERROR,
-    PARSER_EMPTY_LINE,
+    PARSER_EMPTY,
     PARSER_OVERFLOW, /* When the label is too long */
     PARSER_OK
 } parser_status;
@@ -30,7 +30,7 @@ typedef enum e_parser_status
  * Parses the given string.
  * @param str The string to parse.
  * @param cmd A pointer to a command struct to store inside the data.
- * @return PARSER_SYNTAX_ERROR or PARSER_EMPTY_LINE or PARSER_OVERFLOW or PARSER_OK.
+ * @return PARSER_SYNTAX_ERROR or PARSER_EMPTY or PARSER_OVERFLOW or PARSER_OK.
  */
 parser_status parser_parse(char *str, command *cmd);
 
