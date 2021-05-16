@@ -22,7 +22,7 @@ typedef enum e_parser_status
 {
     PARSER_SYNTAX_ERROR,
     PARSER_EMPTY,
-    PARSER_OVERFLOW, /* When the label is too long */
+    PARSER_OVERFLOW, /* When the label/line is too long */
     PARSER_OK
 } parser_status;
 

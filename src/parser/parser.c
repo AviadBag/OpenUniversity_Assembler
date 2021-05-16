@@ -2,6 +2,9 @@
 #include "boolean.h"
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
+
+#define MAX_LINE 80
 
 /**
  * Checks if there is a label inside of the given string.
@@ -93,6 +96,28 @@ static boolean is_empty(char* str)
     return true;
 }
 
+/**
+ * Checks if the command is too long.
+ * @param str The command.
+ * @return if too long.
+ */
+static boolean is_too_long(char* str)
+{
+    int length = 0;
+    while (*str)
+    {
+        if (!isspace(*str))
+            length++;
+        
+        if (length > MAX_LINE)
+            return true;
+
+        str++;
+    }
+
+    return false;
+}
+
 parser_status parser_parse(char *str, command *cmd)
 {
     /* TODO: Print the errors!! */
@@ -101,7 +126,8 @@ parser_status parser_parse(char *str, command *cmd)
 
     if (is_empty(str))
         return PARSER_EMPTY;
-
+    if (is_too_long(str))
+        return PARSER_OVERFLOW;
     if ((parse_label_status = parse_label(&str, cmd)) != PARSER_OK)
         return parse_label_status;
 

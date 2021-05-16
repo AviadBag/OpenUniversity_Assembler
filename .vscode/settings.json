@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.inc": "asm-intel-x86-generic",
-        "dictionary.h": "c"
+        "dictionary.h": "c",
+        "parser.h": "c"
     }
 }
