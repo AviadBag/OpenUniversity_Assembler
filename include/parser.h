@@ -42,4 +42,11 @@ parser_status parser_parse(char *str, command *cmd);
  */
 char* parser_status_to_string(parser_status status);
 
+/**
+ * Converts a command_type object to it's string representation. 
+ * @param  type The type to convert
+ * @return The string representation
+ */
+char* command_type_to_string(command_type type);
+
 #endif
