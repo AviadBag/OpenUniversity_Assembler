@@ -1,5 +1,6 @@
 #include "parser.h"
 #include "boolean.h"
+#include "str_helper.h"
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
@@ -40,9 +41,7 @@ static parser_status parse_label(char **str, command *cmd)
 
     if (has_label(*str))
     {
-        /* Jump to the first non-empty char */
-        while (isspace(**str))
-            (*str)++;
+        skip_whitespaces(str);
 
         if (**str == ':')
             /* A label cannot be empty! */
@@ -120,7 +119,7 @@ static boolean is_too_long(char *str)
 
 /**
  * Parses the command name in the command. Increments the given string to after the command name.
- * @param str     A pointer to the pointer of the string to parse.
+ * @param str     A pointer to the pointer of the string to parse, STARTING AFTER THE LABEL!
  * @param command The command object to parse into.
  * @return PARSER_SYNTAX_ERROR or PARSER_NOT_ENOUGH_MEMORY or PARSER_OK.
  */
@@ -129,9 +128,7 @@ static parser_status parse_command_name(char **str, command *cmd)
     int command_name_length = 0, i;
     char *ptr;
 
-    /* Jump to the first non-empty char */
-    while (isspace(**str) && **str)
-        (*str)++;
+    skip_whitespaces(str);
 
     /* Find the length of the command name */
     ptr = *str;
@@ -166,6 +163,18 @@ static parser_status parse_command_name(char **str, command *cmd)
         cmd->type = INSTRUCTION;
 
     return PARSER_OK;
+}
+
+/**
+ * Parses the operands in the command.
+ * @param str     A pointer to the string to parse.
+ * @param command The command object to parse into, STARTING FROM THE OPERANDS!
+ * @return PARSER_SYNTAX_ERROR or PARSER_NOT_ENOUGH_MEMORY or PARSER_OK.
+ */
+static parser_status parse_operands(char *str, command *cmd)
+{
+    /* The first non whitespace char must be a comma,
+    because we are right after a command name. */
 }
 
 parser_status parser_parse(char *str, command *cmd)
@@ -203,15 +212,15 @@ char *parser_status_to_string(parser_status status)
     }
 }
 
-char* command_type_to_string(command_type type)
+char *command_type_to_string(command_type type)
 {
     switch (type)
     {
-        case DIRECTIVE:
-            return "DIRECTIVE";
-        case INSTRUCTION:
-            return "INSTRUCTION";
-        default:
-            return "INVALID_COMMAND_TYPE_OBJECT";
+    case DIRECTIVE:
+        return "DIRECTIVE";
+    case INSTRUCTION:
+        return "INSTRUCTION";
+    default:
+        return "INVALID_COMMAND_TYPE_OBJECT";
     }
 }
