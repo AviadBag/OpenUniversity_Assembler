@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdio.h>
 
 #define MAX_LINE 80
 
@@ -166,6 +167,142 @@ static parser_status parse_command_name(char **str, command *cmd)
 }
 
 /**
+ * Calculates the number of operands in the given string. Reports if there
+ * was any syntax error with the operands.
+ * @param str The string to check. MUST BEGIN RIGHT FROM THE OPERANDS.
+ *            There must be at least one operand!
+ * @param int A pointer to integer to fill in the number of operands.
+ * @return PARSER_SYNTAX_ERROR or PARSER_OK.
+ */
+static parser_status get_number_of_operands(char *str, int *number_of_operands)
+{
+    boolean inside_quotes, inside_operand, after_comma;
+
+    *number_of_operands = 0;
+    inside_quotes = false, inside_operand = false, after_comma = true;
+    while (*str)
+    {
+        if (*str == '"')
+            inside_quotes = !inside_quotes;
+
+        if (!inside_quotes)
+        {
+            if (*str == ',')
+            {
+                if (inside_operand)
+                {
+                    inside_operand = false;
+                    after_comma = false;
+                }
+
+                if (after_comma && !inside_operand)
+                    return PARSER_SYNTAX_ERROR;
+
+                (*number_of_operands)++;
+                after_comma = true;
+                inside_operand = false;
+            }
+            else if (!isspace(*str))
+            {
+                if (!after_comma)
+                    return PARSER_SYNTAX_ERROR;
+
+                inside_operand = true;
+            }
+            else
+            {
+                if (inside_operand)
+                    after_comma = false;
+
+                inside_operand = false;
+            }
+        }
+
+        str++;
+    }
+
+    /* If inside_operand is true, it means that I am RIGHT AFTER an operand, so
+    then it's ok if after_comma is true, because It just means that there
+    was a comma before the operand. But if I am not after a operand, and
+    after_comma is true - It is a syntax error, because there shouldn't be 
+    any comma after the last operand. */
+    if (after_comma && !inside_operand)
+        return PARSER_SYNTAX_ERROR;
+
+    /* Well, pretty sensible.. You cannot just open your quotes without
+    closing.. */
+    if (inside_quotes)
+        return PARSER_SYNTAX_ERROR;
+    (*number_of_operands)++; /* To count the first operand */
+
+    return PARSER_OK;
+}
+
+/**
+ * Fills the operand of the given string in the given array.
+ * @param str                The string to parse. MUST BEGIN RIGHT FROM THE 
+ *                           OPERANDS. IT'S SYNTAX MUST BE OK!
+ * @param number_of_operands How many operands there are?
+ * @param operands           The array to fill in.
+ * @return PARSER_NOT_ENOUGH_MEMORY or PARSER_OK;
+ */
+static parser_status fill_operands(char *str, int number_of_operands, char **operands_array)
+{
+    int i, j, operand_length;
+    char *ptr, *operand; /* An helping pointer */
+    boolean inside_quotes;
+
+    for (i = 0; i < number_of_operands; i++)
+    {
+        ptr = str; /* Back up the string pointer */
+
+        /* First, calculate the operand size */
+        operand_length = 0;
+        inside_quotes = false;
+        while ((*str != ',' || inside_quotes) && *str)
+        {
+            if (*str == '"')
+                inside_quotes = !inside_quotes;
+
+            if (!isspace(*str) || inside_quotes)
+                operand_length++;
+
+            str++;
+        }
+
+        /* Now, insert the pointer to the array! */
+        /* First, allocate memory for the operand */
+        operand = malloc(operand_length * sizeof(char));
+        if (operand == NULL)
+            return PARSER_NOT_ENOUGH_MEMORY;
+
+        str = ptr; /* Go back to the beginning of the operand */
+        j = 0;
+        inside_quotes = false;
+        while ((*str != ',' || inside_quotes) && *str)
+        {
+            if (*str == '"')
+                inside_quotes = !inside_quotes;
+
+            if (!isspace(*str) || inside_quotes)
+            {
+                operand[j] = *str;
+                j++;
+            }
+
+            str++;
+        }
+
+        operands_array[i] = operand;
+
+        if (*str)
+            str++; /* To skip the comma */
+    }
+
+    return PARSER_OK;
+}
+
+/**
  * Parses the operands in the command.
  * @param str     A pointer to the string to parse.
  * @param command The command object to parse into, STARTING FROM THE OPERANDS!
@@ -173,8 +310,30 @@ static parser_status parse_command_name(char **str, command *cmd)
  */
 static parser_status parse_operands(char *str, command *cmd)
 {
-    /* The first non whitespace char must be a comma,
-    because we are right after a command name. */
+    parser_status status;
+
+    skip_whitespaces(&str);
+    if (!*str) /* There are no operands.. */
+    {
+        cmd->operands_length = 0;
+        cmd->operands = NULL;
+        return PARSER_OK;
+    }
+
+    /* Get the number of operands */
+    if ((status = get_number_of_operands(str, &cmd->operands_length)) != PARSER_OK)
+        return status;
+
+    /* Allocate the array of the operands */
+    cmd->operands = malloc(cmd->operands_length * sizeof(char *));
+    if (cmd->operands == NULL)
+        return PARSER_NOT_ENOUGH_MEMORY;
+
+    /* Fill the operands in the array */
+    if ((status = fill_operands(str, cmd->operands_length, cmd->operands)) != PARSER_OK)
+        return status;
+
+    return PARSER_OK;
 }
 
 parser_status parser_parse(char *str, command *cmd)
@@ -190,6 +349,8 @@ parser_status parser_parse(char *str, command *cmd)
     if ((status = parse_label(&str, cmd)) != PARSER_OK)
         return status;
     if ((status = parse_command_name(&str, cmd)) != PARSER_OK)
+        return status;
+    if ((status = parse_operands(str, cmd)) != PARSER_OK)
         return status;
 
     return PARSER_OK;
