@@ -41,7 +41,7 @@ dictionary_status dictionary_put(dictionary *d, char *key, void *data);
  * Retrives a value from the given dictionary, by the given key.
  * @param d    The dictionary to retreive from.
  * @param key  The desired key.
- * @param data A pointer to where to put the retreived data in.
+ * @param data A pointer to where to put the address of the retreived data.
  * @return     KEY_DOES_NOT_EXIST, if it happens. Else - DICTIONARY_OK.
  */
 dictionary_status dictionary_get(dictionary d, char *key, void **data);
