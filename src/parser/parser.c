@@ -7,6 +7,38 @@
 #include <stdio.h>
 
 #define MAX_LINE 80
+#define MAX_LABEL 31
+
+/**
+ * Prints an error to the log.
+ * @param error_type The type of the error. For example - "SyntaxError".
+ * @param message    The error message itself.
+ * @param line       The line in which the error occurred.
+ */
+static void error(char *error_type, char *message, int line)
+{
+    printf("Parser: %s (line %d) -> %s!\n", error_type, line, message);
+}
+
+/**
+ * Prints a syntax error to the log.
+ * @param message The error message itself.
+ * @param line    The line in which the error occurred.
+ */
+static void syntax_error(char *message, int line)
+{
+    error("SyntaxError", message, line);
+}
+
+/**
+ * Prints an overflow error to the log.
+ * @param message The error message itself.
+ * @param line    The line in which the error occurred.
+ */
+static void overflow_error(char *message, int line)
+{
+    error("OverflowError", message, line);
+}
 
 /**
  * Checks if there is a label inside of the given string.
@@ -34,9 +66,10 @@ static boolean has_label(char *str)
  * Parses the label in the command. Increments the given string to after the label.
  * @param str     A pointer to the pointer of the string to parse. MUST NOT BE EMPTY OR COMMENT
  * @param command The command object to parse into.
+ * @param line    On what line is this string?
  * @return PARSER_SYNTAX_ERROR or PARSER_OVERFLOW or PARSER_OK.
  */
-static parser_status parse_label(char **str, command *cmd)
+static parser_status parse_label(char **str, command *cmd, int line)
 {
     int label_length;
 
@@ -45,30 +78,39 @@ static parser_status parse_label(char **str, command *cmd)
         skip_whitespaces(str);
 
         if (**str == ':')
-            /* A label cannot be empty! */
+        {
+            syntax_error("A label cannot be empty", line);
             return PARSER_SYNTAX_ERROR;
+        }
 
         label_length = 0;
         while (**str != ':')
         {
             label_length++;
-            if (label_length > 31)
+            if (label_length > MAX_LABEL)
+            {
+                overflow_error("A line cannot be longer than 31 characters", line);
                 return PARSER_OVERFLOW;
+            }
 
             cmd->label[label_length - 1] = **str;
             (*str)++;
         }
 
         if (isspace(*(*str - 1)))
-            /* The colon must be right after the label */
+        {
+            syntax_error("The colon of the label must be right after the label", line);
             return PARSER_SYNTAX_ERROR;
+        }
 
         cmd->label[label_length] = '\0';
 
         (*str)++; /* Point to after the label */
         if (!isspace(**str))
-            /* There must be a space after the label */
+        {
+            syntax_error("There must be a space after the label", line);
             return PARSER_SYNTAX_ERROR;
+        }
     }
     else
         cmd->label[0] = '\0';
@@ -122,9 +164,10 @@ static boolean is_too_long(char *str)
  * Parses the command name in the command. Increments the given string to after the command name.
  * @param str     A pointer to the pointer of the string to parse, STARTING AFTER THE LABEL!
  * @param command The command object to parse into.
+ * @param line    On what line is this string?
  * @return PARSER_SYNTAX_ERROR or PARSER_NOT_ENOUGH_MEMORY or PARSER_OK.
  */
-static parser_status parse_command_name(char **str, command *cmd)
+static parser_status parse_command_name(char **str, command *cmd, int line)
 {
     int command_name_length = 0, i;
     char *ptr;
@@ -140,8 +183,10 @@ static parser_status parse_command_name(char **str, command *cmd)
     }
 
     if (command_name_length == 0 || (command_name_length == 1 && **str == '.'))
-        /* There must be a command! */
+    {
+        syntax_error("A line must contain a command (For example - addi)", line);
         return PARSER_SYNTAX_ERROR;
+    }
 
     /* Allocate buffer for the command name */
     cmd->command_name = malloc((command_name_length + 1) * sizeof(char));
@@ -169,55 +214,85 @@ static parser_status parse_command_name(char **str, command *cmd)
 /**
  * Calculates the number of operands in the given string. Reports if there
  * was any syntax error with the operands.
- * @param str The string to check. MUST BEGIN RIGHT FROM THE OPERANDS.
- *            There must be at least one operand!
- * @param int A pointer to integer to fill in the number of operands.
+ * @param str  The string to check. MUST BEGIN RIGHT FROM THE OPERANDS.
+ *             There must be at least one operand!
+ * @param int  A pointer to integer to fill in the number of operands.
+ * @param line The line in which the error occurred.
  * @return PARSER_SYNTAX_ERROR or PARSER_OK.
  */
-static parser_status get_number_of_operands(char *str, int *number_of_operands)
+static parser_status get_number_of_operands(char *str, int *number_of_operands, int line)
 {
-    boolean inside_quotes, inside_operand, after_comma;
+    boolean inside_quotes, inside_operand, after_comma, after_quotes_end;
 
     *number_of_operands = 0;
-    inside_quotes = false, inside_operand = false, after_comma = true;
+    inside_quotes = false, inside_operand = false, after_comma = true, after_quotes_end = false;
     while (*str)
     {
         if (*str == '"')
+        {
             inside_quotes = !inside_quotes;
 
-        if (!inside_quotes)
-        {
-            if (*str == ',')
+            if (inside_operand && inside_quotes)
             {
-                if (inside_operand)
-                {
-                    inside_operand = false;
-                    after_comma = false;
-                }
-
-                if (after_comma && !inside_operand)
-                    return PARSER_SYNTAX_ERROR;
-
-                (*number_of_operands)++;
-                after_comma = true;
-                inside_operand = false;
+                syntax_error("You cannot open quotes inside of an operand", line);
+                return PARSER_SYNTAX_ERROR;
             }
-            else if (!isspace(*str))
-            {
-                if (!after_comma)
-                    return PARSER_SYNTAX_ERROR;
 
-                inside_operand = true;
-            }
-            else
-            {
-                if (inside_operand)
-                    after_comma = false;
+            inside_operand = inside_quotes;
 
-                inside_operand = false;
+            if (!inside_quotes)
+            {
+                after_quotes_end = true;
+                goto next_iteration; /* This current char doesn't need more parse */
             }
         }
 
+        if (inside_quotes)
+            goto next_iteration; /* There is nothing to parse inside of quotes. */
+
+        if (*str == ',')
+        {
+            if (inside_operand)
+            {
+                inside_operand = false;
+                after_comma = false;
+            }
+
+            if (after_comma && !inside_operand)
+            {
+                syntax_error("There cannot be a comma after a comma", line);
+                return PARSER_SYNTAX_ERROR;
+            }
+
+            (*number_of_operands)++;
+            after_comma = true;
+            inside_operand = false;
+        }
+        else if (!isspace(*str))
+        {
+            if (!after_comma || after_quotes_end)
+            {
+                syntax_error("There must be a comma before an operand, except the first operand", line);
+                return PARSER_SYNTAX_ERROR;
+            }
+
+            inside_operand = true;
+        }
+        else
+        {
+            if (inside_operand)
+                after_comma = false;
+
+            inside_operand = false;
+        }
+        
+        /* If it wasn't just now defined. Actually, it's not needed, because after
+        after_quotes_end is setted to true - it jumps to next_iteration, but anyway
+        it is a good practis to put it - for future code change. */
+        if (!inside_quotes)
+            after_quotes_end = false;
+
+    next_iteration:
         str++;
     }
 
@@ -227,12 +302,16 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands)
     after_comma is true - It is a syntax error, because there shouldn't be 
     any comma after the last operand. */
     if (after_comma && !inside_operand)
+    {
+        syntax_error("There souldn't be any comma after the last operand", line);
         return PARSER_SYNTAX_ERROR;
+    }
 
-    /* Well, pretty sensible.. You cannot just open your quotes without
-    closing.. */
     if (inside_quotes)
+    {
+        syntax_error("You must close your quotes", line);
         return PARSER_SYNTAX_ERROR;
+    }
     (*number_of_operands)++; /* To count the first operand */
 
     return PARSER_OK;
@@ -306,9 +385,10 @@ static parser_status fill_operands(char *str, int number_of_operands, char **ope
  * Parses the operands in the command.
  * @param str     A pointer to the string to parse.
  * @param command The command object to parse into, STARTING FROM THE OPERANDS!
+ * @param line    On what line is this string?
  * @return PARSER_SYNTAX_ERROR or PARSER_NOT_ENOUGH_MEMORY or PARSER_OK.
  */
-static parser_status parse_operands(char *str, command *cmd)
+static parser_status parse_operands(char *str, command *cmd, int line)
 {
     parser_status status;
 
@@ -321,7 +401,7 @@ static parser_status parse_operands(char *str, command *cmd)
     }
 
     /* Get the number of operands */
-    if ((status = get_number_of_operands(str, &cmd->number_of_operands)) != PARSER_OK)
+    if ((status = get_number_of_operands(str, &cmd->number_of_operands, line)) != PARSER_OK)
         return status;
 
     /* Allocate the array of the operands */
@@ -336,21 +416,22 @@ static parser_status parse_operands(char *str, command *cmd)
     return PARSER_OK;
 }
 
-parser_status parser_parse(char *str, command *cmd)
+parser_status parser_parse(char *str, command *cmd, int line)
 {
-    /* TODO: Print the errors!! */
-
     parser_status status;
 
     if (is_empty(str))
         return PARSER_EMPTY;
     if (is_too_long(str))
+    {
+        overflow_error("A line cannot be longer than 80 characters", line);
         return PARSER_OVERFLOW;
-    if ((status = parse_label(&str, cmd)) != PARSER_OK)
+    }
+    if ((status = parse_label(&str, cmd, line)) != PARSER_OK)
         return status;
-    if ((status = parse_command_name(&str, cmd)) != PARSER_OK)
+    if ((status = parse_command_name(&str, cmd, line)) != PARSER_OK)
         return status;
-    if ((status = parse_operands(str, cmd)) != PARSER_OK)
+    if ((status = parse_operands(str, cmd, line)) != PARSER_OK)
         return status;
 
     return PARSER_OK;

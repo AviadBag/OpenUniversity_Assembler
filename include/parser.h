@@ -29,11 +29,12 @@ typedef enum e_parser_status
 
 /**
  * Parses the given string.
- * @param str The string to parse.
- * @param cmd A pointer to a command struct to store inside the data.
+ * @param str  The string to parse.
+ * @param cmd  A pointer to a command struct to store inside the data.
+ * @param line On what line is this string?
  * @return PARSER_SYNTAX_ERROR or PARSER_EMPTY or PARSER_OVERFLOW or PARSER_OK.
  */
-parser_status parser_parse(char *str, command *cmd);
+parser_status parser_parse(char *str, command *cmd, int line);
 
 /**
  * Converts a parser_status object to it's string representation. 
