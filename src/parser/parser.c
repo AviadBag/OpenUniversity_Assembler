@@ -315,22 +315,22 @@ static parser_status parse_operands(char *str, command *cmd)
     skip_whitespaces(&str);
     if (!*str) /* There are no operands.. */
     {
-        cmd->operands_length = 0;
+        cmd->number_of_operands = 0;
         cmd->operands = NULL;
         return PARSER_OK;
     }
 
     /* Get the number of operands */
-    if ((status = get_number_of_operands(str, &cmd->operands_length)) != PARSER_OK)
+    if ((status = get_number_of_operands(str, &cmd->number_of_operands)) != PARSER_OK)
         return status;
 
     /* Allocate the array of the operands */
-    cmd->operands = malloc(cmd->operands_length * sizeof(char *));
+    cmd->operands = malloc(cmd->number_of_operands * sizeof(char *));
     if (cmd->operands == NULL)
         return PARSER_NOT_ENOUGH_MEMORY;
 
     /* Fill the operands in the array */
-    if ((status = fill_operands(str, cmd->operands_length, cmd->operands)) != PARSER_OK)
+    if ((status = fill_operands(str, cmd->number_of_operands, cmd->operands)) != PARSER_OK)
         return status;
 
     return PARSER_OK;
