@@ -18,6 +18,7 @@ run: clean all
 	@./${BIN}/${EXECUTABLE}
 
 ${BIN}/${EXECUTABLE}: ${SOURCES} ${HEADERS}
+	mkdir bin -p
 	${CC} ${CC_FLAG} -o $@ ${SOURCES}
 
 clean:
