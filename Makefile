@@ -11,11 +11,17 @@ HEADERS := $(shell find ${ROOT} -type f -name '*.h')
 
 EXECUTABLE := assembler
 
+DOXYFILE       := Doxyfile
+DOXYGEN_OUTPUT := html
+
 all: ${BIN}/${EXECUTABLE}
 
 run: clean all
 	clear
 	@./${BIN}/${EXECUTABLE}
+
+docs:
+	doxygen ${DOXYFILE}
 
 ${BIN}/${EXECUTABLE}: ${SOURCES} ${HEADERS}
 	mkdir bin -p
@@ -23,3 +29,4 @@ ${BIN}/${EXECUTABLE}: ${SOURCES} ${HEADERS}
 
 clean:
 	rm -f ${BIN}/*
+	rm -rf ${DOXYGEN_OUTPUT}
