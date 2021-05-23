@@ -1,6 +1,10 @@
 #ifndef _PARSER_H
 #define _PARSER_H
 
+/**
+ * This module is a parser - parses a given string into a command object.
+ */
+
 #define LABEL_MAX_LENGTH 31
 
 typedef enum e_command_type

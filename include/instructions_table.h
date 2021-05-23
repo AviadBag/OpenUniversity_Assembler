@@ -1,6 +1,10 @@
 #ifndef _INSTRUCTIONS_TABLE_H
 #define _INSTRUCTIONS_TABLE_H
 
+/**
+ * This module implements the instructions table - a table which gives you the information of every command.
+ */
+
 typedef enum e_operand_type
 {
     REGISTER,
