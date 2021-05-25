@@ -12,3 +12,8 @@ char *command_type_to_string(command_type type)
         return "INVALID_COMMAND_TYPE_OBJECT";
     }
 }
+
+boolean command_has_label(command cmd)
+{
+    return cmd.label[0] != '\0';
+}

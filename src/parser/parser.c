@@ -453,16 +453,3 @@ char *parser_status_to_string(parser_status status)
         return "INVALID_PARSER_STATUS_OBJECT";
     }
 }
-
-char *command_type_to_string(command_type type)
-{
-    switch (type)
-    {
-    case DIRECTIVE:
-        return "DIRECTIVE";
-    case INSTRUCTION:
-        return "INSTRUCTION";
-    default:
-        return "INVALID_COMMAND_TYPE_OBJECT";
-    }
-}
