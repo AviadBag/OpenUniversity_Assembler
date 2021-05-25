@@ -1,6 +1,10 @@
 #ifndef _COMMAND_H
 #define _COMMAND_H
 
+/**
+ * This module used for representing a parsed command.
+ */
+
 #include "boolean.h"
 
 #define LABEL_MAX_LENGTH 31
