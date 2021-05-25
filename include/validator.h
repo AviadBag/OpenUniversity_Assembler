@@ -18,6 +18,6 @@ typedef enum e_validator_status
  * @param cmd The command to check.
  * @return VALIDATOR_INVALID or VALIDATOR_OK.
  */
-e_validator_status validator_validate(command cmd);
+validator_status validator_validate(command cmd);
 
 #endif
