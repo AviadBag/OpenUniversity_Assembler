@@ -1,6 +1,0 @@
-make all --dry-run --keep-going --print-directory
-make: Entering directory '/home/aviad/files/programming/projects/c/OpenUniversity_Assembler'
- 
-make: Nothing to be done for 'all'.
-make: Leaving directory '/home/aviad/files/programming/projects/c/OpenUniversity_Assembler'
- 
