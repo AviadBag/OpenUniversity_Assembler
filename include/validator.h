@@ -20,4 +20,6 @@ typedef enum e_validator_status
  */
 validator_status validator_validate(command cmd);
 
+char* validator_status_to_string(validator_status status);
+
 #endif

@@ -38,3 +38,16 @@ validator_status validator_validate(command cmd)
 
     return VALIDATOR_OK;
 }
+
+char* validator_status_to_string(validator_status status)
+{
+    switch (status)
+    {
+        case VALIDATOR_OK:
+            return "VALIDATOR_OK";
+        case VALIDATOR_INVALID:
+            return "VALIDATOR_INVALID";
+        default:
+            return "INVALID_VALIDATOR_STATUS_OBJECT";
+    }
+}

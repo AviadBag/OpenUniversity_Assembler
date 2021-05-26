@@ -3,6 +3,7 @@
         "*.inc": "asm-intel-x86-generic",
         "dictionary.h": "c",
         "parser.h": "c",
-        "string_view": "c"
+        "string_view": "c",
+        "validator.h": "c"
     }
 }
