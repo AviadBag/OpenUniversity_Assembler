@@ -5,5 +5,12 @@
         "parser.h": "c",
         "string_view": "c",
         "validator.h": "c"
-    }
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/aviad/files/programming/projects/c/OpenUniversity_Assembler/bin",
+            "binaryPath": "/home/aviad/files/programming/projects/c/OpenUniversity_Assembler/bin/assembler",
+            "binaryArgs": []
+        }
+    ]
 }
