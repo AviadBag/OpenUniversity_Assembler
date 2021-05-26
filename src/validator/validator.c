@@ -1,6 +1,7 @@
 #include "validator.h"
 #include "command.h"
 #include "instructions_table.h"
+#include "str_helper.h"
 #include <ctype.h>
 
 /**
@@ -8,16 +9,20 @@
  * @param label The label to check. Must be not empty!
  * @return VALIDATOR_INVALID or VALIDATOR_OK.
  */
-validator_status validate_label(char label[LABEL_MAX_LENGTH])
+validator_status validate_label(char* label)
 {
     instruction inst;
-    
+
     /* A label must start with an higher or lower char. */
     if (!isalpha(label[0]))
         return VALIDATOR_INVALID;
 
-    /* A label cannot be a reserved word */
+    /* A label cannot be a reserved word. */
     if (instructions_table_get_instruction(label, &inst) == IT_OK)
+        return VALIDATOR_INVALID;
+
+    /* There cannot be a whitespace in the label */
+    if (has_whitespaces(label))
         return VALIDATOR_INVALID;
 
     return VALIDATOR_OK;
