@@ -1,3 +1,6 @@
+#ifndef _STR_HELPER_H
+#define _STR_HELPER_H
+
 /**
  * This module contains useful string functions.
  */
@@ -16,3 +19,5 @@ void skip_whitespaces(char** ptr);
  * @return true if it has; else - false.
  */
 boolean has_whitespaces(char* str);
+
+#endif
