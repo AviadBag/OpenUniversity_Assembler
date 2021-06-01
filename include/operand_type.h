@@ -6,7 +6,8 @@ typedef enum e_operand_type
     REGISTER,
     CONSTANT,
     LABEL,
-    LABEL_OR_REGISTER
+    LABEL_OR_REGISTER,
+    STRING
 } operand_type;
 
 #endif
