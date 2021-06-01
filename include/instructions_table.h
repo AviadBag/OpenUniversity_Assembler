@@ -5,13 +5,7 @@
  * This module implements the instructions table - a table which gives you the information of every command.
  */
 
-typedef enum e_operand_type
-{
-    REGISTER,
-    CONSTANT,
-    LABEL,
-    LABEL_OR_REGISTER
-} operand_type;
+#include "operand_type.h"
 
 typedef enum e_instruction_type
 {
