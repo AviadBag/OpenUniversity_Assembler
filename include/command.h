@@ -20,7 +20,7 @@ typedef struct s_command
 {
     command_type type;                /* Tye type of the command */
     char **operands;                  /* All the operands of the command. NULL if there are no operands. */
-    int number_of_operands;              /* The length of the operands array */
+    int number_of_operands;           /* The length of the operands array */
     char *command_name;               /* The name of the command (For example - "addi") */
     char label[LABEL_MAX_LENGTH + 1]; /* The label of that line; Empty string if there is no label. */
 } command;
