@@ -47,11 +47,7 @@ instructions_table_status instructions_table_init();
  * Gives the instruction struct of the required instruction.
  * @param name The name of the instruction. (For example - "add").
  * @param inst A pointer to a instruction struct to store inside the data.
-<<<<<<< HEAD
  * @return  IT_INSTRUCTION_DOES_NOT_EXIST if it happens, else - IT_OK.
-=======
- * @retrun  IT_INSTRUCTION_DOES_NOT_EXIST if it happens, else - IT_OK.
->>>>>>> master
  * MUST BE CALLED AFTER instructions_table_init(0)!
  */
 instructions_table_status instructions_table_get_instruction(char *name, instruction *inst);
