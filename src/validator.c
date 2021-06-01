@@ -86,7 +86,7 @@ validator_status validate_operands(command cmd)
     validator_status status;
 
     if ((status = validate_operands_length(cmd)) != VALIDATOR_OK)
-            return status;
+        return status;
 
     return VALIDATOR_OK;
 }
