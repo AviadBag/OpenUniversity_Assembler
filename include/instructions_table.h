@@ -22,13 +22,12 @@ typedef enum e_instruction_type
 
 typedef struct s_instruction
 {
-    instruction_type type;
-    int funct; /* If exists; 0 otherwise. */
-    int opcode;
+    instruction_type type;        /**< The type of this instruction - R or I or J. */
+    int funct;                    /**< The funct of this instruction - if exists; 0 otherwise. */
+    int opcode;                   /**< The opcode of this instruction. */
 
-    int number_of_operands;       /* How many operands does this instruction get? */
-    /* An array of operands types, of length number_of_operands. NULL if there are no operands. */
-    operand_type *operands_types;
+    int number_of_operands;       /**< How many operands does this instruction get? */
+    operand_type *operands_types; /**< An array of operands types, of length number_of_operands. NULL if there are no operands. */
 } instruction;
 
 typedef enum e_instructions_table_status
