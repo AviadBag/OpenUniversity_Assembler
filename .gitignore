@@ -1,4 +1,8 @@
 bin/
 src/main.c
 html/
+<<<<<<< HEAD
 .vscode/
+=======
+.vscode/
+>>>>>>> master

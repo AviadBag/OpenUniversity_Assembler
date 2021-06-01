@@ -7,10 +7,10 @@
 
 struct s_dictionary_node
 {
-    char *key;
-    void *data;
+    char *key;                      /* The key of this node */
+    void *data;                     /**< The data of this node */
 
-    struct s_dictionary_node *next;
+    struct s_dictionary_node *next; /**< A pointer to the next node in the linked list */
 };
 
 typedef struct s_dictionary_node *dictionary;
