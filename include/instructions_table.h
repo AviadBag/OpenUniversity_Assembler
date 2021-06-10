@@ -5,13 +5,7 @@
  * This module implements the instructions table - a table which gives you the information of every command.
  */
 
-typedef enum e_operand_type
-{
-    REGISTER,
-    CONSTANT,
-    LABEL,
-    LABEL_OR_REGISTER
-} operand_type;
+#include "operand_type.h"
 
 typedef enum e_instruction_type
 {
@@ -47,11 +41,7 @@ instructions_table_status instructions_table_init();
  * Gives the instruction struct of the required instruction.
  * @param name The name of the instruction. (For example - "add").
  * @param inst A pointer to a instruction struct to store inside the data.
-<<<<<<< HEAD
  * @return  IT_INSTRUCTION_DOES_NOT_EXIST if it happens, else - IT_OK.
-=======
- * @retrun  IT_INSTRUCTION_DOES_NOT_EXIST if it happens, else - IT_OK.
->>>>>>> master
  * MUST BE CALLED AFTER instructions_table_init(0)!
  */
 instructions_table_status instructions_table_get_instruction(char *name, instruction *inst);
