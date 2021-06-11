@@ -1,6 +1,8 @@
 #include "parser.h"
 #include "boolean.h"
 #include "str_helper.h"
+#include "logger.h"
+
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
@@ -9,36 +11,9 @@
 #define MAX_LINE 80
 #define MAX_LABEL 31
 
-/**
- * Prints an error to the log.
- * @param error_type The type of the error. For example - "SyntaxError".
- * @param message    The error message itself.
- * @param line       The line in which the error occurred.
- */
-static void error(char *error_type, char *message, int line)
-{
-    printf("Parser: %s (line %d) -> %s!\n", error_type, line, message);
-}
-
-/**
- * Prints a syntax error to the log.
- * @param message The error message itself.
- * @param line    The line in which the error occurred.
- */
-static void syntax_error(char *message, int line)
-{
-    error("SyntaxError", message, line);
-}
-
-/**
- * Prints an overflow error to the log.
- * @param message The error message itself.
- * @param line    The line in which the error occurred.
- */
-static void overflow_error(char *message, int line)
-{
-    error("OverflowError", message, line);
-}
+#define PARSER "Parser"
+#define SYNTAX_ERROR "SyntaxError"
+#define OVERFLOW_ERROR "OverflowError"
 
 /**
  * Checks if there is a label inside of the given string.
@@ -79,7 +54,7 @@ static parser_status parse_label(char **str, command *cmd, int line)
 
         if (**str == ':')
         {
-            syntax_error("A label cannot be empty", line);
+            logger_log(PARSER, SYNTAX_ERROR, line, "A label cannot be empty!");
             return PARSER_SYNTAX_ERROR;
         }
 
@@ -89,7 +64,7 @@ static parser_status parse_label(char **str, command *cmd, int line)
             label_length++;
             if (label_length > MAX_LABEL)
             {
-                overflow_error("A line cannot be longer than 31 characters", line);
+                logger_log(PARSER, OVERFLOW_ERROR, line, "A line cannot be longer than 31 characters");
                 return PARSER_OVERFLOW;
             }
 
@@ -99,7 +74,7 @@ static parser_status parse_label(char **str, command *cmd, int line)
 
         if (isspace(*(*str - 1)))
         {
-            syntax_error("The colon of the label must be right after the label", line);
+            logger_log(PARSER, SYNTAX_ERROR, line, "The colon of the label must be right after the label");
             return PARSER_SYNTAX_ERROR;
         }
 
@@ -108,7 +83,7 @@ static parser_status parse_label(char **str, command *cmd, int line)
         (*str)++; /* Point to after the label */
         if (!isspace(**str))
         {
-            syntax_error("There must be a space after the label", line);
+            logger_log(PARSER, SYNTAX_ERROR, line, "There must be a space after the label");
             return PARSER_SYNTAX_ERROR;
         }
     }
@@ -184,7 +159,7 @@ static parser_status parse_command_name(char **str, command *cmd, int line)
 
     if (command_name_length == 0 || (command_name_length == 1 && **str == '.'))
     {
-        syntax_error("A line must contain a command (For example - addi)", line);
+        logger_log(PARSER, SYNTAX_ERROR, line, "A line must contain a command (For example - addi)");
         return PARSER_SYNTAX_ERROR;
     }
 
@@ -234,7 +209,7 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands, 
 
             if (inside_operand && inside_quotes)
             {
-                syntax_error("You cannot open quotes inside of an operand", line);
+                logger_log(PARSER, SYNTAX_ERROR, line, "You cannot open quotes inside of an operand");
                 return PARSER_SYNTAX_ERROR;
             }
 
@@ -260,7 +235,7 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands, 
 
             if (after_comma && !inside_operand)
             {
-                syntax_error("There cannot be a comma after a comma", line);
+                logger_log(PARSER, SYNTAX_ERROR, line, "There cannot be a comma after a comma");
                 return PARSER_SYNTAX_ERROR;
             }
 
@@ -272,7 +247,7 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands, 
         {
             if (!after_comma || after_quotes_end)
             {
-                syntax_error("There must be a comma before an operand, except the first operand", line);
+                logger_log(PARSER, SYNTAX_ERROR, line, "There must be a comma before an operand, except the first operand");
                 return PARSER_SYNTAX_ERROR;
             }
 
@@ -285,7 +260,7 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands, 
 
             inside_operand = false;
         }
-        
+
         /* If it wasn't just now defined. Actually, it's not needed, because after
         after_quotes_end is setted to true - it jumps to next_iteration, but anyway
         it is a good practis to put it - for future code change. */
@@ -303,13 +278,13 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands, 
     any comma after the last operand. */
     if (after_comma && !inside_operand)
     {
-        syntax_error("There souldn't be any comma after the last operand", line);
+        logger_log(PARSER, SYNTAX_ERROR, line, "There souldn't be any comma after the last operand");
         return PARSER_SYNTAX_ERROR;
     }
 
     if (inside_quotes)
     {
-        syntax_error("You must close your quotes", line);
+        logger_log(PARSER, SYNTAX_ERROR, line, "You must close your quotes");
         return PARSER_SYNTAX_ERROR;
     }
     (*number_of_operands)++; /* To count the first operand */
@@ -424,7 +399,7 @@ parser_status parser_parse(char *str, command *cmd, int line)
         return PARSER_EMPTY;
     if (is_too_long(str))
     {
-        overflow_error("A line cannot be longer than 80 characters", line);
+        logger_log(PARSER, OVERFLOW_ERROR, line, "A line cannot be longer than %d characters", MAX_LINE);
         return PARSER_OVERFLOW;
     }
     if ((status = parse_label(&str, cmd, line)) != PARSER_OK)
