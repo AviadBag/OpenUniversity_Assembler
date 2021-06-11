@@ -3,6 +3,8 @@
 
 #include "operand_type.h"
 
+#define DT_INFINITY -1
+
 typedef enum e_directives_table_status
 {
     /* DT stands for "Directives Table". */
@@ -13,7 +15,7 @@ typedef enum e_directives_table_status
 typedef struct s_directive
 {
     char *name;                   /**< The name of the directive */
-    int number_of_operands;       /**< How many operands does this directive get? -1 means one operand in the array, but the directive gets infinity number of operands of this types. */
+    int number_of_operands;       /**< How many operands does this directive get? DT_INFINITY means one operand in the array, but the directive gets infinity number of operands of this types. */
     operand_type *operands_types; /**< An array of operands types, of length number_of_operands. */
 } directive;
 
