@@ -3,6 +3,7 @@
 #include "instructions_table.h"
 #include "directives_table.h"
 #include "str_helper.h"
+#include "boolean.h"
 #include <ctype.h>
 
 /**
@@ -39,18 +40,18 @@ validator_status validate_label(char *label)
 validator_status validate_command_name(char *command_name, command_type type)
 {
     instruction* inst;
+    directive* dir;
 
     if (type == INSTRUCTION)
     {
         if (instructions_table_get_instruction(command_name, &inst) == IT_INSTRUCTION_NOT_FOUND)
             return VALIDATOR_INVALID;
     }
-    else if (type == DIRECTIVE)
+    else /* Directive */
     {
-        /* TODO */
+        if (directives_table_get_directive(command_name, &dir) == DT_DIRECTIVE_DOES_NOT_EXIST)  
+            return VALIDATOR_INVALID;
     }
-    else
-        return VALIDATOR_INVALID;
 
     return VALIDATOR_OK;
 }

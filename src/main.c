@@ -13,11 +13,15 @@ void check_validator()
     
     printf("check_validator():\n");
 
-    p_status = parser_parse(".dw:   add  $4, 5 , 3", &cmd, 17);
+    p_status = parser_parse("w:   sw 1, 2", &cmd, 17);
     printf("%s\n", parser_status_to_string(p_status));
     if (command_has_label(cmd))
         printf("Label: %s\n", cmd.label);
     printf("Command: %s\n", cmd.command_name);
+    if (cmd.type == DIRECTIVE)
+        printf("Command type: Directive\n");
+    else
+        printf("Command type: Instruction\n");
 
     v_status = validator_validate(cmd);
     printf("%s\n", validator_status_to_string(v_status));
