@@ -26,10 +26,6 @@ void check_validator()
     printf("%s\n", validator_status_to_string(v_status));
 
     instructions_table_free();
-
-    printf("------------\n");
-    directives_table_get_directive("A", &d);
-    printf("%d\n", d->number_of_operands);
 }
 
 void check_directives_table()
@@ -48,7 +44,7 @@ void check_directives_table()
 
 int main()
 {
-    check_directives_table();
+    check_validator();
 
     return 0;
 }
