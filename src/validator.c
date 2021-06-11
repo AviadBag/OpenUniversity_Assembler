@@ -1,6 +1,7 @@
 #include "validator.h"
 #include "command.h"
 #include "instructions_table.h"
+#include "directives_table.h"
 #include "str_helper.h"
 #include <ctype.h>
 
@@ -12,13 +13,14 @@
 validator_status validate_label(char *label)
 {
     instruction* inst;
+    directive* dir;
 
     /* A label must start with an higher or lower char. */
     if (!isalpha(label[0]))
         return VALIDATOR_INVALID;
 
     /* A label cannot be a reserved word. */
-    if (instructions_table_get_instruction(label, &inst) == IT_OK)
+    if (instructions_table_get_instruction(label, &inst) == IT_OK || directives_table_get_directive(label, &dir) == DT_OK)
         return VALIDATOR_INVALID;
 
     /* There cannot be a whitespace in the label */

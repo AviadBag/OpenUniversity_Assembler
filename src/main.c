@@ -13,7 +13,7 @@ void check_validator()
     
     printf("check_validator():\n");
 
-    p_status = parser_parse("addd:   asdd  $4, 5 , 3", &cmd, 17);
+    p_status = parser_parse(".dw:   add  $4, 5 , 3", &cmd, 17);
     printf("%s\n", parser_status_to_string(p_status));
     if (command_has_label(cmd))
         printf("Label: %s\n", cmd.label);
