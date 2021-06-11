@@ -11,7 +11,7 @@
  */
 validator_status validate_label(char *label)
 {
-    instruction inst;
+    instruction* inst;
 
     /* A label must start with an higher or lower char. */
     if (!isalpha(label[0]))
@@ -36,11 +36,11 @@ validator_status validate_label(char *label)
  */
 validator_status validate_command_name(char *command_name, command_type type)
 {
-    instruction inst;
+    instruction* inst;
 
     if (type == INSTRUCTION)
     {
-        if (instructions_table_get_instruction(command_name, &inst) == IT_INSTRUCTION_DOES_NOT_EXIST)
+        if (instructions_table_get_instruction(command_name, &inst) == IT_INSTRUCTION_NOT_FOUND)
             return VALIDATOR_INVALID;
     }
     else if (type == DIRECTIVE)
@@ -60,12 +60,12 @@ validator_status validate_command_name(char *command_name, command_type type)
  */
 validator_status validate_operands_length(command cmd)
 {
-    instruction inst;
+    instruction* inst;
 
     if (cmd.type == INSTRUCTION)
     {
         instructions_table_get_instruction(cmd.command_name, &inst);
-        if (inst.number_of_operands != cmd.number_of_operands)
+        if (inst->number_of_operands != cmd.number_of_operands)
             return VALIDATOR_INVALID;
     }
     else /* Directive */
