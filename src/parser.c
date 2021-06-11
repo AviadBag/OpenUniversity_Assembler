@@ -243,7 +243,13 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands, 
                 return PARSER_SYNTAX_ERROR;
             }
 
-            inside_operand = inside_quotes;
+            if (!after_comma || after_quotes_end)
+            {
+                syntax_error("There must be a comma before an operand, except the first operand", line);
+                return PARSER_SYNTAX_ERROR;
+            }
+
+            inside_operand = true;
 
             if (!inside_quotes)
             {
@@ -273,7 +279,7 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands, 
             after_comma = true;
             inside_operand = false;
         }
-        else if (!isspace(*str))
+        else if (!isspace(*str)) /* This is a regular operand */
         {
             if (!after_comma || after_quotes_end)
             {
@@ -283,7 +289,7 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands, 
 
             inside_operand = true;
         }
-        else
+        else /* This is a whitespace */
         {
             if (inside_operand)
                 after_comma = false;
