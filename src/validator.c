@@ -64,17 +64,22 @@ validator_status validate_command_name(char *command_name, command_type type)
 validator_status validate_operands_length(command cmd)
 {
     instruction* inst;
+    directive* dir;
+    int required_number_of_operands;
 
     if (cmd.type == INSTRUCTION)
     {
         instructions_table_get_instruction(cmd.command_name, &inst);
-        if (inst->number_of_operands != cmd.number_of_operands)
-            return VALIDATOR_INVALID;
+        required_number_of_operands = inst->number_of_operands;
     }
     else /* Directive */
     {
-        /* TODO */
+        directives_table_get_directive(cmd.command_name, &dir);
+        required_number_of_operands = dir->number_of_operands;
     }
+
+    if (required_number_of_operands != cmd.number_of_operands)
+        return VALIDATOR_INVALID;
 
     return VALIDATOR_OK;
 }

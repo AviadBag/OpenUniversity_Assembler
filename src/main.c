@@ -10,11 +10,18 @@ void check_validator()
     command cmd;
     parser_status p_status;
     validator_status v_status;
-    
+    int i;
+
     printf("check_validator():\n");
 
-    p_status = parser_parse("w:   sw 1, 2", &cmd, 17);
+    p_status = parser_parse("w:   .asciz f,\"afaef ,f aefa e\",ss ", &cmd, 17);
     printf("%s\n", parser_status_to_string(p_status));
+    if (p_status != PARSER_OK)
+        return;
+    for (i = 0; i < cmd.number_of_operands; i++)
+    {
+        printf("operands[%d] = %s\n", i, cmd.operands[i]);
+    }
     if (command_has_label(cmd))
         printf("Label: %s\n", cmd.label);
     printf("Command: %s\n", cmd.command_name);
