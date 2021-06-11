@@ -1,3 +1,2 @@
-bin/
-html/
-.vscode/
+out/
+src/main.c
