@@ -78,6 +78,14 @@ validator_status validate_operands_length(command cmd)
         required_number_of_operands = dir->number_of_operands;
     }
 
+    if (required_number_of_operands == DT_INFINITY)
+    {
+        if (cmd.number_of_operands == 0)
+            return VALIDATOR_INVALID;
+        
+        return VALIDATOR_OK;
+    }
+
     if (required_number_of_operands != cmd.number_of_operands)
         return VALIDATOR_INVALID;
 
