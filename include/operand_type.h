@@ -4,7 +4,6 @@
 typedef enum e_operand_type
 {
     REGISTER,
-    CONSTANT, /* Should be removed */
     CONSTANT_BYTE,
     CONSTANT_HALF,
     CONSTANT_WORD,
