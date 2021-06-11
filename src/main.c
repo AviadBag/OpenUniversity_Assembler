@@ -14,7 +14,7 @@ void check_validator()
 
     printf("check_validator():\n");
 
-    p_status = parser_parse("w:  move 323, 13  ", &cmd, 17);
+    p_status = parser_parse("w:  move 323,, 13  ", &cmd, 17);
     printf("%s\n", parser_status_to_string(p_status));
     if (p_status != PARSER_OK)
         return;
