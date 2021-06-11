@@ -1,7 +1,9 @@
 #include "validator.h"
 #include "command.h"
 #include "instructions_table.h"
+#include "directives_table.h"
 #include "str_helper.h"
+#include "boolean.h"
 #include <ctype.h>
 
 /**
@@ -12,13 +14,14 @@
 validator_status validate_label(char *label)
 {
     instruction* inst;
+    directive* dir;
 
     /* A label must start with an higher or lower char. */
     if (!isalpha(label[0]))
         return VALIDATOR_INVALID;
 
     /* A label cannot be a reserved word. */
-    if (instructions_table_get_instruction(label, &inst) == IT_OK)
+    if (instructions_table_get_instruction(label, &inst) == IT_OK || directives_table_get_directive(label, &dir) == DT_OK)
         return VALIDATOR_INVALID;
 
     /* There cannot be a whitespace in the label */
@@ -37,18 +40,18 @@ validator_status validate_label(char *label)
 validator_status validate_command_name(char *command_name, command_type type)
 {
     instruction* inst;
+    directive* dir;
 
     if (type == INSTRUCTION)
     {
         if (instructions_table_get_instruction(command_name, &inst) == IT_INSTRUCTION_NOT_FOUND)
             return VALIDATOR_INVALID;
     }
-    else if (type == DIRECTIVE)
+    else /* Directive */
     {
-        /* TODO */
+        if (directives_table_get_directive(command_name, &dir) == DT_DIRECTIVE_DOES_NOT_EXIST)  
+            return VALIDATOR_INVALID;
     }
-    else
-        return VALIDATOR_INVALID;
 
     return VALIDATOR_OK;
 }
@@ -61,17 +64,22 @@ validator_status validate_command_name(char *command_name, command_type type)
 validator_status validate_operands_length(command cmd)
 {
     instruction* inst;
+    directive* dir;
+    int required_number_of_operands;
 
     if (cmd.type == INSTRUCTION)
     {
         instructions_table_get_instruction(cmd.command_name, &inst);
-        if (inst->number_of_operands != cmd.number_of_operands)
-            return VALIDATOR_INVALID;
+        required_number_of_operands = inst->number_of_operands;
     }
     else /* Directive */
     {
-        /* TODO */
+        directives_table_get_directive(cmd.command_name, &dir);
+        required_number_of_operands = dir->number_of_operands;
     }
+
+    if (required_number_of_operands != cmd.number_of_operands)
+        return VALIDATOR_INVALID;
 
     return VALIDATOR_OK;
 }
