@@ -8,9 +8,10 @@
 
 /**
  * Checks if the operands of the given command are valid.
- * @param cmd The commnad to check. The command name must exist.
+ * @param cmd  The commnad to check. The command name must exist.
+ * @param line On what line these operands are?
  * @return VALIDATOR_INVALID or VALIDATOR_OK.
  */
-validator_status validate_operands(command cmd);
+validator_status validate_operands(command cmd, int line);
 
 #endif

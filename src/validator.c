@@ -89,7 +89,7 @@ validator_status validator_validate(command cmd, int line)
     if ((status = validate_command_name(cmd.command_name, cmd.type, line)) != VALIDATOR_OK)
         return status;
 
-    if ((status = validate_operands(cmd)) != VALIDATOR_OK)
+    if ((status = validate_operands(cmd, line)) != VALIDATOR_OK)
         return status;
 
     return VALIDATOR_OK;
