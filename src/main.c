@@ -15,7 +15,7 @@ void check_validator()
     printf("check_validator():\n");
 
     printf("\n------- RUNNING PARSER -------\n");
-    p_status = parser_parse("label: .asciz 3, 3", &cmd, 17);
+    p_status = parser_parse("label: move $3, $-1", &cmd, 17);
     printf("%s\n", parser_status_to_string(p_status));
     if (p_status != PARSER_OK)
         return;

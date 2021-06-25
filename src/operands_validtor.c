@@ -3,8 +3,14 @@
 #include "directives_table.h"
 #include "logger.h"
 
+#include <string.h>
+#include <stdio.h>
+
 #define OPERANDS_VALIDATOR "OperandsValidator"
 #define INVALID_OPERANDS "InvalidOperands"
+
+#define FIRST_REGISTER 0
+#define LAST_REGISTER 31
 
 /**
  * Checks if the operands length of the given command is valid.
@@ -88,6 +94,37 @@ operand_type* get_operands_types(command cmd)
  */
 validator_status validate_register_operand(char* operand, int line)
 {
+    int length;
+    int register_value;
+
+    /* Make sure that the register is written well */
+    if (operand[0] != '$')
+    {
+        logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "A register name must start with '$'");
+        return VALIDATOR_INVALID;
+    }
+
+    length = strlen(operand);
+    if (length < 2 || length > 3)
+    {
+        logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "The register length must be between 2 and 3");
+        return VALIDATOR_INVALID;
+    }
+
+    /* Make sure that the register name is valid */
+    operand++; /* Point to the register number itself */
+    if (sscanf(operand, "%d", &register_value) != 1)
+    {
+        logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "The register value must be a number");
+        return VALIDATOR_INVALID;
+    }
+
+    if (register_value < FIRST_REGISTER || register_value > LAST_REGISTER)
+    {
+        logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "Register number %d is out of range. Must be between %d and %d", register_value, FIRST_REGISTER, LAST_REGISTER);
+        return VALIDATOR_INVALID;
+    }
+
     return VALIDATOR_OK;
 }
 
