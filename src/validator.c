@@ -93,6 +93,49 @@ validator_status validate_operands_length(command cmd)
 }
 
 /**
+ * @brief Returnes the operands types array of the given command.
+ * 
+ * @param command         The command. MUST EXIST.
+ * @param length          The length of the array will be stored here.
+ * @return operand_type* The operands types array.
+ */
+operand_type* get_operands_types(command cmd, int* length)
+{
+    instruction* inst;
+    directive* dir;
+
+    if (cmd.type == INSTRUCTION)
+    {
+        instructions_table_get_instruction(cmd.command_name, &inst);
+        *length = inst->number_of_operands;
+        return inst->operands_types;
+    }
+    else /* A directive */
+    {
+        directives_table_get_directive(cmd.command_name, &dir);
+        *length = dir->number_of_operands;
+        return dir->operands_types;
+    }
+}
+
+/**
+ * Checks if the operands types of the given command is valid.
+ * @param cmd The commnad to check. The command name must exist.
+ * @return VALIDATOR_INVALID or VALIDATOR_OK.
+*/
+validator_status validate_operands_type(command cmd)
+{
+    operand_type* operands_types;
+    int operands_types_arr_length;
+    int i;
+
+    /* First, We will have to get the operands types */
+    operands_types = get_operands_types(cmd, &operands_types_arr_length);
+
+    return VALIDATOR_OK;
+}
+
+/**
  * Checks if the operands of the given command are valid.
  * @param cmd The commnad to check. The command name must exist.
  * @return VALIDATOR_INVALID or VALIDATOR_OK.
@@ -102,6 +145,9 @@ validator_status validate_operands(command cmd)
     validator_status status;
 
     if ((status = validate_operands_length(cmd)) != VALIDATOR_OK)
+        return status;
+
+    if ((status = validate_operands_type(cmd)) != VALIDATOR_OK)
         return status;
 
     return VALIDATOR_OK;
