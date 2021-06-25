@@ -1,13 +1,18 @@
 #include "operands_validator.h"
 #include "instructions_table.h"
 #include "directives_table.h"
+#include "logger.h"
+
+#define OPERANDS_VALIDATOR "OperandsValidator"
+#define INVALID_OPERANDS "InvalidOperands"
 
 /**
  * Checks if the operands length of the given command is valid.
- * @param cmd The commnad to check. The command name must exist.
+ * @param cmd  The commnad to check. The command name must exist.
+ * @param line On what line these operands are?
  * @return VALIDATOR_INVALID or VALIDATOR_OK.
  */
-validator_status validate_operands_length(command cmd)
+validator_status validate_operands_length(command cmd, int line)
 {
     instruction* inst;
     directive* dir;
@@ -27,13 +32,26 @@ validator_status validate_operands_length(command cmd)
     if (required_number_of_operands == DT_INFINITY)
     {
         if (cmd.number_of_operands == 0)
+        {
+            if (cmd.type == INSTRUCTION)
+                logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "Instruction \"%s\" expects a least 1 operand, given 0", cmd.command_name);
+            else /* Directive */
+                logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "Directive \".%s\" expects a least 1 operand, given 0", cmd.command_name);
             return VALIDATOR_INVALID;
+        }
         
         return VALIDATOR_OK;
     }
 
     if (required_number_of_operands != cmd.number_of_operands)
+    {
+        if (cmd.type == INSTRUCTION)
+            logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "Instruction \"%s\" expects %d operands, given %d", cmd.command_name, required_number_of_operands, cmd.number_of_operands);
+        else /* Directive */
+            logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "Directive \".%s\" expects %d operands, given %d", cmd.command_name, required_number_of_operands, cmd.number_of_operands);          
+        
         return VALIDATOR_INVALID;
+    }
 
     return VALIDATOR_OK;
 }
@@ -65,9 +83,10 @@ operand_type* get_operands_types(command cmd)
  * @brief This method checks if the given operand is a valid register.
  * 
  * @param operand The operand to check.
+ * @param line    On what line this operand is?
  * @return validator_status VALIDATOR_INVALID or VALIDATOR_OK
  */
-validator_status validate_register_operand(char* operand)
+validator_status validate_register_operand(char* operand, int line)
 {
     return VALIDATOR_OK;
 }
@@ -77,14 +96,15 @@ validator_status validate_register_operand(char* operand)
  * 
  * @param operand The operand to check.
  * @param type    The desired operand type.
+ * @param line    On what line this operand is?
  * @return validator_status VALIDATOR_OK or VALIDATOR_INVALID
  */
-validator_status validate_operand_type(char* operand, operand_type type)
+validator_status validate_operand_type(char* operand, operand_type type, int line)
 {
     switch (type)
     {
         case REGISTER:
-            return validate_register_operand(operand);
+            return validate_register_operand(operand, line);
         default:
             return VALIDATOR_OK;
     }
@@ -93,9 +113,10 @@ validator_status validate_operand_type(char* operand, operand_type type)
 /**
  * Checks if the operands types of the given command is valid.
  * @param cmd The commnad to check. The command name must exist, the number of operands must be correct.
+ * @param line On what line these operands are?
  * @return VALIDATOR_INVALID or VALIDATOR_OK.
 */
-validator_status validate_operands_type(command cmd)
+validator_status validate_operands_type(command cmd, int line)
 {
     operand_type* operands_types;
     int i;
@@ -107,21 +128,21 @@ validator_status validate_operands_type(command cmd)
     /* Now, check every operand */
     for (i = 0; i < cmd.number_of_operands; i++)
     {
-        if ((status = validate_operand_type(cmd.operands[i], operands_types[i])) != VALIDATOR_OK)
+        if ((status = validate_operand_type(cmd.operands[i], operands_types[i], line)) != VALIDATOR_OK)
             return status;
     }
 
     return VALIDATOR_OK;
 }
 
-validator_status validate_operands(command cmd)
+validator_status validate_operands(command cmd, int line)
 {
     validator_status status;
 
-    if ((status = validate_operands_length(cmd)) != VALIDATOR_OK)
+    if ((status = validate_operands_length(cmd, line)) != VALIDATOR_OK)
         return status;
 
-    if ((status = validate_operands_type(cmd)) != VALIDATOR_OK)
+    if ((status = validate_operands_type(cmd, line)) != VALIDATOR_OK)
         return status;
 
     return VALIDATOR_OK;
