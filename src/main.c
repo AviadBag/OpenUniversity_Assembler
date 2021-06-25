@@ -14,7 +14,8 @@ void check_validator()
 
     printf("check_validator():\n");
 
-    p_status = parser_parse("w:  move 323, 13  ", &cmd, 17);
+    printf("\n------- RUNNING PARSER -------\n");
+    p_status = parser_parse("label: move 123, 12", &cmd, 17);
     printf("%s\n", parser_status_to_string(p_status));
     if (p_status != PARSER_OK)
         return;
@@ -30,8 +31,9 @@ void check_validator()
     else
         printf("Command type: Instruction\n");
 
-    v_status = validator_validate(cmd);
-    printf("%s\n", validator_status_to_string(v_status));
+    printf("\n------- RUNNING VALIDATION -------\n");
+    v_status = validator_validate(cmd, 17);
+    printf("Validation status: %s\n", validator_status_to_string(v_status));
 }
 
 void check_directives_table()
