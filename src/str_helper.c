@@ -19,3 +19,22 @@ boolean has_whitespaces(char *str)
 
     return false;
 }
+
+boolean is_number(char* str)
+{
+    /* A number cannot be empty */
+    if (!*str)
+        return false;
+
+    /* There can be a minus sign at the beginning */
+    if (*str == '-')
+        str++;
+
+    while (*str)
+    {
+        if (!isdigit(*str++))
+            return false;
+    }
+
+    return true;
+}
