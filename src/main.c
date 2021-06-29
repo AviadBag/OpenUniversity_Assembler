@@ -4,6 +4,7 @@
 #include "validator.h"
 #include "command.h"
 #include "directives_table.h"
+#include "str_helper.h"
 
 void check_validator()
 {
@@ -15,7 +16,7 @@ void check_validator()
     printf("check_validator():\n");
 
     printf("\n------- RUNNING PARSER -------\n");
-    p_status = parser_parse("label: move $3, $-1", &cmd, 17);
+    p_status = parser_parse("label: lh $9, 3339999999999999999999999999999999999999999999999999999994, $5", &cmd, 17);
     printf("%s\n", parser_status_to_string(p_status));
     if (p_status != PARSER_OK)
         return;

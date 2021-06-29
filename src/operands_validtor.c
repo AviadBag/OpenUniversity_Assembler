@@ -2,9 +2,14 @@
 #include "instructions_table.h"
 #include "directives_table.h"
 #include "logger.h"
+#include "str_helper.h"
+#include "utils.h"
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <errno.h>
 
 #define OPERANDS_VALIDATOR "OperandsValidator"
 #define INVALID_OPERANDS "InvalidOperands"
@@ -129,6 +134,35 @@ validator_status validate_register_operand(char* operand, int line)
 }
 
 /**
+ * @brief Checks if the given operand is a valid constant.
+ * 
+ * @param operand The operand to check.
+ * @param width   The width that the operand should be. (In bytes). Must be less than long size.
+ * @param line    On what line this operand is?
+ */
+validator_status validate_constant(char* operand, int width, int line)
+{
+    long num;
+    
+    if (!is_number(operand))
+    {
+        logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "Constant \"%s\" is not a number", operand);
+        return VALIDATOR_INVALID;
+    }
+
+    num = strtol(operand, 0, 10);
+
+    /* Check the range */
+    if (!is_in_range_2_complement(num, width) || (num == LONG_MIN && errno == ERANGE) || (num == LONG_MAX && errno == ERANGE))
+    {
+        logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "The number %ld must fit to %d bytes in 2's complement", num, width);
+        return VALIDATOR_INVALID;
+    }
+
+    return VALIDATOR_OK;
+}
+
+/**
  * @brief Checks if the given operand matchs to the given operand type.
  * 
  * @param operand The operand to check.
@@ -142,6 +176,12 @@ validator_status validate_operand_type(char* operand, operand_type type, int lin
     {
         case REGISTER:
             return validate_register_operand(operand, line);
+        case CONSTANT_BYTE:
+            return validate_constant(operand, 1, line);
+        case CONSTANT_HALF:
+            return validate_constant(operand, 2, line);
+        case CONSTANT_WORD:
+            return validate_constant(operand, 4, line);
         default:
             return VALIDATOR_OK;
     }
