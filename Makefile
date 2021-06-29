@@ -4,7 +4,7 @@ SRC     := src
 INCLUDE := include
 
 CC       := gcc
-CC_FLAG  := -Wall -ansi -pedantic -ggdb -I${INCLUDE} -I${SRC}
+CC_FLAG  := -Wall -ansi -pedantic -ggdb -I${INCLUDE} -I${SRC} -lm 
 
 SOURCES := $(shell find ${SRC} -type f -name '*.c')
 HEADERS := $(shell find ${ROOT} -type f -name '*.h')
@@ -25,7 +25,7 @@ docs:
 
 ${BIN}/${EXECUTABLE}: ${SOURCES} ${HEADERS}
 	mkdir bin -p
-	${CC} ${CC_FLAG} -o $@ ${SOURCES}
+	${CC} ${SOURCES} ${CC_FLAG} -o $@ 
 
 clean:
 	rm -f ${BIN}/*

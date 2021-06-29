@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <stdio.h>
 
 #define MAX_LINE 80
 #define MAX_LABEL 31
@@ -149,6 +148,11 @@ static parser_status parse_command_name(char **str, command *cmd, int line)
 
     skip_whitespaces(str);
 
+    if (**str == '.')
+        cmd->type = DIRECTIVE;
+    else
+        cmd->type = INSTRUCTION;
+
     /* Find the length of the command name */
     ptr = *str;
     while (!isspace(*ptr) && *ptr)
@@ -157,7 +161,10 @@ static parser_status parse_command_name(char **str, command *cmd, int line)
         ptr++;
     }
 
-    if (command_name_length == 0 || (command_name_length == 1 && **str == '.'))
+    if (cmd->type == DIRECTIVE)
+        command_name_length--; /* I don't want to put the '.' in the command name. */
+
+    if (command_name_length == 0)
     {
         logger_log(PARSER, SYNTAX_ERROR, line, "A line must contain a command (For example - addi)");
         return PARSER_SYNTAX_ERROR;
@@ -169,6 +176,8 @@ static parser_status parse_command_name(char **str, command *cmd, int line)
         return PARSER_NOT_ENOUGH_MEMORY;
 
     /* Fill! */
+    if (cmd->type == DIRECTIVE)
+        (*str)++; /* Skip the dot if this is a directive. */
     for (i = 0; i < command_name_length; i++)
     {
         cmd->command_name[i] = **str;
@@ -177,11 +186,6 @@ static parser_status parse_command_name(char **str, command *cmd, int line)
 
     /* Put terminating zero */
     cmd->command_name[command_name_length] = '\0';
-
-    if (cmd->command_name[0] == '.')
-        cmd->type = DIRECTIVE;
-    else
-        cmd->type = INSTRUCTION;
 
     return PARSER_OK;
 }
@@ -213,7 +217,13 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands, 
                 return PARSER_SYNTAX_ERROR;
             }
 
-            inside_operand = inside_quotes;
+            if (!after_comma || after_quotes_end)
+            {
+                logger_log(PARSER, SYNTAX_ERROR, line, "There must be a comma before an operand, except the first operand");
+                return PARSER_SYNTAX_ERROR;
+            }
+
+            inside_operand = true;
 
             if (!inside_quotes)
             {
@@ -243,7 +253,7 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands, 
             after_comma = true;
             inside_operand = false;
         }
-        else if (!isspace(*str))
+        else if (!isspace(*str)) /* This is a regular operand */
         {
             if (!after_comma || after_quotes_end)
             {
@@ -253,7 +263,7 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands, 
 
             inside_operand = true;
         }
-        else
+        else /* This is a whitespace */
         {
             if (inside_operand)
                 after_comma = false;
@@ -426,18 +436,5 @@ char *parser_status_to_string(parser_status status)
         return "PARSER_OK";
     default:
         return "INVALID_PARSER_STATUS_OBJECT";
-    }
-}
-
-char *command_type_to_string(command_type type)
-{
-    switch (type)
-    {
-    case DIRECTIVE:
-        return "DIRECTIVE";
-    case INSTRUCTION:
-        return "INSTRUCTION";
-    default:
-        return "INVALID_COMMAND_TYPE_OBJECT";
     }
 }
