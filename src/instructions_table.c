@@ -9,9 +9,7 @@ static operand_type two_registers_operands_types[] = {REGISTER, REGISTER};
 static operand_type three_registers_operands_types[] = {REGISTER, REGISTER, REGISTER};
 static operand_type arithmetics_logics_operands_types[] = {REGISTER, CONSTANT_HALF, REGISTER};
 static operand_type conditional_jumps_operands_types[] = {REGISTER, REGISTER, LABEL};
-static operand_type memory_instructions_byte_operands_types[] = {REGISTER, CONSTANT_BYTE, REGISTER};
-static operand_type memory_instructions_half_operands_types[] = {REGISTER, CONSTANT_HALF, REGISTER};
-static operand_type memory_instructions_word_operands_types[] = {REGISTER, CONSTANT_WORD, REGISTER};
+static operand_type memory_instructions_operands_types[] = {REGISTER, CONSTANT_HALF, REGISTER};
 static operand_type register_or_label_operand_type[] = {LABEL_OR_REGISTER};
 static operand_type label_operand_type[] = {LABEL};
 
@@ -33,12 +31,12 @@ static instruction instructions_arr[] = {
     {"beq", I, 0, 16, 3, conditional_jumps_operands_types},
     {"blt", I, 0, 17, 3, conditional_jumps_operands_types},
     {"bgt", I, 0, 18, 3, conditional_jumps_operands_types},
-    {"lb", I, 0, 19, 3, memory_instructions_byte_operands_types},
-    {"sb", I, 0, 20, 3, memory_instructions_byte_operands_types},
-    {"lw", I, 0, 21, 3, memory_instructions_half_operands_types},
-    {"sw", I, 0, 22, 3, memory_instructions_half_operands_types},
-    {"lh", I, 0, 23, 3, memory_instructions_word_operands_types},
-    {"sh", I, 0, 24, 3, memory_instructions_word_operands_types},
+    {"lb", I, 0, 19, 3, memory_instructions_operands_types},
+    {"sb", I, 0, 20, 3, memory_instructions_operands_types},
+    {"lw", I, 0, 21, 3, memory_instructions_operands_types},
+    {"sw", I, 0, 22, 3, memory_instructions_operands_types},
+    {"lh", I, 0, 23, 3, memory_instructions_operands_types},
+    {"sh", I, 0, 24, 3, memory_instructions_operands_types},
     {"jmp", J, 0, 30, 1, register_or_label_operand_type},
     {"la", J, 0, 31, 1, label_operand_type},
     {"call", J, 0, 32, 1, label_operand_type},
