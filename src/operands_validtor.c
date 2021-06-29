@@ -139,8 +139,9 @@ validator_status validate_register_operand(char* operand, int line)
  * @param operand The operand to check.
  * @param width   The width that the operand should be. (In bytes). Must be less than long size.
  * @param line    On what line this operand is?
+ * @return validator_status VALIDATOR_OK or VALIDATOR_INVALID
  */
-validator_status validate_constant(char* operand, int width, int line)
+validator_status validate_constant_operand(char* operand, int width, int line)
 {
     long num;
     
@@ -163,6 +164,37 @@ validator_status validate_constant(char* operand, int width, int line)
 }
 
 /**
+ * @brief Checks if the given operand is a valid label.
+ * 
+ * @param operand The operand to check.
+ * @param line    On what line this operand is?
+ * @return validator_status VALIDATOR_OK or VALIDATOR_INVALID
+ */
+validator_status validate_label_operand(char* operand, int line)
+{
+    /*
+      There is nothing to check. Because if this label is invalid, it will be caught when the label is defined.
+      And if this label does not exist, it will be caught on the second walk.
+    */
+    return VALIDATOR_OK;
+}
+
+/**
+ * @brief Checks if the given operand matchs to label or register.
+ * 
+ * @param operand The operand to check.
+ * @param line    On what line this operand is?
+ * @return validator_status VALIDATOR_OK or VALIDATOR_INVALID
+ */
+validator_status validate_label_or_register(char* operand, int line)
+{
+    if (*operand == '$') /* This is a register. A label cannot start with '$' */
+        return validate_register_operand(operand, line);
+    else /* This is a label */
+        return validate_label_operand(operand, line);
+}
+
+/**
  * @brief Checks if the given operand matchs to the given operand type.
  * 
  * @param operand The operand to check.
@@ -177,11 +209,15 @@ validator_status validate_operand_type(char* operand, operand_type type, int lin
         case REGISTER:
             return validate_register_operand(operand, line);
         case CONSTANT_BYTE:
-            return validate_constant(operand, 1, line);
+            return validate_constant_operand(operand, 1, line);
         case CONSTANT_HALF:
-            return validate_constant(operand, 2, line);
+            return validate_constant_operand(operand, 2, line);
         case CONSTANT_WORD:
-            return validate_constant(operand, 4, line);
+            return validate_constant_operand(operand, 4, line);
+        case LABEL_OR_REGISTER:
+            return validate_label_or_register(operand, line);
+        case LABEL:
+            return validate_label_operand(operand, line);
         default:
             return VALIDATOR_OK;
     }
