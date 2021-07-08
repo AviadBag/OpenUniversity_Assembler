@@ -64,7 +64,38 @@ static machine_instruction translate_R_instruction(command cmd, instruction inst
  */
 static machine_instruction translate_I_instruction(command cmd, instruction inst)
 {
-	return 0;
+	/* TODO: #defint to all offsets */
+
+	machine_instruction m = 0;
+	int rs, rt;
+	int immed;
+
+	/* Put the opcode */
+	bitmap_put_data(&m, &inst.opcode, 26, 31);
+
+	/* There are two operands arrangement. A way to distinguish between them is to know that "conditional jump" gets
+	   a label as the third operand.
+	*/
+	if (inst.operands_types[2] == LABEL)
+	{
+		/* Conditional jump */
+		rs = register_string_to_int(cmd.operands[0]);
+		rt = register_string_to_int(cmd.operands[1]);
+		immed = 0; /* It is a label; The second walk will treat that. */
+	}
+	else
+	{
+		/* Arthimetic login or memory instructions */ 
+		rs = register_string_to_int(cmd.operands[0]);
+		rt = register_string_to_int(cmd.operands[2]);
+		immed = atoi(cmd.operands[1]);
+	}
+
+	bitmap_put_data(&m, &rs, 21, 25);   /* Put rs */
+	bitmap_put_data(&m, &rt, 16, 20);  /* Put rt */
+	bitmap_put_data(&m, &immed, 0, 15); /* Put immed */
+
+	return m;
 }
 
 /**
