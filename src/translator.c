@@ -3,6 +3,7 @@
 #include "bitmap.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #define R_COPY_INSTRUCTIONS_NUMBER_OF_OPERANDS 2
 
@@ -24,6 +25,12 @@
 #define IMMED_START 0
 #define IMMED_END   15
 
+#define REG_START     25
+#define REG_END       25
+
+#define ADDRESS_START 0
+#define ADDRESS_END   24
+
 /**
  * @brief Converts a register string (line "$3") to it's int representation. (Like 3).
  * 
@@ -38,7 +45,7 @@ static int register_string_to_int(char* register_str)
 /**
  * @brief Translates an R instruction into it's machine language representation.
  *
- * @param cmd  The command to translate
+ * @param cmd  The command to translate. MUST BE VALIDATED!
  * @param inst The instruction struct that represents the insturction.
  *
  * @return 
@@ -75,7 +82,7 @@ static machine_instruction translate_R_instruction(command cmd, instruction inst
 /**
  * @brief Translates an I instruction into it's machine language representation.
  *
- * @param cmd  The command to translate
+ * @param cmd  The command to translate. MUST BE VALIDATED!
  * @param inst The instruction struct that represents the insturction.
  *
  * @return 
@@ -97,7 +104,7 @@ static machine_instruction translate_I_instruction(command cmd, instruction inst
 		/* Conditional jump */
 		rs = register_string_to_int(cmd.operands[0]);
 		rt = register_string_to_int(cmd.operands[1]);
-		immed = 0; /* It is a label; The second walk will treat that. */
+		immed = 0; /* This is a label; The second walk will treat that. */
 	}
 	else
 	{
@@ -117,14 +124,41 @@ static machine_instruction translate_I_instruction(command cmd, instruction inst
 /**
  * @brief Translates an J instruction into it's machine language representation.
  *
- * @param cmd  The command to translate
+ * @param cmd  The command to translate. MUST BE VALIDATED!
  * @param inst The instruction struct that represents the insturction.
  *
  * @return 
  */
 static machine_instruction translate_J_instruction(command cmd, instruction inst)
 {
-	return 0;
+	machine_instruction m = 0;
+	int reg = 0, address;
+
+	/* Put the opcode */
+	bitmap_put_data(&m, &inst.opcode, OPCODE_START, OPCODE_END);
+	
+	/* Here, every command is different */
+	if (strcmp(cmd.command_name, "jmp") == 0)
+	{
+		if (*cmd.operands[0] == '$') /* ThiS is a register */
+		{
+			reg = 1;
+			address = register_string_to_int(cmd.operands[0]);
+		}
+		else
+			address = 0; /* This is a label; The second walk will treat that. */
+	}
+	else
+		/* This is either:
+		   1. "call" or "la" - and then address should be zero, and the second walk will treat it.
+		   2. "stop"         - and then there are no operands, so address should be 0.
+		*/
+		address = 0;
+
+	bitmap_put_data(&m, &address, ADDRESS_START, ADDRESS_END);
+	bitmap_put_data(&m, &reg, REG_START, REG_END);
+
+	return m;
 }
 
 machine_instruction translator_translate(command cmd)
