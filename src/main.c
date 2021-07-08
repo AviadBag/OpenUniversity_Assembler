@@ -5,69 +5,37 @@
 #include "command.h"
 #include "directives_table.h"
 #include "str_helper.h"
+#include "translator.h"
 
-void check_validator()
+void printBits(size_t const size, void const * const ptr)
 {
-    command cmd;
-    parser_status p_status;
-    validator_status v_status;
-    int i;
-
-    printf("check_validator():\n");
-
-    printf("\n------- RUNNING PARSER -------\n");
-    p_status = parser_parse("label: jmp $33", &cmd, 17);
-    printf("%s\n", parser_status_to_string(p_status));
-    if (p_status != PARSER_OK)
-        return;
-    for (i = 0; i < cmd.number_of_operands; i++)
-    {
-        printf("operands[%d] = %s\n", i, cmd.operands[i]);
+    unsigned char *b = (unsigned char*) ptr;
+    unsigned char byte;
+    int i, j;
+    
+    for (i = size-1; i >= 0; i--) {
+        for (j = 7; j >= 0; j--) {
+            byte = (b[i] >> j) & 1;
+            printf("%u", byte);
+        }
     }
-    if (command_has_label(cmd))
-        printf("Label: %s\n", cmd.label);
-    printf("Command: %s\n", cmd.command_name);
-    if (cmd.type == DIRECTIVE)
-        printf("Command type: Directive\n");
-    else
-        printf("Command type: Instruction\n");
-
-    printf("\n------- RUNNING VALIDATION -------\n");
-    v_status = validator_validate(cmd, 17);
-    printf("Validation status: %s\n", validator_status_to_string(v_status));
-}
-
-void check_directives_table()
-{
-    directive* d;
-    directives_table_status s;
-
-    printf("check_directives_table():\n");
-
-    s = directives_table_get_directive("db", &d);
-    if (s == DT_OK)
-        printf("Directive name = %s\n", d->name);
-    else
-        printf("ERROR\n");
-}
-
-void check_instructions_table()
-{
-    instruction* i;
-    instructions_table_status s;
-
-    printf("check_instructions_table():\n");
-
-    s = instructions_table_get_instruction("sw", &i);
-    if (s == IT_OK)
-        printf("Instruction name = %s\n", i->name);
-    else
-        printf("ERROR\n");
+    puts("");
 }
 
 int main()
 {
-    check_validator();
+    machine_instruction m;
+	char* command_str;
+	command cmd;
+	int line;
+
+	command_str = "call: stop ";
+	line = 17;
+	printf("Parser Output: %s\n", parser_status_to_string(parser_parse(command_str, &cmd, line)));
+	printf("Validator Output: %s\n", validator_status_to_string(validator_validate(cmd, line)));
+	m = translator_translate(cmd);
+	printf("Machine Instruction: ");
+	printBits(sizeof(machine_instruction), &m);
 
     return 0;
 }
