@@ -29,7 +29,7 @@ int main()
 	command cmd;
 	int line;
 
-	command_str = "label: blt $5, $24, loop";
+	command_str = "label: add $3, $19, $8";
 	line = 17;
 	printf("Parser Output: %s\n", parser_status_to_string(parser_parse(command_str, &cmd, line)));
 	printf("Validator Output: %s\n", validator_status_to_string(validator_validate(cmd, line)));

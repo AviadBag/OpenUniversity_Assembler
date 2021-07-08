@@ -6,6 +6,24 @@
 
 #define R_COPY_INSTRUCTIONS_NUMBER_OF_OPERANDS 2
 
+#define RS_START      21
+#define RS_END        25
+
+#define RT_START      16
+#define RT_END        20
+
+#define RD_START      11
+#define RD_END        15
+
+#define OPCODE_START  26
+#define OPCODE_END    31
+
+#define FUNCT_START   6
+#define FUNCT_END     10
+
+#define IMMED_START 0
+#define IMMED_END   15
+
 /**
  * @brief Converts a register string (line "$3") to it's int representation. (Like 3).
  * 
@@ -30,8 +48,8 @@ static machine_instruction translate_R_instruction(command cmd, instruction inst
 	machine_instruction m = 0;
 	int rs, rt, rd;
 	
-	bitmap_put_data(&m, &inst.opcode, 26, 31); /* Put opcode */
-	bitmap_put_data(&m, &inst.funct, 6, 10);   /* Put funct */
+	bitmap_put_data(&m, &inst.opcode, OPCODE_START, OPCODE_END); /* Put opcode */
+	bitmap_put_data(&m, &inst.funct, FUNCT_START, FUNCT_END);   /* Put funct */
 
 	if (inst.number_of_operands == R_COPY_INSTRUCTIONS_NUMBER_OF_OPERANDS)
 	{
@@ -47,9 +65,9 @@ static machine_instruction translate_R_instruction(command cmd, instruction inst
 		rd = register_string_to_int(cmd.operands[2]);
 	}
 
-	bitmap_put_data(&m, &rs, 21, 25); /* Put rs */
-	bitmap_put_data(&m, &rt, 16, 20); /* Put rt */
-	bitmap_put_data(&m, &rd, 11, 15); /* Put rd */
+	bitmap_put_data(&m, &rs, RS_START, RS_END); /* Put rs */
+	bitmap_put_data(&m, &rt, RT_START, RT_END); /* Put rt */
+	bitmap_put_data(&m, &rd, RD_START, RD_END); /* Put rd */
 
 	return m;
 }
@@ -64,14 +82,12 @@ static machine_instruction translate_R_instruction(command cmd, instruction inst
  */
 static machine_instruction translate_I_instruction(command cmd, instruction inst)
 {
-	/* TODO: #defint to all offsets */
-
 	machine_instruction m = 0;
 	int rs, rt;
 	int immed;
 
 	/* Put the opcode */
-	bitmap_put_data(&m, &inst.opcode, 26, 31);
+	bitmap_put_data(&m, &inst.opcode, OPCODE_START, OPCODE_END);
 
 	/* There are two operands arrangement. A way to distinguish between them is to know that "conditional jump" gets
 	   a label as the third operand.
@@ -91,9 +107,9 @@ static machine_instruction translate_I_instruction(command cmd, instruction inst
 		immed = atoi(cmd.operands[1]);
 	}
 
-	bitmap_put_data(&m, &rs, 21, 25);   /* Put rs */
-	bitmap_put_data(&m, &rt, 16, 20);  /* Put rt */
-	bitmap_put_data(&m, &immed, 0, 15); /* Put immed */
+	bitmap_put_data(&m, &rs, RS_START, RS_END);   /* Put rs */
+	bitmap_put_data(&m, &rt, RT_START, RT_END);  /* Put rt */
+	bitmap_put_data(&m, &immed, IMMED_START, IMMED_END); /* Put immed */
 
 	return m;
 }
