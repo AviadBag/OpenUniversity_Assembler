@@ -1,41 +1,59 @@
 #include <stdio.h>
-#include "instructions_table.h"
-#include "parser.h"
-#include "validator.h"
-#include "command.h"
-#include "directives_table.h"
-#include "str_helper.h"
-#include "translator.h"
+#include <string.h>
 
-void printBits(size_t const size, void const * const ptr)
+#include "first_walk.h"
+#include "boolean.h"
+
+#define DESIRED_INPUT_FILE_EXT "as"
+
+/**
+ * @brief Checks if the given file name ends with DESIRED_INPUT_FILE_EXT
+ * 
+ * @param file_name The file name to check.
+ * @return boolean True or False.
+ */
+boolean has_legal_extension(char* file_name)
 {
-    unsigned char *b = (unsigned char*) ptr;
-    unsigned char byte;
-    int i, j;
-    
-    for (i = size-1; i >= 0; i--) {
-        for (j = 7; j >= 0; j--) {
-            byte = (b[i] >> j) & 1;
-            printf("%u", byte);
-        }
-    }
-    puts("");
+    char* dot = strchr(file_name, '.');
+    if (!dot)
+        return false; /* There is no extenstion... */
+
+    dot++; /* Skip the '.' */
+    return strcmp(dot, DESIRED_INPUT_FILE_EXT) == 0;
 }
 
-int main()
+/**
+ * @brief Compiles the given assembly file.
+ * 
+ * @param file_name The file to compile.
+ */
+void compile(char* file_name)
 {
-    machine_instruction m;
-	char* command_str;
-	command cmd;
-	int line;
+    symbols_table st;
+    
+    if (!has_legal_extension(file_name))
+    {
+        printf("Error: File \"%s\" has no \".asm\" extension. Skipping.\n", file_name);
+        return;
+    }
 
-	command_str = "call: stop ";
-	line = 17;
-	printf("Parser Output: %s\n", parser_status_to_string(parser_parse(command_str, &cmd, line)));
-	printf("Validator Output: %s\n", validator_status_to_string(validator_validate(cmd, line)));
-	m = translator_translate(cmd);
-	printf("Machine Instruction: ");
-	printBits(sizeof(machine_instruction), &m);
+    st = first_walk(file_name);
+    if (st == NULL)
+        return;
+}
 
+int main(int argc, char* argv[])
+{
+    int i;
+
+    if (argc == 1)
+    {
+        printf("Usage: \"%s file1.asm file2.asm ...\"\n", argv[0]);
+        return 1;
+    }
+
+    for (i = 1; i < argc; i++)
+        compile(argv[i]);
+    
     return 0;
 }
