@@ -7,7 +7,6 @@
 #include <ctype.h>
 #include <string.h>
 
-#define MAX_LINE 80
 #define MAX_LABEL 31
 
 #define PARSER "Parser"
@@ -110,28 +109,6 @@ static boolean is_empty(char *str)
     }
 
     return true;
-}
-
-/**
- * Checks if the command is too long.
- * @param str The command.
- * @return if too long.
- */
-static boolean is_too_long(char *str)
-{
-    int length = 0;
-    while (*str)
-    {
-        if (!isspace(*str))
-            length++;
-
-        if (length > MAX_LINE)
-            return true;
-
-        str++;
-    }
-
-    return false;
 }
 
 /**
@@ -407,11 +384,6 @@ parser_status parser_parse(char *str, command *cmd, int line)
 
     if (is_empty(str))
         return PARSER_EMPTY;
-    if (is_too_long(str))
-    {
-        logger_log(PARSER, OVERFLOW_ERROR, line, "A line cannot be longer than %d characters", MAX_LINE);
-        return PARSER_OVERFLOW;
-    }
     if ((status = parse_label(&str, cmd, line)) != PARSER_OK)
         return status;
     if ((status = parse_command_name(&str, cmd, line)) != PARSER_OK)
