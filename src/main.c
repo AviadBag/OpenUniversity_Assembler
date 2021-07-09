@@ -30,15 +30,16 @@ boolean has_legal_extension(char* file_name)
 void compile(char* file_name)
 {
     symbols_table st;
+    first_walk_status fw_status;
     
     if (!has_legal_extension(file_name))
     {
-        printf("Error: File \"%s\" has no \".asm\" extension. Skipping.\n", file_name);
+        printf("Error: File \"%s\" has no \".%s\" extension. Skipping.\n", file_name, DESIRED_INPUT_FILE_EXT);
         return;
     }
 
-    st = first_walk(file_name);
-    if (st == NULL)
+    fw_status = first_walk(file_name, &st);
+    if (fw_status != FIRST_WALK_OK)
         return;
 }
 
