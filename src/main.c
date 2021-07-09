@@ -3,6 +3,7 @@
 
 #include "first_walk.h"
 #include "boolean.h"
+#include "dictionary.h"
 
 #define DESIRED_INPUT_FILE_EXT "as"
 
@@ -41,6 +42,9 @@ void compile(char* file_name)
     fw_status = first_walk(file_name, &st);
     if (fw_status != FIRST_WALK_OK)
         return;
+
+    /* Clean up */
+    dictionary_free(st);
 }
 
 int main(int argc, char* argv[])
