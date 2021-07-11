@@ -18,7 +18,7 @@ all: ${BIN}/${EXECUTABLE}
 
 run: clean all
 	clear
-	@./${BIN}/${EXECUTABLE}
+	@./${BIN}/${EXECUTABLE} ${ARGS}
 
 docs:
 	doxygen ${DOXYFILE}
