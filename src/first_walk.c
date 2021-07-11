@@ -208,7 +208,7 @@ first_walk_status first_walk(char* file_name, symbols_table* symbols_table_p)
         return FIRST_WALK_IO_ERROR;
     }
 
-    st = dictionary_create();
+    st = linked_list_create();
     *symbols_table_p = st; /* It is ok; st is dynamically allocated. */
 
     return fill_symbols_table(file, st);

@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "first_walk.h"
+#include "linked_list.h"
 #include "boolean.h"
 
 #define DESIRED_INPUT_FILE_EXT "as"
@@ -24,14 +25,14 @@ boolean has_legal_extension(char* file_name)
     return strcmp(dot, DESIRED_INPUT_FILE_EXT) == 0;
 }
 
-void print_symbol(char* key, void* value)
+void print_symbol(void* value)
 {
     
 }
 
 void print_symbols_table(symbols_table st)
 {
-    dictionary_for_each(st, print_symbol);
+    linked_list_for_each(st, print_symbol);
 }
 
 /**
@@ -62,7 +63,7 @@ void compile(char* file_name)
     print_symbols_table(st);
 
     /* Clean up */
-    dictionary_free(st);
+    linked_list_free(st);
 }
 
 int main(int argc, char* argv[])
