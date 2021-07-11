@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "instructions_table.h"
-#include "dictionary.h"
 
 #define LENGTH_OF_ARRAY(arr) (sizeof(arr) / sizeof((arr)[0]))
 

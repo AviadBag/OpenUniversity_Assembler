@@ -1,9 +1,10 @@
+#include "linked_list.h"
+
 #include <stdio.h>
 #include <string.h>
 
 #include "first_walk.h"
 #include "boolean.h"
-#include "dictionary.h"
 
 #define DESIRED_INPUT_FILE_EXT "as"
 
