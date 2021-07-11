@@ -23,6 +23,16 @@ boolean has_legal_extension(char* file_name)
     return strcmp(dot, DESIRED_INPUT_FILE_EXT) == 0;
 }
 
+void print_symbol(char* key, void* value)
+{
+    
+}
+
+void print_symbols_table(symbols_table st)
+{
+    dictionary_for_each(st, print_symbol);
+}
+
 /**
  * @brief Compiles the given assembly file.
  * 
@@ -40,8 +50,15 @@ void compile(char* file_name)
     }
 
     fw_status = first_walk(file_name, &st);
+    if (fw_status == FIRST_WALK_NOT_ENOUGH_MEMORY)
+    {
+        printf("Error: Not enough memory!\n");
+        return;
+    }
     if (fw_status != FIRST_WALK_OK)
         return;
+    
+    print_symbols_table(st);
 
     /* Clean up */
     dictionary_free(st);
