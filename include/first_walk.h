@@ -9,7 +9,7 @@ typedef enum first_walk_status_e
 {
     FIRST_WALK_IO_ERROR,
     FIRST_WALK_NOT_ENOUGH_MEMORY,
-    FIRST_WALK_LINE_TOO_LONG,
+    FIRST_WALK_PROBLEM_WITH_CODE,
     FIRST_WALK_OK
 } first_walk_status;
 
