@@ -18,7 +18,7 @@ typedef enum first_walk_status_e
  * 
  * @param file_name The file to compile.
  * @param symbols_table Will point to the symbol table. SHOULD BE FREED BY dictionary_free().
- * @return first_walk_status FIRST_WALK_IO_ERROR or FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_OK.
+ * @return first_walk_status FIRST_WALK_IO_ERROR or FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_PROBLEM_WITH_CODE or FIRST_WALK_OK.
  */
 first_walk_status first_walk(char* file_name, symbols_table* symbols_table_p);
 
