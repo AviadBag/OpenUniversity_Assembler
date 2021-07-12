@@ -11,6 +11,9 @@
 
 #define LINE_MAX_LENGTH 80
 
+#define FIRST_WALK "FirstWalk"
+#define PROBLEM_WITH_CODE "PromblemWithCode"
+
 /**
  * @brief This method reads the next line from file. Every line must be at most LINE_MAX_LENGTH chars.
  *        If the file is over, the buffer will be empty.
@@ -83,6 +86,27 @@ boolean should_put_label_symbol(command cmd)
 }
 
 /**
+ * @brief Checks if the given symbol exist in the given symbols table
+ * 
+ * @param symbol      The symbol
+ * @param symbol_name The symbols table
+ * @return boolean    True or False
+ */
+boolean symbols_table_symbol_exist(char* symbol_name, symbols_table st)
+{
+    int i;
+    symbol* symbol_t;
+    for (i = 0; i < linked_list_length(st); i++)
+    {
+        symbol_t = (symbol*) linked_list_get(st, i);
+        if (strcmp(symbol_t->name, symbol_name) == 0)
+            return true;
+    }
+
+    return false;
+}
+
+/**
  * @brief If the given command is an ".extern" defintion, put the symbol declared extern in the given symbols table.
  * 
  * @param cmd The command. MUST BE VALIDATED.
@@ -104,6 +128,9 @@ first_walk_status put_extern_symbol(command cmd, symbols_table* symbols_table_p)
     strcpy(symbol_t->name, cmd.operands[0]);
     symbol_t->type = EXTERNAL;
 
+    if (symbols_table_symbol_exist(symbol_t->name, *symbols_table_p))
+        return FIRST_WALK_OK; /* I just skip */
+
     if (linked_list_append(symbols_table_p, symbol_t) == LINKED_LIST_NOT_ENOUGH_MEMORY)
         return FIRST_WALK_NOT_ENOUGH_MEMORY;
 
@@ -113,11 +140,12 @@ first_walk_status put_extern_symbol(command cmd, symbols_table* symbols_table_p)
 /**
  * @brief Puts the symbol of the given command's label (if exists) in the symbols table.
  * 
- * @param cmd The command. MUST BE VALIDATED.
- * @param st  The symbols table to insert into.
- * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_OK.
+ * @param cmd  The command. MUST BE VALIDATED.
+ * @param st   The symbols table to insert into.
+ * @param line On what line is this command is?
+ * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_PROBLEM_WITH_CODE or FIRST_WALK_OK.
  */
-first_walk_status put_label_symbol(command cmd, symbols_table* symbols_table_p)
+first_walk_status put_label_symbol(command cmd, symbols_table* symbols_table_p, int line)
 {
     symbol* symbol_t;
 
@@ -132,6 +160,12 @@ first_walk_status put_label_symbol(command cmd, symbols_table* symbols_table_p)
     strcpy(symbol_t->name, cmd.label);
     symbol_t->type = (cmd.type == INSTRUCTION) ? CODE : DATA;
 
+    if (symbols_table_symbol_exist(symbol_t->name, *symbols_table_p))
+    {
+        logger_log(FIRST_WALK, PROBLEM_WITH_CODE, line, "Label %s was already defined", symbol_t->name);
+        return FIRST_WALK_PROBLEM_WITH_CODE;
+    }
+
     if (linked_list_append(symbols_table_p, symbol_t) == LINKED_LIST_NOT_ENOUGH_MEMORY)
         return FIRST_WALK_NOT_ENOUGH_MEMORY;
 
@@ -143,13 +177,14 @@ first_walk_status put_label_symbol(command cmd, symbols_table* symbols_table_p)
  * 
  * @param cmd The command. MUST BE VALIDATED.
  * @param st  The symbols table to insert into.
+ * @param line On what line is this command is?
  * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_OK.
  */
-first_walk_status put_symbol(command cmd, symbols_table* symbols_table_p)
+first_walk_status put_symbol(command cmd, symbols_table* symbols_table_p, int line)
 {
     first_walk_status status;
 
-    if ((status = put_label_symbol(cmd, symbols_table_p)) != FIRST_WALK_OK)
+    if ((status = put_label_symbol(cmd, symbols_table_p, line)) != FIRST_WALK_OK)
         return status;
     if ((status = put_extern_symbol(cmd, symbols_table_p)) != FIRST_WALK_OK)
         return status;
@@ -180,7 +215,7 @@ first_walk_status fill_symbols_table(FILE* f, symbols_table* symbols_table_p)
         if (read_next_line(f, line) == FIRST_WALK_PROBLEM_WITH_CODE)
         {
             status = FIRST_WALK_PROBLEM_WITH_CODE;
-            logger_log("FirstWalk", "CodeError", line_number, "A line must be at most %d chars, including whitespaces", LINE_MAX_LENGTH);
+            logger_log(FIRST_WALK, PROBLEM_WITH_CODE, line_number, "A line must be at most %d chars, including whitespaces", LINE_MAX_LENGTH);
             continue;
         }
 
@@ -209,7 +244,7 @@ first_walk_status fill_symbols_table(FILE* f, symbols_table* symbols_table_p)
             continue;
         }
 
-        put_symbol(cmd, symbols_table_p);
+        put_symbol(cmd, symbols_table_p, line_number);
     }
 
     return status;
