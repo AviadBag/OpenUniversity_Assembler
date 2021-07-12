@@ -265,7 +265,7 @@ static first_walk_status put_symbol(command cmd, symbols_table *symbols_table_p,
  */
 static first_walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
 {
-    int line_number;
+    int line_number, i;
     unsigned long pc, dc;
     char line[LINE_MAX_LENGTH + 1]; /* +1 for the last '\0'. */
     first_walk_status status = FIRST_WALK_OK;
@@ -317,6 +317,14 @@ static first_walk_status fill_symbols_table(FILE *f, symbols_table *symbols_tabl
             status = put_symbol_status;
 
         next_counter(&pc, &dc, cmd);
+    }
+
+    /* Update the data symbols' values to be AFTER the code */
+    for (i = 0; i < linked_list_length(*symbols_table_p); i++)
+    {
+        symbol* symbol_t = (symbol*) linked_list_get(*symbols_table_p, i);
+        if (symbol_t->type == DATA)
+            symbol_t->value += pc;
     }
 
     return status;
