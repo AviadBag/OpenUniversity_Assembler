@@ -26,7 +26,15 @@ first_walk_status read_next_line(FILE* f, char* buf)
     {
         counter++;
         if (counter > LINE_MAX_LENGTH)
+        {
+            /* Read until the end of the line, and then return the error */
+            do
+            {
+                c = fgetc(f);
+            } while (c != EOF && c != '\n');
+
             return FIRST_WALK_PROBLEM_WITH_CODE;
+        }
 
         if (c == '\n')
             break;
