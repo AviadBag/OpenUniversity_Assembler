@@ -43,6 +43,7 @@ void print_symbol(void* data)
         printf("EXTERNAL");
         break;
     }
+    printf(", symbol value: %lu", s->value);
     printf(", symbol is %s\n", s->is_entry ? "entry" : "not entry");
 }
 
