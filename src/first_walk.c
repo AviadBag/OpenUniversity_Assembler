@@ -47,7 +47,7 @@ first_walk_status read_next_line(FILE* f, char* buf)
  */
 boolean should_put_extern_symbol(command cmd)
 {
-    return strcmp(cmd.command_name, ".extern") == 0;
+    return strcmp(cmd.command_name, "extern") == 0;
 }
 
 /**
@@ -65,10 +65,10 @@ boolean should_put_label_symbol(command cmd)
     if (!command_has_label(cmd))
         return false;
 
-    if (strcmp(cmd.command_name, ".extern") == 0)
+    if (strcmp(cmd.command_name, "extern") == 0)
         return false;
     
-    if (strcmp(cmd.command_name, ".entry") == 0)
+    if (strcmp(cmd.command_name, "entry") == 0)
         return false;
 
     return true;
