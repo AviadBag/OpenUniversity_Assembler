@@ -48,7 +48,11 @@ void print_symbol(void* data)
 
 void print_symbols_table(symbols_table st)
 {
-    linked_list_for_each(st, print_symbol);
+    int i;
+    for (i = 0; i < linked_list_length(st); i++)
+    {
+        print_symbol(linked_list_get(st, i));
+    }
 }
 
 /**
