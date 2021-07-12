@@ -51,12 +51,31 @@ void linked_list_free(node *nod)
     }
 }
 
-void linked_list_for_each(node* nod, void (*callback)(void* data))
+int linked_list_length(node* nod)
 {
+    int count = 0;
+
     while (nod != NULL)
     {
-        callback(nod->data);
-
+        count++;
         nod = nod->next;
     }
+
+    return count;
+}
+
+void* linked_list_get(node* nod, int index)
+{   
+    int count = 0;
+
+    while (nod != NULL)
+    {
+        if (count == index)
+            return nod->data;
+
+        count++;
+        nod = nod->next;
+    }
+
+    return NULL;
 }

@@ -3,3 +3,4 @@ html/
 .vscode/
 compile_commands.json
 .vimrc
+*.as

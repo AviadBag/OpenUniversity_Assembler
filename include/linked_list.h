@@ -1,6 +1,8 @@
 #ifndef _LINKED_LIST_H
 #define _LINKED_LIST_H
 
+#include "boolean.h"
+
 /**
  * This module implements a simple linked list.
  */
@@ -41,10 +43,20 @@ linked_list_status linked_list_append(linked_list *d, void *data);
 void linked_list_free(linked_list l);
 
 /**
- * Calls the given callback with each entry of the table.
- * @param l        The linked_list to iterate on.
- * @param callback The callback.
+ * @brief Returns the length of the given linked list
+ * 
+ * @param l    The linked list
+ * @return int The length
  */
-void linked_list_for_each(linked_list l, void (*callback)(void *data));
+int linked_list_length(linked_list l);
+
+/**
+ * @brief Returns linked_list[index]
+ * 
+ * @param index  The index
+ * @param l      The linked list.
+ * @return void* The data at linked_list[index]. If the index is out of bounds - returns null.
+ */
+void* linked_list_get(linked_list l, int index);
 
 #endif
