@@ -18,6 +18,7 @@ typedef struct s_symbol
 {
     char name[LABEL_MAX_LENGTH + 1]; /**< The name of the symbol. (+1 for the null terminator) */
     symbol_type type;                /**< The type of the symbol */
+    unsigned long value;             /**< The address of the symbol */
     boolean is_entry;                /**< Is this symbol defined as entry? */
 } symbol;
 
