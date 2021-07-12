@@ -155,11 +155,13 @@ static boolean symbols_table_symbol_exist(char *symbol_name, symbols_table st)
  * 
  * @param cmd The command. MUST BE VALIDATED.
  * @param st  The symbols table to insert into.
- * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_OK.
+ * @param line On what line is this command is?
+ * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_PROBLEM_WITH_CODE or FIRST_WALK_OK.
  */
-static first_walk_status put_extern_symbol(command cmd, symbols_table *symbols_table_p)
+static first_walk_status put_extern_symbol(command cmd, symbols_table *symbols_table_p, int line)
 {
     symbol *symbol_t;
+    int i;
 
     if (!should_put_extern_symbol(cmd))
         return FIRST_WALK_OK; /* Just skip it */
@@ -173,8 +175,20 @@ static first_walk_status put_extern_symbol(command cmd, symbols_table *symbols_t
     symbol_t->value = 0; /* Will be filled by the linker */
     strcpy(symbol_t->name, cmd.operands[0]);
 
-    if (symbols_table_symbol_exist(symbol_t->name, *symbols_table_p))
-        return FIRST_WALK_OK; /* I just skip */
+    for (i = 0; i < linked_list_length(*symbols_table_p); i++)
+    {
+        symbol* s = (symbol*) linked_list_get(*symbols_table_p, i);
+        if (strcmp(s->name, symbol_t->name) == 0) /* This symbol already exist */
+        {
+            if (s->type == EXTERNAL)
+                return FIRST_WALK_OK;
+            else
+            {
+                logger_log(FIRST_WALK, PROBLEM_WITH_CODE, line, "Label \"%s\" was already defined", symbol_t->name);
+                return FIRST_WALK_PROBLEM_WITH_CODE; /* You cannot define it extern if it has already been defined.. */
+            }
+        }
+    }
 
     if (linked_list_append(symbols_table_p, symbol_t) == LINKED_LIST_NOT_ENOUGH_MEMORY)
         return FIRST_WALK_NOT_ENOUGH_MEMORY;
@@ -210,7 +224,7 @@ static first_walk_status put_label_symbol(command cmd, symbols_table *symbols_ta
 
     if (symbols_table_symbol_exist(symbol_t->name, *symbols_table_p))
     {
-        logger_log(FIRST_WALK, PROBLEM_WITH_CODE, line, "Label %s was already defined", symbol_t->name);
+        logger_log(FIRST_WALK, PROBLEM_WITH_CODE, line, "Label \"%s\" was already defined", symbol_t->name);
         return FIRST_WALK_PROBLEM_WITH_CODE;
     }
 
@@ -228,7 +242,7 @@ static first_walk_status put_label_symbol(command cmd, symbols_table *symbols_ta
  * @param pc  Current program counter
  * @param dc  Current data counter
  * @param line On what line is this command is?
- * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_OK.
+ * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_PROBLEM_WITH_CODE or FIRST_WALK_OK.
  */
 static first_walk_status put_symbol(command cmd, symbols_table *symbols_table_p, unsigned long pc, unsigned long dc, int line)
 {
@@ -236,7 +250,7 @@ static first_walk_status put_symbol(command cmd, symbols_table *symbols_table_p,
 
     if ((status = put_label_symbol(cmd, symbols_table_p, pc, dc, line)) != FIRST_WALK_OK)
         return status;
-    if ((status = put_extern_symbol(cmd, symbols_table_p)) != FIRST_WALK_OK)
+    if ((status = put_extern_symbol(cmd, symbols_table_p, line)) != FIRST_WALK_OK)
         return status;
 
     return FIRST_WALK_OK;
@@ -264,6 +278,8 @@ static first_walk_status fill_symbols_table(FILE *f, symbols_table *symbols_tabl
 
     while (1)
     {
+        first_walk_status put_symbol_status;
+
         line_number++;
         if (read_next_line(f, line) == FIRST_WALK_PROBLEM_WITH_CODE)
         {
@@ -297,8 +313,8 @@ static first_walk_status fill_symbols_table(FILE *f, symbols_table *symbols_tabl
             continue;
         }
 
-        put_symbol(cmd, symbols_table_p, pc, dc, line_number);
-        printf("Command: %s, dc: %lu, pc: %lu\n", cmd.command_name, dc, pc);
+        if ((put_symbol_status = put_symbol(cmd, symbols_table_p, pc, dc, line_number)) != FIRST_WALK_OK)
+            status = put_symbol_status;
 
         next_counter(&pc, &dc, cmd);
     }
