@@ -30,7 +30,7 @@
  * @param dc  The data counetr
  * @param cmd The next command. MUST BE VALIDATED.
  */
-void next_counter(unsigned long *pc, unsigned long *dc, command cmd)
+static void next_counter(unsigned long *pc, unsigned long *dc, command cmd)
 {
     if (cmd.type == INSTRUCTION)
         *pc += INSTRUCTION_SIZE;
@@ -65,7 +65,7 @@ void next_counter(unsigned long *pc, unsigned long *dc, command cmd)
  * @param buf The buffer to write into. Must be size of at least LINE_MAX_LENGTH + 1.
  * @return FIRST_WALK_PROBLEM_WITH_CODE or FIRST_WALK_OK
  */
-first_walk_status read_next_line(FILE *f, char *buf)
+static first_walk_status read_next_line(FILE *f, char *buf)
 {
     int c;
     int counter = 0;
@@ -100,7 +100,7 @@ first_walk_status read_next_line(FILE *f, char *buf)
  * @param cmd The command. MUST BE VALIDATED.
  * @return boolean 
  */
-boolean should_put_extern_symbol(command cmd)
+static boolean should_put_extern_symbol(command cmd)
 {
     return strcmp(cmd.command_name, "extern") == 0;
 }
@@ -113,7 +113,7 @@ boolean should_put_extern_symbol(command cmd)
  * @param cmd      The command to check.
  * @return boolean True or False.
  */
-boolean should_put_label_symbol(command cmd)
+static boolean should_put_label_symbol(command cmd)
 {
     /* I could have made this function much shorter, but I prefer it like that */
 
@@ -136,7 +136,7 @@ boolean should_put_label_symbol(command cmd)
  * @param symbol_name The symbols table
  * @return boolean    True or False
  */
-boolean symbols_table_symbol_exist(char *symbol_name, symbols_table st)
+static boolean symbols_table_symbol_exist(char *symbol_name, symbols_table st)
 {
     int i;
     symbol *symbol_t;
@@ -157,7 +157,7 @@ boolean symbols_table_symbol_exist(char *symbol_name, symbols_table st)
  * @param st  The symbols table to insert into.
  * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_OK.
  */
-first_walk_status put_extern_symbol(command cmd, symbols_table *symbols_table_p)
+static first_walk_status put_extern_symbol(command cmd, symbols_table *symbols_table_p)
 {
     symbol *symbol_t;
 
@@ -192,7 +192,7 @@ first_walk_status put_extern_symbol(command cmd, symbols_table *symbols_table_p)
  * @param line On what line is this command is?
  * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_PROBLEM_WITH_CODE or FIRST_WALK_OK.
  */
-first_walk_status put_label_symbol(command cmd, symbols_table *symbols_table_p, unsigned long pc, unsigned long dc, int line)
+static first_walk_status put_label_symbol(command cmd, symbols_table *symbols_table_p, unsigned long pc, unsigned long dc, int line)
 {
     symbol *symbol_t;
 
@@ -230,7 +230,7 @@ first_walk_status put_label_symbol(command cmd, symbols_table *symbols_table_p, 
  * @param line On what line is this command is?
  * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_OK.
  */
-first_walk_status put_symbol(command cmd, symbols_table *symbols_table_p, unsigned long pc, unsigned long dc, int line)
+static first_walk_status put_symbol(command cmd, symbols_table *symbols_table_p, unsigned long pc, unsigned long dc, int line)
 {
     first_walk_status status;
 
@@ -249,7 +249,7 @@ first_walk_status put_symbol(command cmd, symbols_table *symbols_table_p, unsign
  * @param st The symbols table to write into.
  * @return first_walk_status - FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_PROBLEM_WITH_CODE or FIRST_WALK_OK.
  */
-first_walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
+static first_walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
 {
     int line_number;
     unsigned long pc, dc;
