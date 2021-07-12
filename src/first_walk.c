@@ -81,7 +81,7 @@ boolean should_put_label_symbol(command cmd)
  * @param st  The symbols table to insert into.
  * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_OK.
  */
-first_walk_status put_extern_symbol(command cmd, symbols_table st)
+first_walk_status put_extern_symbol(command cmd, symbols_table* symbols_table_p)
 {
     symbol* symbol_t;
 
@@ -93,8 +93,11 @@ first_walk_status put_extern_symbol(command cmd, symbols_table st)
         return FIRST_WALK_NOT_ENOUGH_MEMORY;
 
     symbol_t->is_entry = false;
-    symbol_t->name = cmd.operands[0];
+    strcpy(symbol_t->name, cmd.operands[0]);
     symbol_t->type = EXTERNAL;
+
+    if (linked_list_append(symbols_table_p, symbol_t) == LINKED_LIST_NOT_ENOUGH_MEMORY)
+        return FIRST_WALK_NOT_ENOUGH_MEMORY;
 
     return FIRST_WALK_OK;
 }
@@ -106,7 +109,7 @@ first_walk_status put_extern_symbol(command cmd, symbols_table st)
  * @param st  The symbols table to insert into.
  * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_OK.
  */
-first_walk_status put_label_symbol(command cmd, symbols_table st)
+first_walk_status put_label_symbol(command cmd, symbols_table* symbols_table_p)
 {
     symbol* symbol_t;
 
@@ -118,8 +121,11 @@ first_walk_status put_label_symbol(command cmd, symbols_table st)
         return FIRST_WALK_NOT_ENOUGH_MEMORY;
 
     symbol_t->is_entry = false; /* Will be filled during the second walk */
-    symbol_t->name = cmd.label;
+    strcpy(symbol_t->name, cmd.label);
     symbol_t->type = (cmd.type == INSTRUCTION) ? CODE : DATA;
+
+    if (linked_list_append(symbols_table_p, symbol_t) == LINKED_LIST_NOT_ENOUGH_MEMORY)
+        return FIRST_WALK_NOT_ENOUGH_MEMORY;
 
     return FIRST_WALK_OK;
 }
@@ -131,13 +137,13 @@ first_walk_status put_label_symbol(command cmd, symbols_table st)
  * @param st  The symbols table to insert into.
  * @return FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_OK.
  */
-first_walk_status put_symbol(command cmd, symbols_table st)
+first_walk_status put_symbol(command cmd, symbols_table* symbols_table_p)
 {
     first_walk_status status;
 
-    if ((status = put_label_symbol(cmd, st)) != FIRST_WALK_OK)
+    if ((status = put_label_symbol(cmd, symbols_table_p)) != FIRST_WALK_OK)
         return status;
-    if ((status = put_extern_symbol(cmd, st)) != FIRST_WALK_OK)
+    if ((status = put_extern_symbol(cmd, symbols_table_p)) != FIRST_WALK_OK)
         return status;
     
     return FIRST_WALK_OK;
@@ -150,7 +156,7 @@ first_walk_status put_symbol(command cmd, symbols_table st)
  * @param st The symbols table to write into.
  * @return first_walk_status - FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_PROBLEM_WITH_CODE or FIRST_WALK_OK.
  */
-first_walk_status fill_symbols_table(FILE* f, symbols_table st)
+first_walk_status fill_symbols_table(FILE* f, symbols_table* symbols_table_p)
 {
     int line_number;
     char line[LINE_MAX_LENGTH+1]; /* +1 for the last '\0'. */
@@ -169,6 +175,9 @@ first_walk_status fill_symbols_table(FILE* f, symbols_table st)
             logger_log("FirstWalk", "CodeError", line_number, "A line must be at most %d chars, including whitespaces", LINE_MAX_LENGTH);
             continue;
         }
+
+        if (!*line) /* EOF */
+            break;
 
         p_status = parser_parse(line, &cmd, line_number);
         switch (p_status)
@@ -191,6 +200,8 @@ first_walk_status fill_symbols_table(FILE* f, symbols_table st)
             status = FIRST_WALK_PROBLEM_WITH_CODE;
             continue;
         }
+
+        put_symbol(cmd, symbols_table_p);
     }
 
     return status;
@@ -199,7 +210,6 @@ first_walk_status fill_symbols_table(FILE* f, symbols_table st)
 first_walk_status first_walk(char* file_name, symbols_table* symbols_table_p)
 {
     FILE* file;
-    symbols_table st;
 
     file = fopen(file_name, "r");
     if (!file)
@@ -208,8 +218,7 @@ first_walk_status first_walk(char* file_name, symbols_table* symbols_table_p)
         return FIRST_WALK_IO_ERROR;
     }
 
-    st = linked_list_create();
-    *symbols_table_p = st; /* It is ok; st is dynamically allocated. */
+    *symbols_table_p = linked_list_create();
 
-    return fill_symbols_table(file, st);
+    return fill_symbols_table(file, symbols_table_p);
 }
