@@ -191,11 +191,10 @@ static walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
     command cmd;
 
     line_number = 0;
-    pc = 100, dc = 0;
+    pc = PC_DEFAULT_VALUE, dc = DC_DEFAULT_VALUE;
 
     while (1)
-    {
-        
+    {   
         line_number++;
         status = get_next_command(f, &cmd, line_number);
         if (status == WALK_EOF)
