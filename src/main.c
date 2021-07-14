@@ -7,6 +7,7 @@
 #include "linked_list.h"
 #include "symbol.h"
 #include "boolean.h"
+#include "walk.h"
 
 #define DESIRED_INPUT_FILE_EXT "as"
 
@@ -64,7 +65,7 @@ void print_symbols_table(symbols_table st)
 void compile(char* file_name)
 {
     symbols_table st;
-    first_walk_status fw_status;
+    walk_status fw_status;
     
     if (!has_legal_extension(file_name))
     {
@@ -73,12 +74,12 @@ void compile(char* file_name)
     }
 
     fw_status = first_walk(file_name, &st);
-    if (fw_status == FIRST_WALK_NOT_ENOUGH_MEMORY)
+    if (fw_status == WALK_NOT_ENOUGH_MEMORY)
     {
         printf("Error: Not enough memory!\n");
         return;
     }
-    if (fw_status != FIRST_WALK_OK)
+    if (fw_status != WALK_OK)
         return;
     
     print_symbols_table(st);
