@@ -20,7 +20,7 @@
  *        If the file is over, the buffer will be empty.
  * @param f   The file to read from.
  * @param buf The buffer to write into. Must be size of at least LINE_MAX_LENGTH + 1.
- * @return WALK_PROBLEM_WITH_CODE or WALK_OK
+ * @return WALK_PROBLEM_WITH_CODE or WALK_EOF or WALK_OK
  */
 walk_status read_next_line(FILE *f, char *buf)
 {
@@ -29,6 +29,9 @@ walk_status read_next_line(FILE *f, char *buf)
     while ((c = fgetc(f)) != EOF)
     {
         counter++;
+        if (c == '\n')
+            break;
+
         if (counter > LINE_MAX_LENGTH)
         {
             /* Read until the end of the line, and then return the error */
@@ -40,13 +43,13 @@ walk_status read_next_line(FILE *f, char *buf)
             return WALK_PROBLEM_WITH_CODE;
         }
 
-        if (c == '\n')
-            break;
-
         *buf++ = c;
     }
-
     *buf = '\0';
+    
+    if (counter == 0)
+        return WALK_EOF;
+
     return WALK_OK;
 }
 
@@ -83,16 +86,17 @@ walk_status get_next_command(FILE *f, command *cmd, int line_number)
     char line[LINE_MAX_LENGTH + 1]; /* +1 for the last '\0'. */
     parser_status p_status;
     validator_status v_status;
+    walk_status status;
 
 read_line:
-    if (read_next_line(f, line) == WALK_PROBLEM_WITH_CODE)
+    status = read_next_line(f, line);
+    if (status == WALK_PROBLEM_WITH_CODE)
     {
         logger_log(WALK, PROBLEM_WITH_CODE, line_number, "A line must be at most %d chars, including whitespaces", LINE_MAX_LENGTH);
         return WALK_PROBLEM_WITH_CODE;
     }
-
-    if (!*line) /* EOF */
-        return WALK_EOF;
+    else if (status == WALK_EOF)
+        return status;
 
     p_status = parser_parse(line, cmd, line_number);
     switch (p_status)
