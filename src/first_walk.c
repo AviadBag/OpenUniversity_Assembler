@@ -333,6 +333,7 @@ static first_walk_status fill_symbols_table(FILE *f, symbols_table *symbols_tabl
 first_walk_status first_walk(char *file_name, symbols_table *symbols_table_p)
 {
     FILE *file;
+    first_walk_status status;
 
     file = fopen(file_name, "r");
     if (!file)
@@ -340,8 +341,11 @@ first_walk_status first_walk(char *file_name, symbols_table *symbols_table_p)
         printf("Error: Cannot open file \"%s\". Skipping.\n", file_name);
         return FIRST_WALK_IO_ERROR;
     }
+    fclose(file);
 
     *symbols_table_p = linked_list_create();
+    status = fill_symbols_table(file, symbols_table_p);
 
-    return fill_symbols_table(file, symbols_table_p);
+    fclose(file);
+    return status;
 }
