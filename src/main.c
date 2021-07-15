@@ -65,6 +65,7 @@ void compile(char* file_name)
 {
     symbols_table st;
     first_walk_status fw_status;
+    FILE* file;
     
     if (!has_legal_extension(file_name))
     {
@@ -72,7 +73,14 @@ void compile(char* file_name)
         return;
     }
 
-    fw_status = first_walk(file_name, &st);
+    file = fopen(file_name, "r");
+    if (!file)
+    {
+        printf("Error: Cannot open file \"%s\". Skipping.\n", file_name);
+        return;
+    }
+
+    fw_status = first_walk(file, &st);
     if (fw_status == FIRST_WALK_NOT_ENOUGH_MEMORY)
     {
         printf("Error: Not enough memory!\n");

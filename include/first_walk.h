@@ -3,6 +3,8 @@
 
 #include "linked_list.h"
 
+#include <stdio.h>
+
 typedef linked_list symbols_table;
 
 typedef enum first_walk_status_e
@@ -20,6 +22,6 @@ typedef enum first_walk_status_e
  * @param symbols_table Will point to the symbol table. SHOULD BE FREED BY linked_list_free().
  * @return first_walk_status FIRST_WALK_IO_ERROR or FIRST_WALK_NOT_ENOUGH_MEMORY or FIRST_WALK_PROBLEM_WITH_CODE or FIRST_WALK_OK.
  */
-first_walk_status first_walk(char* file_name, symbols_table* symbols_table_p);
+first_walk_status first_walk(FILE* file, symbols_table* symbols_table_p);
 
 #endif
