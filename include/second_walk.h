@@ -20,7 +20,7 @@
  * @param dcf_p           A pointer to where to store the dcf after the second walk.
  * @param code_image_p    A pointer to a linked list that will represent the code image.
  * @param icf_p           A pointer to where to store the icf after the second walk.
- * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_IO_ERROR or WALK_OK.
+ * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_IO_ERROR or WALK_PROBLEM_WITH_CODE or WALK_OK.
  */
 walk_status second_walk(char* file_name, symbols_table *symbols_table_p, linked_list *data_image_p, int *dcf_p, linked_list *code_image_p, int *icf_p);
 
