@@ -196,7 +196,7 @@ static walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
     while (1)
     {   
         line_number++;
-        status = get_next_command(f, &cmd, line_number);
+        status = get_next_command(f, &cmd, line_number, true);
         if (status == WALK_EOF)
             break;
         else if (status == WALK_PROBLEM_WITH_CODE)

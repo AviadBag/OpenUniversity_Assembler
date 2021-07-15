@@ -81,7 +81,7 @@ void next_counter(unsigned long *pc, unsigned long *dc, command cmd)
     }
 }
 
-walk_status get_next_command(FILE *f, command *cmd, int line_number)
+walk_status get_next_command(FILE *f, command *cmd, int line_number, boolean validate)
 {
     char line[LINE_MAX_LENGTH + 1]; /* +1 for the last '\0'. */
     parser_status p_status;
@@ -112,9 +112,12 @@ read_line:
         break;
     }
 
-    v_status = validator_validate(*cmd, line_number);
-    if (v_status == VALIDATOR_INVALID)
-        return WALK_PROBLEM_WITH_CODE;
+    if (validate)
+    {
+        v_status = validator_validate(*cmd, line_number);
+        if (v_status == VALIDATOR_INVALID)
+            return WALK_PROBLEM_WITH_CODE;
+    }
 
     return WALK_OK;
 }

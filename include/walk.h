@@ -3,6 +3,7 @@
 
 #include "command.h"
 #include "linked_list.h"
+#include "boolean.h"
 
 #include <stdio.h>
 
@@ -39,8 +40,9 @@ void next_counter(unsigned long *pc, unsigned long *dc, command cmd);
  * @param f              The file to read from. Returns WALK_EOF when reaching EOF.
  * @param cmd            A pointer to where to insert the command into.
  * @param line           What line is it?
+ * @param validate       Should I validate this command as well?
  * @return walk_status - WALK_NOT_ENOUGH_MEMORY or WALK_PROBLEM_WITH_CODE or WALK_EOF or WALK_OK.
  */
-walk_status get_next_command(FILE* f, command* cmd, int line_number);
+walk_status get_next_command(FILE* f, command* cmd, int line_number, boolean validate);
 
 #endif 
