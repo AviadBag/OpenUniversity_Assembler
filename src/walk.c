@@ -8,10 +8,6 @@
 
 #define INSTRUCTION_SIZE 4 /* = 32 bits */
 
-#define BYTE 1
-#define HALF 2
-#define WORD 4
-
 #define WALK "Walk"
 #define PROBLEM_WITH_CODE "PromblemWithCode"
 

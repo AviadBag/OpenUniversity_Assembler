@@ -14,6 +14,10 @@
 
 #define LINE_MAX_LENGTH 80
 
+#define BYTE 1
+#define HALF 2
+#define WORD 4
+
 typedef linked_list symbols_table;
 
 typedef enum walk_status_e
