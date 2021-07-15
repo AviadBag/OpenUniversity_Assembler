@@ -14,14 +14,14 @@
 /**
  * @brief Does the second walk.
  * 
- * @param file_name  The name of the input file.
- * @param st         A pointer to the given symbols table.
- * @param data_image A pointer to a linked list that will represent the data image.
- * @param dcf        A pointer to where to store the dcf after the second walk.
- * @param code_image A pointer to a linked list that will represent the code image.
- * @param icf        A pointer to where to store the icf after the second walk.
+ * @param file_name       The name of the input file.
+ * @param symbols_table_p A pointer to the given symbols table.
+ * @param data_image_p    A pointer to a linked list that will represent the data image.
+ * @param dcf_p           A pointer to where to store the dcf after the second walk.
+ * @param code_image_p    A pointer to a linked list that will represent the code image.
+ * @param icf_p           A pointer to where to store the icf after the second walk.
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_IO_ERROR or WALK_OK.
  */
-walk_status second_walk(char* file_name, symbols_table *st, linked_list *data_image, int *dcf, linked_list *code_image, int *icf);
+walk_status second_walk(char* file_name, symbols_table *symbols_table_p, linked_list *data_image_p, int *dcf_p, linked_list *code_image_p, int *icf_p);
 
 #endif
