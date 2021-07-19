@@ -55,12 +55,12 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
 /**
  * @brief Handles the given "define" directive. ('db' or 'dh' or 'dw').
  *  
- * @param cmd             The "define" directive. MUST BE VALIDATED.
- * @param symbols_table_p A pointer to the symbols table.
- * @param line            On what line is this label?
+ * @param cmd        The "define" directive. MUST BE VALIDATED.
+ * @param data_image A pointer to where to put the address of the data image.
+ * @param line       On what line is this label?
  * @return walk_status WALK_PROBLEM_WITH_CODE or WALK_OK
  */
-walk_status handle_define_directive(command cmd, linked_list* data_image_p, int* dcf_p)
+walk_status handle_define_directive(command cmd, char** data_image, int* dcf_p)
 {
     int size;
     switch (cmd.command_name[1]) /* 'b' for byte, 'h' for half, 'w' for word */
@@ -85,13 +85,13 @@ walk_status handle_define_directive(command cmd, linked_list* data_image_p, int*
  * @brief Handles the given directive.
  * 
  * @param cmd             The directive. MUST BE VALIDATED.
- * @param data_image_p    A pointer to the data image.
+ * @param data_image      A pointer to where to put the address of the data image.
  * @param dcf_p           A pointer to the DCF.
  * @param symbols_table_p A pointer to the symbols table.
  * @param line            On what line is this label?
  * @return walk_status    WALK_PROBLEM_WITH_CODE or WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-static walk_status handle_directive(command cmd, linked_list* data_image_p, int* dcf_p, symbols_table *symbols_table_p, int line)
+static walk_status handle_directive(command cmd, char **data_image, int* dcf_p, symbols_table *symbols_table_p, int line)
 {
     if (strcmp(cmd.command_name, "entry") == 0) return handle_entry_directive(cmd, symbols_table_p, line);
     if (*cmd.command_name == 'd') /* 'db' or 'dh' or 'dw'. */
@@ -104,18 +104,18 @@ static walk_status handle_directive(command cmd, linked_list* data_image_p, int*
  * @brief Handles the given instruction.
  * 
  * @param cmd             The directive. MUST BE VALIDATED.
- * @param data_image_p    A pointer to the data image.
+ * @param code_image      A pointer to where to put the address of the code image.
  * @param dcf_p           A pointer to the DCF.
  * @param symbols_table_p A pointer to the symbols table.
  * @param line            On what line is this label?
  * @return walk_status    WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-walk_status handle_instruction(command cmd, linked_list *code_image_p, int *icf_p)
+walk_status handle_instruction(command cmd, char **code_image, int *icf_p)
 {
     return WALK_OK;
 }
 
-walk_status second_walk(char* file_name, symbols_table *symbols_table_p, linked_list *data_image_p, int *dcf_p, linked_list *code_image_p, int *icf_p)
+walk_status second_walk(char* file_name, symbols_table *symbols_table_p, char **data_image, int *dcf_p, char **code_image, int *icf_p)
 {
     FILE *file;
     command cmd;
@@ -142,12 +142,12 @@ walk_status second_walk(char* file_name, symbols_table *symbols_table_p, linked_
 
         if (cmd.type == DIRECTIVE)
         {
-            if ((status = handle_directive(cmd, data_image_p, dcf_p, symbols_table_p, line_number)) != WALK_OK)
+            if ((status = handle_directive(cmd, data_image, dcf_p, symbols_table_p, line_number)) != WALK_OK)
                 return status;
         }
         else /* Instruction */
         {
-            if ((status = handle_instruction(cmd, code_image_p, icf_p)) != WALK_OK)
+            if ((status = handle_instruction(cmd, code_image, icf_p)) != WALK_OK)
                 return status;
         }
     }
