@@ -62,7 +62,7 @@ static parser_status parse_label(char **str, command *cmd, int line)
             label_length++;
             if (label_length > MAX_LABEL)
             {
-                logger_log(PARSER, OVERFLOW_ERROR, line, "A line cannot be longer than 31 characters");
+                logger_log(PARSER, OVERFLOW_ERROR, line, "A label cannot be longer than 31 characters");
                 return PARSER_OVERFLOW;
             }
 
