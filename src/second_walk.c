@@ -14,6 +14,17 @@
 
 #define BUFFER_MIN_SIZE 2048
 
+#define REALLOC(buffer, max_size) \
+{ \
+    (buffer) = realloc((buffer), BUFFER_MIN_SIZE);  \
+    if (!buffer) \
+        return WALK_NOT_ENOUGH_MEMORY; \
+    (max_size) += BUFFER_MIN_SIZE; \
+}
+
+static int code_image_max_size;
+static int data_image_max_size;
+
 /**
  * @brief Finds a symbol in the symbols table, according to it's name.
  * 
@@ -65,7 +76,7 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
  */
 walk_status handle_define_directive(command cmd, char** data_image, int* dcf_p)
 {
-    int size;
+    int size, i;
     switch (cmd.command_name[1]) /* 'b' for byte, 'h' for half, 'w' for word */
     {
         case 'b':
@@ -79,6 +90,20 @@ walk_status handle_define_directive(command cmd, char** data_image, int* dcf_p)
             break;
         default: /* Will never happen */
             break;
+    }
+
+    while (*dcf_p + size * cmd.number_of_operands > data_image_max_size)
+        REALLOC(*data_image, data_image_max_size);
+
+    for (i = 0; i < cmd.number_of_operands; i++)
+    {
+        char* operand = cmd.operands[i];
+        if (size == BYTE)
+        {
+            (*data_image)[*dcf_p] = atoi(operand);
+        }
+
+        *dcf_p += size;
     }
 
     return WALK_OK;
@@ -130,6 +155,7 @@ walk_status second_walk(char* file_name, symbols_table *symbols_table_p, char **
     *code_image = malloc(BUFFER_MIN_SIZE);
     if (!data_image || !code_image)
         return WALK_NOT_ENOUGH_MEMORY;
+    code_image_max_size = data_image_max_size = BUFFER_MIN_SIZE;
 
     /* Open the input file */
     file = fopen(file_name, "r");
