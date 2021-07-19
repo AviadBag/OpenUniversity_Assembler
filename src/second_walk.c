@@ -58,7 +58,7 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
     symbol* symbol_p = find_symbol(cmd.operands[0], *symbols_table_p);
     if (!symbol_p)
     {
-        logger_log(SECOND_WALK, PROBLEM_WITH_CODE, line, "Cannot mark label \"%s\" as entry, because it does not exist");
+        logger_log(SECOND_WALK, PROBLEM_WITH_CODE, line, "Cannot mark label \"%s\" as entry, because it does not exist", cmd.operands[0]);
         return WALK_PROBLEM_WITH_CODE;
     }
     symbol_p->is_entry = true;
