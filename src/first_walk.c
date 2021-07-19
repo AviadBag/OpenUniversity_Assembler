@@ -187,7 +187,7 @@ static walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
 {
     int line_number, i;
     unsigned long pc, dc;
-    walk_status status = WALK_OK, put_symbol_status;
+    walk_status status, put_symbol_status, final_status = WALK_OK;
     command cmd;
 
     line_number = 0;
@@ -200,12 +200,15 @@ static walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
         if (status == WALK_EOF)
             break;
         else if (status == WALK_PROBLEM_WITH_CODE)
+        {
+            final_status = status;
             continue;
+        }
         else if (status == WALK_NOT_ENOUGH_MEMORY)
             return status;
 
         if ((put_symbol_status = put_symbol(cmd, symbols_table_p, pc, dc, line_number)) != WALK_OK)
-            status = put_symbol_status;
+            final_status = put_symbol_status;
 
         next_counter(&pc, &dc, cmd);
     }
@@ -218,7 +221,7 @@ static walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
             symbol_t->value += pc;
     }
 
-    return WALK_OK;
+    return final_status;
 }
 
 walk_status first_walk(char *file_name, symbols_table *symbols_table_p)
