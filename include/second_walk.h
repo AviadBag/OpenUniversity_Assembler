@@ -16,12 +16,12 @@
  * 
  * @param file_name       The name of the input file.
  * @param symbols_table_p A pointer to the given symbols table.
- * @param data_image      A pointer to where to put the address of the data image.
+ * @param data_image      A pointer to where to put the address of the data image. SHOULD BE FREED AFTER USAGE.
  * @param dcf_p           A pointer to where to store the dcf after the second walk.
- * @param code_image      A pointer to where to put the address of the code image.
+ * @param code_image      A pointer to where to put the address of the code image. SHOULD BE FREED AFTER USAGE.
  * @param icf_p           A pointer to where to store the icf after the second walk.
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_IO_ERROR or WALK_PROBLEM_WITH_CODE or WALK_OK.
  */
-walk_status second_walk(char* file_name, symbols_table *symbols_table_p, char **data_image, int *dcf_p, char **code_image, int *icf_p);
+walk_status second_walk(char* file_name, symbols_table *symbols_table_p, unsigned char **data_image, int *dcf_p, unsigned char **code_image, int *icf_p);
 
 #endif

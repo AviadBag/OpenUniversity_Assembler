@@ -74,7 +74,7 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
  * @param line       On what line is this label?
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-walk_status handle_define_directive(command cmd, char** data_image, int* dcf_p)
+walk_status handle_define_directive(command cmd, unsigned char** data_image, int* dcf_p)
 {
     int size, i;
     switch (cmd.command_name[1]) /* 'b' for byte, 'h' for half, 'w' for word */
@@ -119,7 +119,7 @@ walk_status handle_define_directive(command cmd, char** data_image, int* dcf_p)
  * @param line            On what line is this label?
  * @return walk_status    WALK_PROBLEM_WITH_CODE or WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-static walk_status handle_directive(command cmd, char **data_image, int* dcf_p, symbols_table *symbols_table_p, int line)
+static walk_status handle_directive(command cmd, unsigned char **data_image, int* dcf_p, symbols_table *symbols_table_p, int line)
 {
     if (strcmp(cmd.command_name, "entry") == 0) return handle_entry_directive(cmd, symbols_table_p, line);
     if (*cmd.command_name == 'd') /* 'db' or 'dh' or 'dw'. */
@@ -138,12 +138,12 @@ static walk_status handle_directive(command cmd, char **data_image, int* dcf_p, 
  * @param line            On what line is this label?
  * @return walk_status    WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-walk_status handle_instruction(command cmd, char **code_image, int *icf_p)
+walk_status handle_instruction(command cmd, unsigned char **code_image, int *icf_p)
 {
     return WALK_OK;
 }
 
-walk_status second_walk(char* file_name, symbols_table *symbols_table_p, char **data_image, int *dcf_p, char **code_image, int *icf_p)
+walk_status second_walk(char* file_name, symbols_table *symbols_table_p, unsigned char **data_image, int *dcf_p, unsigned char **code_image, int *icf_p)
 {
     FILE *file;
     command cmd;
