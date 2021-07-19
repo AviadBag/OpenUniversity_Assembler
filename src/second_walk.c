@@ -32,9 +32,9 @@ static symbol* find_symbol(char* name, symbols_table st)
 }
 
 /**
- * @brief Handles the given entry directive.
+ * @brief Handles the given "entry" directive.
  * 
- * @param cmd             The entry directive.
+ * @param cmd             The "entry" directive. MUST BE VALIDATED.
  * @param symbols_table_p A pointer to the symbols table.
  * @param line            On what line is this label?
  * @return walk_status WALK_PROBLEM_WITH_CODE or WALK_OK
@@ -53,9 +53,38 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
 }
 
 /**
+ * @brief Handles the given "define" directive. ('db' or 'dh' or 'dw').
+ *  
+ * @param cmd             The "define" directive. MUST BE VALIDATED.
+ * @param symbols_table_p A pointer to the symbols table.
+ * @param line            On what line is this label?
+ * @return walk_status WALK_PROBLEM_WITH_CODE or WALK_OK
+ */
+walk_status handle_define_directive(command cmd, linked_list* data_image_p, int* dcf_p)
+{
+    int size;
+    switch (cmd.command_name[1]) /* 'b' for byte, 'h' for half, 'w' for word */
+    {
+        case 'b':
+            size = BYTE;
+            break;
+        case 'h':
+            size = HALF;
+            break;
+        case 'w':
+            size = WORD;
+            break;
+        default: /* Will never happen */
+            break;
+    }
+
+    return WALK_OK;
+}
+
+/**
  * @brief Handles the given directive.
  * 
- * @param cmd             The directive.
+ * @param cmd             The directive. MUST BE VALIDATED.
  * @param data_image_p    A pointer to the data image.
  * @param dcf_p           A pointer to the DCF.
  * @param symbols_table_p A pointer to the symbols table.
@@ -65,6 +94,8 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
 static walk_status handle_directive(command cmd, linked_list* data_image_p, int* dcf_p, symbols_table *symbols_table_p, int line)
 {
     if (strcmp(cmd.command_name, "entry") == 0) return handle_entry_directive(cmd, symbols_table_p, line);
+    if (*cmd.command_name == 'd') /* 'db' or 'dh' or 'dw'. */
+        return handle_define_directive(cmd, data_image_p, dcf_p);
 
     return WALK_OK;
 }
@@ -72,7 +103,7 @@ static walk_status handle_directive(command cmd, linked_list* data_image_p, int*
 /**
  * @brief Handles the given instruction.
  * 
- * @param cmd             The directive.
+ * @param cmd             The directive. MUST BE VALIDATED.
  * @param data_image_p    A pointer to the data image.
  * @param dcf_p           A pointer to the DCF.
  * @param symbols_table_p A pointer to the symbols table.
