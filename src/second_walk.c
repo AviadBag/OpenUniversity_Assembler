@@ -5,11 +5,14 @@
 #include "logger.h"
 #include "symbol.h"
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #define SECOND_WALK "SecondWalk"
 #define PROBLEM_WITH_CODE "ProblemWithCode"
+
+#define BUFFER_MIN_SIZE 2048
 
 /**
  * @brief Finds a symbol in the symbols table, according to it's name.
@@ -37,7 +40,7 @@ static symbol* find_symbol(char* name, symbols_table st)
  * @param cmd             The "entry" directive. MUST BE VALIDATED.
  * @param symbols_table_p A pointer to the symbols table.
  * @param line            On what line is this label?
- * @return walk_status WALK_PROBLEM_WITH_CODE or WALK_OK
+ * @return walk_status WALK_PROBLEM_WITH_CODE or WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
 static walk_status handle_entry_directive(command cmd, symbols_table *symbols_table_p, int line)
 {
@@ -58,7 +61,7 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
  * @param cmd        The "define" directive. MUST BE VALIDATED.
  * @param data_image A pointer to where to put the address of the data image.
  * @param line       On what line is this label?
- * @return walk_status WALK_PROBLEM_WITH_CODE or WALK_OK
+ * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
 walk_status handle_define_directive(command cmd, char** data_image, int* dcf_p)
 {
@@ -95,7 +98,7 @@ static walk_status handle_directive(command cmd, char **data_image, int* dcf_p, 
 {
     if (strcmp(cmd.command_name, "entry") == 0) return handle_entry_directive(cmd, symbols_table_p, line);
     if (*cmd.command_name == 'd') /* 'db' or 'dh' or 'dw'. */
-        return handle_define_directive(cmd, data_image_p, dcf_p);
+        return handle_define_directive(cmd, data_image, dcf_p);
 
     return WALK_OK;
 }
@@ -123,8 +126,10 @@ walk_status second_walk(char* file_name, symbols_table *symbols_table_p, char **
     walk_status status;
 
     /* Initialize data image and code image */
-    *data_image_p = linked_list_create();
-    *code_image_p = linked_list_create();
+    *data_image = malloc(BUFFER_MIN_SIZE);
+    *code_image = malloc(BUFFER_MIN_SIZE);
+    if (!data_image || !code_image)
+        return WALK_NOT_ENOUGH_MEMORY;
 
     /* Open the input file */
     file = fopen(file_name, "r");
