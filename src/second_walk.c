@@ -14,6 +14,7 @@
 
 #define BUFFER_MIN_SIZE 2048
 
+/* Extends the buffer and it's max_size var, returns WALK_NOT_ENOUGH_MEMORY if it happens. */
 #define REALLOC(buffer, max_size) \
 { \
     (buffer) = realloc((buffer), BUFFER_MIN_SIZE);  \
@@ -21,6 +22,9 @@
         return WALK_NOT_ENOUGH_MEMORY; \
     (max_size) += BUFFER_MIN_SIZE; \
 }
+
+#define FIRST_BYTE_MASK 0xFF /* Helps to extract the first byte from a number, by doing (num & FIRST_BYTE_MASK). */
+#define BITS_IN_BYTE    8    /* How many bits does each byte contain? */
 
 static int code_image_max_size;
 static int data_image_max_size;
@@ -67,6 +71,25 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
 }
 
 /**
+ * @brief Puts the given number in the given char array, in the given index.
+ * 
+ * @param arr   The char array
+ * @param num   The number.
+ * @param size  How many bytes of the number to put? (Little endian!)
+ * @param index From what index to start?
+ */
+void put_in_char_array(unsigned char* arr, long num, int size, int index)
+{
+    int byte;
+    for (byte = 0; byte < size; byte++) /* Iterate on every required byte */
+    {
+        arr[index] = (char) (num & FIRST_BYTE_MASK);
+        index++;
+        num >>= BITS_IN_BYTE;
+    }
+}
+
+/**
  * @brief Handles the given "define" directive. ('db' or 'dh' or 'dw').
  *  
  * @param cmd        The "define" directive. MUST BE VALIDATED.
@@ -92,16 +115,16 @@ walk_status handle_define_directive(command cmd, unsigned char** data_image, int
             break;
     }
 
+    /* Make sure that the buffer is big enough */
     while (*dcf_p + size * cmd.number_of_operands > data_image_max_size)
         REALLOC(*data_image, data_image_max_size);
 
+    /* Do each operand */
     for (i = 0; i < cmd.number_of_operands; i++)
     {
         char* operand = cmd.operands[i];
-        if (size == BYTE)
-        {
-            (*data_image)[*dcf_p] = atoi(operand);
-        }
+        long num = strtol(operand, 0, 10);
+        put_in_char_array(*data_image, num, size, *dcf_p);
 
         *dcf_p += size;
     }
