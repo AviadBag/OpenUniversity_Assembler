@@ -93,7 +93,7 @@ void put_in_char_array(unsigned char* arr, long num, int size, int index)
  * @brief Handles the given "define" directive. ('db' or 'dh' or 'dw').
  *  
  * @param cmd        The "define" directive. MUST BE VALIDATED.
- * @param data_image A pointer to where to put the address of the data image.
+ * @param data_image A pointer to where to put the address of the data image, already containing a data image.
  * @param line       On what line is this label?
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
@@ -133,6 +133,31 @@ walk_status handle_define_directive(command cmd, unsigned char** data_image, int
 }
 
 /**
+ * @brief Handles the given "asciz" directive.
+ *  
+ * @param cmd        The "asciz" directive. MUST BE VALIDATED.
+ * @param data_image A pointer to where to put the address of the data image, already containing a data image.
+ * @param line       On what line is this label?
+ * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_OK
+ */
+walk_status handle_asciz_directive(command cmd, unsigned char** data_image, int* dcf_p)
+{
+    int count = strlen(cmd.operands[0]) - 2; /* Dont include the quotes */
+    int i;
+
+    /* Is the buffer big enough? */
+    while (*dcf_p + count > data_image_max_size)
+        REALLOC(*data_image, data_image_max_size);
+
+    for (i = 0; i < count; i++)
+        (*data_image)[(*dcf_p)++] = (unsigned char) cmd.operands[0][i+1]; /* +1 Because [0] contains the first quote. */
+
+    (*data_image)[(*dcf_p)++] = '\0';
+
+    return WALK_OK;
+}
+
+/**
  * @brief Handles the given directive.
  * 
  * @param cmd             The directive. MUST BE VALIDATED.
@@ -145,8 +170,9 @@ walk_status handle_define_directive(command cmd, unsigned char** data_image, int
 static walk_status handle_directive(command cmd, unsigned char **data_image, int* dcf_p, symbols_table *symbols_table_p, int line)
 {
     if (strcmp(cmd.command_name, "entry") == 0) return handle_entry_directive(cmd, symbols_table_p, line);
-    if (*cmd.command_name == 'd') /* 'db' or 'dh' or 'dw'. */
+    else if (*cmd.command_name == 'd') /* 'db' or 'dh' or 'dw'. */
         return handle_define_directive(cmd, data_image, dcf_p);
+    else if (strcmp(cmd.command_name, "asciz") == 0) return handle_asciz_directive(cmd, data_image, dcf_p);
 
     return WALK_OK;
 }
