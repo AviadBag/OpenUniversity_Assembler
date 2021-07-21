@@ -5,6 +5,7 @@
 #include "symbol.h"
 #include "boolean.h"
 #include "walk.h"
+#include "utils.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,27 +48,6 @@ static boolean should_put_label_symbol(command cmd)
         return false;
 
     return true;
-}
-
-/**
- * @brief Checks if the given symbol exist in the given symbols table
- * 
- * @param symbol      The symbol
- * @param symbol_name The symbols table
- * @return boolean    True or False
- */
-static boolean symbols_table_symbol_exist(char *symbol_name, symbols_table st)
-{
-    int i;
-    symbol *symbol_t;
-    for (i = 0; i < linked_list_length(st); i++)
-    {
-        symbol_t = (symbol *)linked_list_get(st, i);
-        if (strcmp(symbol_t->name, symbol_name) == 0)
-            return true;
-    }
-
-    return false;
 }
 
 /**
@@ -142,7 +122,7 @@ static walk_status put_label_symbol(command cmd, symbols_table *symbols_table_p,
     symbol_t->value = (cmd.type == INSTRUCTION) ? pc : dc;
     strcpy(symbol_t->name, cmd.label);
 
-    if (symbols_table_symbol_exist(symbol_t->name, *symbols_table_p))
+    if (find_symbol(symbol_t->name, *symbols_table_p) != NULL)
     {
         logger_log(FIRST_WALK, PROBLEM_WITH_CODE, line, "Label \"%s\" was already defined", symbol_t->name);
         return WALK_PROBLEM_WITH_CODE;
