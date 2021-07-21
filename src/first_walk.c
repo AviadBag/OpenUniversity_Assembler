@@ -73,6 +73,7 @@ static walk_status put_extern_symbol(command cmd, symbols_table *symbols_table_p
     symbol_t->is_entry = false;
     symbol_t->type = EXTERNAL;
     symbol_t->value = 0; /* Will be filled by the linker */
+    symbol_t->instructions_using_me = linked_list_create();
     strcpy(symbol_t->name, cmd.operands[0]);
 
     for (i = 0; i < linked_list_length(*symbols_table_p); i++)
