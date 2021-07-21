@@ -23,6 +23,7 @@ linked_list_status linked_list_append(node **nod, void *data)
         return LINKED_LIST_NOT_ENOUGH_MEMORY;
 
     new_node->data = data;
+    new_node->next = NULL;
 
     if (*nod == NULL)
         *nod = new_node;
