@@ -18,6 +18,8 @@
 
 #define BUFFER_MIN_SIZE 2048
 
+#define J_INSTRUCTIONS_LABEL_OPERAND_INDEX 0
+
 /* Extends the buffer and it's max_size var, returns WALK_NOT_ENOUGH_MEMORY if it happens. */
 #define REALLOC(buffer, max_size)                      \
     {                                                  \
@@ -26,8 +28,6 @@
             return WALK_NOT_ENOUGH_MEMORY;             \
         (max_size) += BUFFER_MIN_SIZE;                 \
     }
-
-#define J_INSTRUCTIONS_LABEL_OPERAND_INDEX 0
 
 static int code_image_max_size;
 static int data_image_max_size;
@@ -229,7 +229,8 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
         return WALK_NOT_ENOUGH_MEMORY;
     code_image_max_size = data_image_max_size = BUFFER_MIN_SIZE;
 
-    *dcf_p = *icf_p = 0;
+    *dcf_p = DC_DEFAULT_VALUE;
+    *icf_p = IC_DEFAULT_VALUE;
 
     /* Open the input file */
     file = fopen(file_name, "r");
