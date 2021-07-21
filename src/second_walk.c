@@ -1,3 +1,4 @@
+#include "boolean.h"
 #include "second_walk.h"
 #include "linked_list.h"
 #include "walk.h"
@@ -25,6 +26,8 @@
             return WALK_NOT_ENOUGH_MEMORY;             \
         (max_size) += BUFFER_MIN_SIZE;                 \
     }
+
+#define J_INSTRUCTIONS_LABEL_OPERAND_INDEX 0
 
 static int code_image_max_size;
 static int data_image_max_size;
@@ -146,20 +149,41 @@ static walk_status handle_directive(command cmd, unsigned char **data_image, int
  * @brief Adds the given command to the externs table in the symbols table,
  *        if it uses an extern label, and if the instruction type is J.
  * 
- * @param cmd          The command. MUST BE VALIDATED.
+ * @param cmd          The command. MUST BE VALIDATED, and must pass a translation.
+ * @param ic           Current IC.
  * @param st           The symbol table.
- * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_OK.
+ * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_PROBLEM_WITH_CODE or WALK_OK.
  */
-walk_status add_instruction_to_externs_table(command cmd, symbols_table st)
+walk_status add_instruction_to_externs_table(command cmd, int ic, symbols_table st)
 {
     instruction* inst;
+    char* label_name;
+    symbol* symbol_p;
+    unsigned long *value_p;
 
     instructions_table_get_instruction(cmd.command_name, &inst);
     
     /* Is it J? */
     if (inst->type != J) return WALK_OK;
 
-    /* Ok, it is J. Now check if it uses a label */
+    /* Ok, it is J. The only J instruction that does not use a label is "stop". */
+    if (strcmp(cmd.command_name, "stop") == 0) return WALK_OK;
+    
+    label_name = cmd.operands[J_INSTRUCTIONS_LABEL_OPERAND_INDEX];
+
+    /* JMP instruction can take a register instead. Make sure that this is not a register. */
+    if (label_name[0] == '$') return WALK_OK;
+
+    /* Make sure that the label is extern. */
+    symbol_p = find_symbol(label_name, st); /* The label surely exist, because it passed translation */
+    if (symbol_p->type != EXTERNAL)
+        return WALK_OK;
+
+    /* Ok, we have to add it! */
+    value_p = malloc(sizeof(unsigned long));
+    *value_p = ic;
+    if (linked_list_append(&symbol_p->instructions_using_me, value_p) == LINKED_LIST_NOT_ENOUGH_MEMORY)
+        return WALK_NOT_ENOUGH_MEMORY;
 
     return WALK_OK;
 }
@@ -167,15 +191,16 @@ walk_status add_instruction_to_externs_table(command cmd, symbols_table st)
 /**
  * @brief Handles the given instruction.
  * 
- * @param cmd             The directive. MUST BE VALIDATED.
- * @param st              The symbols table.
- * @param code_image      A pointer to where to put the address of the code image.
- * @param dcf_p           A pointer to the DCF.
- * @return walk_status    WALK_NOT_ENOUGH_MEMORY or WALK_OK.
+ * @param cmd          The directive. MUST BE VALIDATED.
+ * @param st           The symbols table.
+ * @param code_image   A pointer to where to put the address of the code image.
+ * @param dcf_p        A pointer to the DCF.
+ * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_PROBLEM_WITH_CODE or WALK_OK.
  */
 walk_status handle_instruction(command cmd, symbols_table st, unsigned char **code_image, int *icf_p)
 {
     machine_instruction mi;
+    walk_status status;
 
     mi = translator_translate(cmd);
 
@@ -184,11 +209,10 @@ walk_status handle_instruction(command cmd, symbols_table st, unsigned char **co
         REALLOC(*code_image, code_image_max_size);
 
     ((machine_instruction*) (*code_image))[*icf_p / sizeof(machine_instruction)] = mi;
+    status = add_instruction_to_externs_table(cmd, *icf_p, st);
     *icf_p += INSTRUCTION_SIZE;
 
-    add_instruction_to_externs_table(cmd, st);
-
-    return WALK_OK;
+    return status;
 }
 
 walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigned char **data_image, int *dcf_p, unsigned char **code_image, int *icf_p)
