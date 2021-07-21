@@ -5,6 +5,8 @@
 #include "logger.h"
 #include "symbol.h"
 #include "translator.h"
+#include "instructions_table.h"
+#include "utils.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,31 +26,8 @@
         (max_size) += BUFFER_MIN_SIZE;                 \
     }
 
-#define FIRST_BYTE_MASK 0xFF /* Helps to extract the first byte from a number, by doing (num & FIRST_BYTE_MASK). */
-#define BITS_IN_BYTE 8       /* How many bits does each byte contain? */
-
 static int code_image_max_size;
 static int data_image_max_size;
-
-/**
- * @brief Finds a symbol in the symbols table, according to it's name.
- * 
- * @param name     The name of the symbol.
- * @param st       The symbols table to search in.
- * @return symbol* A pointer to the found symbol; NULL if not found.
- */
-static symbol *find_symbol(char *name, symbols_table st)
-{
-    int i;
-    for (i = 0; i < linked_list_length(st); i++)
-    {
-        symbol *symbol_p = linked_list_get(st, i);
-        if (strcmp(name, symbol_p->name) == 0)
-            return symbol_p;
-    }
-
-    return NULL;
-}
 
 /**
  * @brief Handles the given "entry" directive.
@@ -69,25 +48,6 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
     symbol_p->is_entry = true;
 
     return WALK_OK;
-}
-
-/**
- * @brief Puts the given number in the given char array, in the given index.
- * 
- * @param arr   The char array
- * @param num   The number.
- * @param size  How many bytes of the number to put? (Little endian!)
- * @param index From what index to start?
- */
-void put_in_char_array(unsigned char *arr, long num, int size, int index)
-{
-    int byte;
-    for (byte = 0; byte < size; byte++) /* Iterate on every required byte */
-    {
-        arr[index] = (char)(num & FIRST_BYTE_MASK);
-        index++;
-        num >>= BITS_IN_BYTE;
-    }
 }
 
 /**
@@ -183,16 +143,37 @@ static walk_status handle_directive(command cmd, unsigned char **data_image, int
 }
 
 /**
+ * @brief Adds the given command to the externs table in the symbols table,
+ *        if it uses an extern label, and if the instruction type is J.
+ * 
+ * @param cmd          The command. MUST BE VALIDATED.
+ * @param st           The symbol table.
+ * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_OK.
+ */
+walk_status add_instruction_to_externs_table(command cmd, symbols_table st)
+{
+    instruction* inst;
+
+    instructions_table_get_instruction(cmd.command_name, &inst);
+    
+    /* Is it J? */
+    if (inst->type != J) return WALK_OK;
+
+    /* Ok, it is J. Now check if it uses a label */
+
+    return WALK_OK;
+}
+
+/**
  * @brief Handles the given instruction.
  * 
  * @param cmd             The directive. MUST BE VALIDATED.
+ * @param st              The symbols table.
  * @param code_image      A pointer to where to put the address of the code image.
  * @param dcf_p           A pointer to the DCF.
- * @param symbols_table_p A pointer to the symbols table.
- * @param line            On what line is this label?
- * @return walk_status    WALK_NOT_ENOUGH_MEMORY or WALK_OK
+ * @return walk_status    WALK_NOT_ENOUGH_MEMORY or WALK_OK.
  */
-walk_status handle_instruction(command cmd, unsigned char **code_image, int *icf_p)
+walk_status handle_instruction(command cmd, symbols_table st, unsigned char **code_image, int *icf_p)
 {
     machine_instruction mi;
 
@@ -204,6 +185,8 @@ walk_status handle_instruction(command cmd, unsigned char **code_image, int *icf
 
     ((machine_instruction*) (*code_image))[*icf_p / sizeof(machine_instruction)] = mi;
     *icf_p += INSTRUCTION_SIZE;
+
+    add_instruction_to_externs_table(cmd, st);
 
     return WALK_OK;
 }
@@ -245,7 +228,7 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
         }
         else /* Instruction */
         {
-            if ((status = handle_instruction(cmd, code_image, icf_p)) != WALK_OK)
+            if ((status = handle_instruction(cmd, *symbols_table_p, code_image, icf_p)) != WALK_OK)
                 return status;
         }
     }
