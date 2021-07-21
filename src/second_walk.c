@@ -4,6 +4,7 @@
 #include "command.h"
 #include "logger.h"
 #include "symbol.h"
+#include "translator.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -193,6 +194,16 @@ static walk_status handle_directive(command cmd, unsigned char **data_image, int
  */
 walk_status handle_instruction(command cmd, unsigned char **code_image, int *icf_p)
 {
+    machine_instruction mi;
+
+    mi = translator_translate(cmd);
+
+    /* Is the buffer big enough? */
+    while (*icf_p + INSTRUCTION_SIZE > code_image_max_size)
+        REALLOC(*code_image, code_image_max_size);
+
+    (*code_image)[(*icf_p)++] = mi;
+
     return WALK_OK;
 }
 
