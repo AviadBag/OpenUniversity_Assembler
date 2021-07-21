@@ -173,6 +173,7 @@ static walk_status handle_directive(command cmd, unsigned char **data_image, int
     else if (*cmd.command_name == 'd') /* 'db' or 'dh' or 'dw'. */
         return handle_define_directive(cmd, data_image, dcf_p);
     else if (strcmp(cmd.command_name, "asciz") == 0) return handle_asciz_directive(cmd, data_image, dcf_p);
+    else if (strcmp(cmd.command_name, "extern") == 0) return WALK_OK; /* There is nothing to do; The first walk already treated this case */
 
     return WALK_OK;
 }
