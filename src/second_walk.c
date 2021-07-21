@@ -15,16 +15,16 @@
 #define BUFFER_MIN_SIZE 2048
 
 /* Extends the buffer and it's max_size var, returns WALK_NOT_ENOUGH_MEMORY if it happens. */
-#define REALLOC(buffer, max_size) \
-{ \
-    (buffer) = realloc((buffer), BUFFER_MIN_SIZE);  \
-    if (!buffer) \
-        return WALK_NOT_ENOUGH_MEMORY; \
-    (max_size) += BUFFER_MIN_SIZE; \
-}
+#define REALLOC(buffer, max_size)                      \
+    {                                                  \
+        (buffer) = realloc((buffer), BUFFER_MIN_SIZE); \
+        if (!buffer)                                   \
+            return WALK_NOT_ENOUGH_MEMORY;             \
+        (max_size) += BUFFER_MIN_SIZE;                 \
+    }
 
 #define FIRST_BYTE_MASK 0xFF /* Helps to extract the first byte from a number, by doing (num & FIRST_BYTE_MASK). */
-#define BITS_IN_BYTE    8    /* How many bits does each byte contain? */
+#define BITS_IN_BYTE 8       /* How many bits does each byte contain? */
 
 static int code_image_max_size;
 static int data_image_max_size;
@@ -36,12 +36,12 @@ static int data_image_max_size;
  * @param st       The symbols table to search in.
  * @return symbol* A pointer to the found symbol; NULL if not found.
  */
-static symbol* find_symbol(char* name, symbols_table st)
+static symbol *find_symbol(char *name, symbols_table st)
 {
     int i;
     for (i = 0; i < linked_list_length(st); i++)
     {
-        symbol* symbol_p = linked_list_get(st, i);
+        symbol *symbol_p = linked_list_get(st, i);
         if (strcmp(name, symbol_p->name) == 0)
             return symbol_p;
     }
@@ -59,7 +59,7 @@ static symbol* find_symbol(char* name, symbols_table st)
  */
 static walk_status handle_entry_directive(command cmd, symbols_table *symbols_table_p, int line)
 {
-    symbol* symbol_p = find_symbol(cmd.operands[0], *symbols_table_p);
+    symbol *symbol_p = find_symbol(cmd.operands[0], *symbols_table_p);
     if (!symbol_p)
     {
         logger_log(SECOND_WALK, PROBLEM_WITH_CODE, line, "Cannot mark label \"%s\" as entry, because it does not exist", cmd.operands[0]);
@@ -78,12 +78,12 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
  * @param size  How many bytes of the number to put? (Little endian!)
  * @param index From what index to start?
  */
-void put_in_char_array(unsigned char* arr, long num, int size, int index)
+void put_in_char_array(unsigned char *arr, long num, int size, int index)
 {
     int byte;
     for (byte = 0; byte < size; byte++) /* Iterate on every required byte */
     {
-        arr[index] = (char) (num & FIRST_BYTE_MASK);
+        arr[index] = (char)(num & FIRST_BYTE_MASK);
         index++;
         num >>= BITS_IN_BYTE;
     }
@@ -97,22 +97,22 @@ void put_in_char_array(unsigned char* arr, long num, int size, int index)
  * @param line       On what line is this label?
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-walk_status handle_define_directive(command cmd, unsigned char** data_image, int* dcf_p)
+walk_status handle_define_directive(command cmd, unsigned char **data_image, int *dcf_p)
 {
     int size, i;
     switch (cmd.command_name[1]) /* 'b' for byte, 'h' for half, 'w' for word */
     {
-        case 'b':
-            size = BYTE;
-            break;
-        case 'h':
-            size = HALF;
-            break;
-        case 'w':
-            size = WORD;
-            break;
-        default: /* Will never happen */
-            break;
+    case 'b':
+        size = BYTE;
+        break;
+    case 'h':
+        size = HALF;
+        break;
+    case 'w':
+        size = WORD;
+        break;
+    default: /* Will never happen */
+        break;
     }
 
     /* Make sure that the buffer is big enough */
@@ -122,7 +122,7 @@ walk_status handle_define_directive(command cmd, unsigned char** data_image, int
     /* Do each operand */
     for (i = 0; i < cmd.number_of_operands; i++)
     {
-        char* operand = cmd.operands[i];
+        char *operand = cmd.operands[i];
         long num = strtol(operand, 0, 10);
         put_in_char_array(*data_image, num, size, *dcf_p);
 
@@ -140,7 +140,7 @@ walk_status handle_define_directive(command cmd, unsigned char** data_image, int
  * @param line       On what line is this label?
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-walk_status handle_asciz_directive(command cmd, unsigned char** data_image, int* dcf_p)
+walk_status handle_asciz_directive(command cmd, unsigned char **data_image, int *dcf_p)
 {
     int count = strlen(cmd.operands[0]) - 2; /* Dont include the quotes */
     int i;
@@ -150,7 +150,7 @@ walk_status handle_asciz_directive(command cmd, unsigned char** data_image, int*
         REALLOC(*data_image, data_image_max_size);
 
     for (i = 0; i < count; i++)
-        (*data_image)[(*dcf_p)++] = (unsigned char) cmd.operands[0][i+1]; /* +1 Because [0] contains the first quote. */
+        (*data_image)[(*dcf_p)++] = (unsigned char)cmd.operands[0][i + 1]; /* +1 Because [0] contains the first quote. */
 
     (*data_image)[(*dcf_p)++] = '\0';
 
@@ -167,13 +167,16 @@ walk_status handle_asciz_directive(command cmd, unsigned char** data_image, int*
  * @param line            On what line is this label?
  * @return walk_status    WALK_PROBLEM_WITH_CODE or WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-static walk_status handle_directive(command cmd, unsigned char **data_image, int* dcf_p, symbols_table *symbols_table_p, int line)
+static walk_status handle_directive(command cmd, unsigned char **data_image, int *dcf_p, symbols_table *symbols_table_p, int line)
 {
-    if (strcmp(cmd.command_name, "entry") == 0) return handle_entry_directive(cmd, symbols_table_p, line);
+    if (strcmp(cmd.command_name, "entry") == 0)
+        return handle_entry_directive(cmd, symbols_table_p, line);
     else if (*cmd.command_name == 'd') /* 'db' or 'dh' or 'dw'. */
         return handle_define_directive(cmd, data_image, dcf_p);
-    else if (strcmp(cmd.command_name, "asciz") == 0) return handle_asciz_directive(cmd, data_image, dcf_p);
-    else if (strcmp(cmd.command_name, "extern") == 0) return WALK_OK; /* There is nothing to do; The first walk already treated this case */
+    else if (strcmp(cmd.command_name, "asciz") == 0)
+        return handle_asciz_directive(cmd, data_image, dcf_p);
+    else if (strcmp(cmd.command_name, "extern") == 0)
+        return WALK_OK; /* There is nothing to do; The first walk already treated this case */
 
     return WALK_OK;
 }
@@ -193,7 +196,7 @@ walk_status handle_instruction(command cmd, unsigned char **code_image, int *icf
     return WALK_OK;
 }
 
-walk_status second_walk(char* file_name, symbols_table *symbols_table_p, unsigned char **data_image, int *dcf_p, unsigned char **code_image, int *icf_p)
+walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigned char **data_image, int *dcf_p, unsigned char **code_image, int *icf_p)
 {
     FILE *file;
     command cmd;
