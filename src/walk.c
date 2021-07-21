@@ -6,8 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define INSTRUCTION_SIZE 4 /* = 32 bits */
-
 #define WALK "Walk"
 #define PROBLEM_WITH_CODE "PromblemWithCode"
 

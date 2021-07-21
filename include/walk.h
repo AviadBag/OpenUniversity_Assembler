@@ -18,6 +18,8 @@
 #define HALF 2
 #define WORD 4
 
+#define INSTRUCTION_SIZE 4 /* = 32 bits */
+
 typedef linked_list symbols_table;
 
 typedef enum walk_status_e
