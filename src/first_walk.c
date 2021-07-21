@@ -172,7 +172,7 @@ static walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
     command cmd;
 
     line_number = 0;
-    pc = PC_DEFAULT_VALUE, dc = DC_DEFAULT_VALUE;
+    pc = IC_DEFAULT_VALUE, dc = DC_DEFAULT_VALUE;
 
     while (1)
     {   

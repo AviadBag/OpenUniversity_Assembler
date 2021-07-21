@@ -9,7 +9,7 @@
 
 /* This module holds of the code that both walks use */
 
-#define PC_DEFAULT_VALUE 100
+#define IC_DEFAULT_VALUE 100
 #define DC_DEFAULT_VALUE 0
 
 #define LINE_MAX_LENGTH 80
