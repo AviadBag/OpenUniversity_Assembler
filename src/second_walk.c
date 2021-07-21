@@ -221,6 +221,8 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
         return WALK_NOT_ENOUGH_MEMORY;
     code_image_max_size = data_image_max_size = BUFFER_MIN_SIZE;
 
+    *dcf_p = *icf_p = 0;
+
     /* Open the input file */
     file = fopen(file_name, "r");
     if (!file)
