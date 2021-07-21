@@ -199,10 +199,11 @@ walk_status handle_instruction(command cmd, unsigned char **code_image, int *icf
     mi = translator_translate(cmd);
 
     /* Is the buffer big enough? */
-    while (*icf_p + INSTRUCTION_SIZE > code_image_max_size)
+    while (*icf_p + sizeof(machine_instruction) > code_image_max_size)
         REALLOC(*code_image, code_image_max_size);
 
-    (*code_image)[(*icf_p)++] = mi;
+    ((machine_instruction*) (*code_image))[*icf_p / sizeof(machine_instruction)] = mi;
+    *icf_p += INSTRUCTION_SIZE;
 
     return WALK_OK;
 }
