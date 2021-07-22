@@ -38,7 +38,6 @@ typedef enum e_instructions_table_status
  * @param name The name of the instruction. (For example - "add").
  * @param inst A pointer to a pointer of instruction struct. Will point to the returned struct.
  * @return  IT_INSTRUCTION_NOT_FOUND if it happens, else - IT_OK.
- * MUST BE CALLED AFTER instructions_table_init(0)!
  */
 instructions_table_status instructions_table_get_instruction(char *name, instruction **inst);
 

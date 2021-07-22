@@ -62,7 +62,7 @@ static parser_status parse_label(char **str, command *cmd, int line)
             label_length++;
             if (label_length > MAX_LABEL)
             {
-                logger_log(PARSER, OVERFLOW_ERROR, line, "A line cannot be longer than 31 characters");
+                logger_log(PARSER, OVERFLOW_ERROR, line, "A label cannot be longer than 31 characters");
                 return PARSER_OVERFLOW;
             }
 
@@ -313,7 +313,7 @@ static parser_status fill_operands(char *str, int number_of_operands, char **ope
 
         /* Now, insert the pointer to the array! */
         /* First, allocate memory for the operand */
-        operand = malloc(operand_length * sizeof(char));
+        operand = malloc((operand_length+1) * sizeof(char));
         if (operand == NULL)
             return PARSER_NOT_ENOUGH_MEMORY;
 
@@ -333,6 +333,7 @@ static parser_status fill_operands(char *str, int number_of_operands, char **ope
 
             str++;
         }
+        operand[j] = '\0';
 
         operands_array[i] = operand;
 

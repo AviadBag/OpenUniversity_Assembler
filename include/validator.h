@@ -2,7 +2,7 @@
 #define _VALIDATOR_H
 
 /**
- * The validator module - validates that a given command is valid.
+ * The validator module - validates that a given command is valid. DOES NOT MAKE SURE THAT USED LABEL EXIST!
  */
 
 #include "parser.h"

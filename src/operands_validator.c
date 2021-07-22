@@ -17,6 +17,8 @@
 #define FIRST_REGISTER 0
 #define LAST_REGISTER 31
 
+#define BITS_PER_BYTE 8
+
 /**
  * Checks if the operands length of the given command is valid.
  * @param cmd  The commnad to check. The command name must exist.
@@ -154,7 +156,7 @@ validator_status validate_constant_operand(char* operand, int width, int line)
     num = strtol(operand, 0, 10);
 
     /* Check the range */
-    if (!is_in_range_2_complement(num, width) || (num == LONG_MIN && errno == ERANGE) || (num == LONG_MAX && errno == ERANGE))
+    if (!is_in_range_2_complement(num, width * BITS_PER_BYTE) || (num == LONG_MIN && errno == ERANGE) || (num == LONG_MAX && errno == ERANGE))
     {
         logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "The number %ld must fit to %d bytes in 2's complement", num, width);
         return VALIDATOR_INVALID;
