@@ -70,8 +70,8 @@ void translate_R_instruction(machine_instruction *m, command cmd, instruction in
 	if (inst.number_of_operands == R_COPY_INSTRUCTIONS_NUMBER_OF_OPERANDS)
 	{
 		/* This is a copy instruction. */
-		rd = register_string_to_int(cmd.operands[0]);
-		rs = register_string_to_int(cmd.operands[1]);
+		rs = register_string_to_int(cmd.operands[0]);
+		rd = register_string_to_int(cmd.operands[1]);
 		rt = 0;
 	}
 	else /* This is an arthimetic-login instruction. */
