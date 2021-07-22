@@ -19,7 +19,7 @@ typedef enum e_parser_status
 /**
  * Parses the given string.
  * @param str  The string to parse.
- * @param cmd  A pointer to a command struct to store inside the data.
+ * @param cmd  A pointer to a command struct to store inside the data. cmd->command_name, cmd->operands and cmd->operands[0] ... cmd->operands[i] should be freed!
  * @param line On what line is this string?
  * @return PARSER_SYNTAX_ERROR or PARSER_EMPTY or PARSER_OVERFLOW or PARSER_OK.
  */

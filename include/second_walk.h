@@ -4,7 +4,7 @@
 #include "walk.h"
 #include "linked_list.h"
 
-/* This moulde implements the second walk, which gets as an input a symbols table, and returns:
+/* This module implements the second walk, which gets as an input a symbols table, and returns:
     1. Data image + DCF
     2. Code image + ICF
     3. For every symbol, fills the is_entry field.
@@ -15,7 +15,7 @@
  * @brief Does the second walk.
  * 
  * @param file_name       The name of the input file.
- * @param symbols_table_p A pointer to the given symbols table.
+ * @param symbols_table_p A pointer to the given symbols table. For every extern symbol, st->instructions_using_me shuold be freed using linked_list_free, and it's items should be freed.
  * @param data_image      A pointer to where to put the address of the data image. SHOULD BE FREED AFTER USAGE.
  * @param dcf_p           A pointer to where to store the dcf after the second walk.
  * @param code_image      A pointer to where to put the address of the code image. SHOULD BE FREED AFTER USAGE.
