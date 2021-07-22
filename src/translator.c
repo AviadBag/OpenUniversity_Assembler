@@ -2,6 +2,9 @@
 #include "instructions_table.h"
 #include "bitmap.h"
 #include "walk.h"
+#include "symbol.h"
+#include "utils.h"
+#include "logger.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -31,6 +34,12 @@
 
 #define ADDRESS_START 0
 #define ADDRESS_END   24
+
+#define I_INSTRUCTION_IMMED_SIZE_BYTES ((IMMED_END - IMMED_START + 1) / 8)
+
+#define TRANSLATOR        "Translator"
+#define PROBLEM_WITH_CODE "ProblemWithCode"
+#define OVERFLOW          "Overflow"
 
 /**
  * @brief Converts a register string (line "$3") to it's int representation. (Like 3).
@@ -83,13 +92,16 @@ void translate_R_instruction(machine_instruction* m, command cmd, instruction in
  * @param cmd                The command to translate. MUST BE VALIDATED!
  * @param inst               The instruction struct that represents the insturction.
  * @param st                 The symbols table.
- * @param ic                   The current instruction counter.
+ * @param ic                 The current instruction counter.
+ * @param line                 On what line this instruction is?
  * @return translator_status TRANSLATOR_OK or TRANSLATOR_LABEL_DOES_NOT_EXIST or TRANSLATOR_OVERFLOW.
  */
-static translator_status translate_I_instruction(machine_instruction* m, command cmd, instruction inst, symbols_table st, int ic)
+static translator_status translate_I_instruction(machine_instruction* m, command cmd, instruction inst, symbols_table st, int ic, int line)
 {
 	int rs, rt;
 	int immed;
+	symbol* symbol_p;
+	int offset;
 
 	/* Put the opcode */
 	bitmap_put_data(m, &inst.opcode, OPCODE_START, OPCODE_END);
@@ -102,11 +114,24 @@ static translator_status translate_I_instruction(machine_instruction* m, command
 		/* Conditional jump */
 		rs = register_string_to_int(cmd.operands[0]);
 		rt = register_string_to_int(cmd.operands[1]);
-		immed = 0; /* This is a label; The second walk will treat that. */
+		symbol_p = find_symbol(cmd.operands[2], st);
+		if (!symbol_p)
+		{
+			logger_log(TRANSLATOR, PROBLEM_WITH_CODE, line, "Label \"%s\" does not exist", cmd.operands[2]);
+			return TRANSLATOR_LABEL_DOES_NOT_EXIST;
+		}
+
+		offset = symbol_p->value - ic;
+		if (!is_in_range_2_complement(offset, I_INSTRUCTION_IMMED_SIZE_BYTES))
+		{
+			logger_log(TRANSLATOR, OVERFLOW, line, "Label \"%s\" is too far!", cmd.operands[2]);
+			return TRANSLATOR_OVERFLOW;
+		}
+		immed = offset;
 	}
 	else
 	{
-		/* Arthimetic login or memory instructions */ 
+		/* Arthimetic logic or memory instructions */ 
 		rs = register_string_to_int(cmd.operands[0]);
 		rt = register_string_to_int(cmd.operands[2]);
 		immed = atoi(cmd.operands[1]);
@@ -159,7 +184,7 @@ static machine_instruction translate_J_instruction(machine_instruction* m, comma
 	return TRANSLATOR_OK;
 }
 
-translator_status translator_translate(command cmd, symbols_table st, int ic, machine_instruction* m)
+translator_status translator_translate(command cmd, symbols_table st, int ic, int line, machine_instruction* m)
 {
 	instruction* inst;
 	instructions_table_get_instruction(cmd.command_name, &inst);
@@ -167,7 +192,7 @@ translator_status translator_translate(command cmd, symbols_table st, int ic, ma
 	if (inst->type == R)	
 		translate_R_instruction(m, cmd, *inst);
 	else if (inst->type == I)
-		return translate_I_instruction(m, cmd, *inst, st, ic);
+		return translate_I_instruction(m, cmd, *inst, st, ic, line);
 	else /* J */
 		return translate_J_instruction(m, cmd, *inst, st);
 

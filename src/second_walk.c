@@ -195,15 +195,16 @@ walk_status add_instruction_to_externs_table(command cmd, int ic, symbols_table 
  * @param st           The symbols table.
  * @param code_image   A pointer to where to put the address of the code image.
  * @param dcf_p        A pointer to the DCF.
+ * @param line                 On what line this instruction is?
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_PROBLEM_WITH_CODE or WALK_OK.
  */
-walk_status handle_instruction(command cmd, symbols_table st, unsigned char **code_image, int *icf_p)
+walk_status handle_instruction(command cmd, symbols_table st, unsigned char **code_image, int *icf_p, int line)
 {
     machine_instruction m;
     walk_status status;
     translator_status t_status;
 
-    t_status = translator_translate(cmd, st, *icf_p, &m);
+    t_status = translator_translate(cmd, st, *icf_p, line, &m);
     if (t_status != TRANSLATOR_OK)
         return WALK_PROBLEM_WITH_CODE; /* Do not need to log; The translator already logged. */
 
@@ -256,7 +257,7 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
         }
         else /* Instruction */
         {
-            if ((status = handle_instruction(cmd, *symbols_table_p, code_image, icf_p)) != WALK_OK)
+            if ((status = handle_instruction(cmd, *symbols_table_p, code_image, icf_p, line_number)) != WALK_OK)
                 return status;
         }
     }
