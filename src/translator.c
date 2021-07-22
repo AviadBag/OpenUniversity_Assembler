@@ -159,6 +159,7 @@ static machine_instruction translate_J_instruction(machine_instruction *m, comma
 {
 	int reg = 0, address;
 	symbol *symbol_p;
+	char* label;
 
 	/* Put the opcode */
 	bitmap_put_data(m, &inst.opcode, OPCODE_START, OPCODE_END);
@@ -174,17 +175,18 @@ static machine_instruction translate_J_instruction(machine_instruction *m, comma
 		}
 		else
 		{
-			symbol_p = find_symbol(cmd.operands[0], st);
+		    label = cmd.operands[0];
+			symbol_p = find_symbol(label, st);
 			if (!symbol_p)
 			{
-				logger_log(TRANSLATOR, PROBLEM_WITH_CODE, line, "Label \"%s\" does not exist", cmd.operands[2]);
+				logger_log(TRANSLATOR, PROBLEM_WITH_CODE, line, "Label \"%s\" does not exist", label);
 				return TRANSLATOR_LABEL_DOES_NOT_EXIST;
 			}
 
 			address = symbol_p->value;
 			if (!is_in_range_2_complement(address, I_INSTRUCTION_IMMED_SIZE_BITS))
 			{
-				logger_log(TRANSLATOR, OVERFLOW, line, "Label \"%s\" is too far!", cmd.operands[2]);
+				logger_log(TRANSLATOR, OVERFLOW, line, "Label \"%s\" is too far!", label);
 				return TRANSLATOR_OVERFLOW;
 			}
 		}
