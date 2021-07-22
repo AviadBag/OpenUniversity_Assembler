@@ -11,7 +11,8 @@ typedef unsigned int machine_instruction; /* Represents an instruction in machin
 typedef enum e_translator_status
 {
     TRANSLATOR_OK,
-    TRANSLATOR_LABEL_DOES_NOT_EXIST
+    TRANSLATOR_LABEL_DOES_NOT_EXIST,
+    TRANSLATOR_OVERFLOW
 } translator_status;
 
 /**
