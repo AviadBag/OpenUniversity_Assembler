@@ -83,9 +83,10 @@ void translate_R_instruction(machine_instruction* m, command cmd, instruction in
  * @param cmd                The command to translate. MUST BE VALIDATED!
  * @param inst               The instruction struct that represents the insturction.
  * @param st                 The symbols table.
- * @return translator_status TRANSLATOR_OK or TRANSLATOR_LABEL_DOES_NOT_EXIST.
+ * @param ic                   The current instruction counter.
+ * @return translator_status TRANSLATOR_OK or TRANSLATOR_LABEL_DOES_NOT_EXIST or TRANSLATOR_OVERFLOW.
  */
-static translator_status translate_I_instruction(machine_instruction* m, command cmd, instruction inst, symbols_table st)
+static translator_status translate_I_instruction(machine_instruction* m, command cmd, instruction inst, symbols_table st, int ic)
 {
 	int rs, rt;
 	int immed;
@@ -125,7 +126,7 @@ static translator_status translate_I_instruction(machine_instruction* m, command
  * @param cmd                The command to translate. MUST BE VALIDATED!
  * @param inst               The instruction struct that represents the insturction.
  * @param st                 The symbols table.
- * @return translator_status TRANSLATOR_OK or TRANSLATOR_LABEL_DOES_NOT_EXIST.
+ * @return translator_status TRANSLATOR_OK or TRANSLATOR_LABEL_DOES_NOT_EXIST or TRANSLATOR_OVERFLOW.
  */
 static machine_instruction translate_J_instruction(machine_instruction* m, command cmd, instruction inst, symbols_table st)
 {
@@ -166,7 +167,7 @@ translator_status translator_translate(command cmd, symbols_table st, int ic, ma
 	if (inst->type == R)	
 		translate_R_instruction(m, cmd, *inst);
 	else if (inst->type == I)
-		return translate_I_instruction(m, cmd, *inst, st);
+		return translate_I_instruction(m, cmd, *inst, st, ic);
 	else /* J */
 		return translate_J_instruction(m, cmd, *inst, st);
 
