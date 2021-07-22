@@ -1,6 +1,7 @@
 #include "translator.h"
 #include "instructions_table.h"
 #include "bitmap.h"
+#include "walk.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -44,19 +45,17 @@ static int register_string_to_int(char* register_str)
 
 /**
  * @brief Translates an R instruction into it's machine language representation.
- *
+
+ * @param m                  A pointer to a machine_instruction; Will be filled with the instruction.
  * @param cmd  The command to translate. MUST BE VALIDATED!
  * @param inst The instruction struct that represents the insturction.
- *
- * @return 
  */
-static machine_instruction translate_R_instruction(command cmd, instruction inst)
+void translate_R_instruction(machine_instruction* m, command cmd, instruction inst)
 {
-	machine_instruction m = 0;
 	int rs, rt, rd;
 	
-	bitmap_put_data(&m, &inst.opcode, OPCODE_START, OPCODE_END); /* Put opcode */
-	bitmap_put_data(&m, &inst.funct, FUNCT_START, FUNCT_END);   /* Put funct */
+	bitmap_put_data(m, &inst.opcode, OPCODE_START, OPCODE_END); /* Put opcode */
+	bitmap_put_data(m, &inst.funct, FUNCT_START, FUNCT_END);   /* Put funct */
 
 	if (inst.number_of_operands == R_COPY_INSTRUCTIONS_NUMBER_OF_OPERANDS)
 	{
@@ -72,29 +71,27 @@ static machine_instruction translate_R_instruction(command cmd, instruction inst
 		rd = register_string_to_int(cmd.operands[2]);
 	}
 
-	bitmap_put_data(&m, &rs, RS_START, RS_END); /* Put rs */
-	bitmap_put_data(&m, &rt, RT_START, RT_END); /* Put rt */
-	bitmap_put_data(&m, &rd, RD_START, RD_END); /* Put rd */
-
-	return m;
+	bitmap_put_data(m, &rs, RS_START, RS_END); /* Put rs */
+	bitmap_put_data(m, &rt, RT_START, RT_END); /* Put rt */
+	bitmap_put_data(m, &rd, RD_START, RD_END); /* Put rd */
 }
 
 /**
  * @brief Translates an I instruction into it's machine language representation.
  *
- * @param cmd  The command to translate. MUST BE VALIDATED!
- * @param inst The instruction struct that represents the insturction.
- *
- * @return 
+ * @param m                  A pointer to a machine_instruction; Will be filled with the instruction.
+ * @param cmd                The command to translate. MUST BE VALIDATED!
+ * @param inst               The instruction struct that represents the insturction.
+ * @param st                 The symbols table.
+ * @return translator_status TRANSLATOR_OK or TRANSLATOR_LABEL_DOES_NOT_EXIST.
  */
-static machine_instruction translate_I_instruction(command cmd, instruction inst)
+static translator_status translate_I_instruction(machine_instruction* m, command cmd, instruction inst, symbols_table st)
 {
-	machine_instruction m = 0;
 	int rs, rt;
 	int immed;
 
 	/* Put the opcode */
-	bitmap_put_data(&m, &inst.opcode, OPCODE_START, OPCODE_END);
+	bitmap_put_data(m, &inst.opcode, OPCODE_START, OPCODE_END);
 
 	/* There are two operands arrangement. A way to distinguish between them is to know that "conditional jump" gets
 	   a label as the third operand.
@@ -114,28 +111,28 @@ static machine_instruction translate_I_instruction(command cmd, instruction inst
 		immed = atoi(cmd.operands[1]);
 	}
 
-	bitmap_put_data(&m, &rs, RS_START, RS_END);   /* Put rs */
-	bitmap_put_data(&m, &rt, RT_START, RT_END);  /* Put rt */
-	bitmap_put_data(&m, &immed, IMMED_START, IMMED_END); /* Put immed */
+	bitmap_put_data(m, &rs, RS_START, RS_END);   /* Put rs */
+	bitmap_put_data(m, &rt, RT_START, RT_END);  /* Put rt */
+	bitmap_put_data(m, &immed, IMMED_START, IMMED_END); /* Put immed */
 
-	return m;
+	return TRANSLATOR_OK;
 }
 
 /**
  * @brief Translates an J instruction into it's machine language representation.
  *
- * @param cmd  The command to translate. MUST BE VALIDATED!
- * @param inst The instruction struct that represents the insturction.
- *
- * @return 
+ * @param m                  A pointer to a machine_instruction; Will be filled with the instruction.
+ * @param cmd                The command to translate. MUST BE VALIDATED!
+ * @param inst               The instruction struct that represents the insturction.
+ * @param st                 The symbols table.
+ * @return translator_status TRANSLATOR_OK or TRANSLATOR_LABEL_DOES_NOT_EXIST.
  */
-static machine_instruction translate_J_instruction(command cmd, instruction inst)
+static machine_instruction translate_J_instruction(machine_instruction* m, command cmd, instruction inst, symbols_table st)
 {
-	machine_instruction m = 0;
 	int reg = 0, address;
 
 	/* Put the opcode */
-	bitmap_put_data(&m, &inst.opcode, OPCODE_START, OPCODE_END);
+	bitmap_put_data(m, &inst.opcode, OPCODE_START, OPCODE_END);
 	
 	/* Here, every command is different */
 	if (strcmp(cmd.command_name, "jmp") == 0)
@@ -155,22 +152,23 @@ static machine_instruction translate_J_instruction(command cmd, instruction inst
 		*/
 		address = 0;
 
-	bitmap_put_data(&m, &address, ADDRESS_START, ADDRESS_END);
-	bitmap_put_data(&m, &reg, REG_START, REG_END);
+	bitmap_put_data(m, &address, ADDRESS_START, ADDRESS_END);
+	bitmap_put_data(m, &reg, REG_START, REG_END);
 
-	return m;
+	return TRANSLATOR_OK;
 }
 
-machine_instruction translator_translate(command cmd)
+translator_status translator_translate(command cmd, symbols_table st, machine_instruction* m)
 {
 	instruction* inst;
 	instructions_table_get_instruction(cmd.command_name, &inst);
+	*m = 0;
 	if (inst->type == R)	
-		return translate_R_instruction(cmd, *inst);
+		translate_R_instruction(m, cmd, *inst);
 	else if (inst->type == I)
-		return translate_I_instruction(cmd, *inst);
+		return translate_I_instruction(m, cmd, *inst, st);
 	else /* J */
-		return translate_J_instruction(cmd, *inst);
+		return translate_J_instruction(m, cmd, *inst, st);
 
-	return 0;		
+	return TRANSLATOR_OK;
 }
