@@ -8,9 +8,8 @@
 #define FIRST_BYTE_MASK 0xFF /* Helps to extract the first byte from a number, by doing (num & FIRST_BYTE_MASK). */
 #define BITS_IN_BYTE 8       /* How many bits does each byte contain? */
 
-boolean is_in_range_2_complement(long num, int bytes)
+boolean is_in_range_2_complement(long num, int bits)
 {
-    int bits = bytes * 8;
     long max = pow(2, bits-1) - 1;
     long min = -pow(2, bits-1);
 
