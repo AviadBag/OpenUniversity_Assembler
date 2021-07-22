@@ -1,5 +1,6 @@
 bin/
 html/
+.idea/
 .vscode/
 compile_commands.json
 .vimrc
