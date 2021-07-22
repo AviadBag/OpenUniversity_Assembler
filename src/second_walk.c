@@ -203,7 +203,7 @@ walk_status handle_instruction(command cmd, symbols_table st, unsigned char **co
     walk_status status;
     translator_status t_status;
 
-    t_status = translator_translate(cmd, st, &m);
+    t_status = translator_translate(cmd, st, *icf_p, &m);
     if (t_status == TRANSLATOR_LABEL_DOES_NOT_EXIST)
         return WALK_PROBLEM_WITH_CODE; /* Do not need to log; The translator already logged. */
 

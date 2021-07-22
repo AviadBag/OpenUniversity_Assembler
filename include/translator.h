@@ -18,9 +18,10 @@ typedef enum e_translator_status
  * This method translates the given command into a machine code.
  * @param cmd                  The command to translate. cmd.command_type MUST be INSTRUCTION, and must be validated by the validator.
  * @param st                   The symbols table.
+ * @param ic                   The current instruction counter.
  * @param m                    A pointer to a machine_instruction; Will be filled with the instruction.
  * @return machine_instruction The translated instruction.
  */
-translator_status translator_translate(command cmd, symbols_table st, machine_instruction* m);
+translator_status translator_translate(command cmd, symbols_table st, int ic, machine_instruction* m);
 
 #endif

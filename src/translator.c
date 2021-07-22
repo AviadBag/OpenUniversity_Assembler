@@ -158,7 +158,7 @@ static machine_instruction translate_J_instruction(machine_instruction* m, comma
 	return TRANSLATOR_OK;
 }
 
-translator_status translator_translate(command cmd, symbols_table st, machine_instruction* m)
+translator_status translator_translate(command cmd, symbols_table st, int ic, machine_instruction* m)
 {
 	instruction* inst;
 	instructions_table_get_instruction(cmd.command_name, &inst);
