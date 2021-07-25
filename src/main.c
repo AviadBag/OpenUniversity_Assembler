@@ -21,7 +21,7 @@
  */
 boolean has_legal_extension(char *file_name)
 {
-    char *dot = strchr(file_name, '.');
+    char *dot = strrchr(file_name, '.');
     if (!dot)
         return false; /* There is no extenstion... */
 
