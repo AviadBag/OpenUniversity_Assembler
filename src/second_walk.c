@@ -21,12 +21,12 @@
 #define J_INSTRUCTIONS_LABEL_OPERAND_INDEX 0
 
 /* Extends the buffer and it's max_size var, returns WALK_NOT_ENOUGH_MEMORY if it happens. */
-#define REALLOC(buffer, max_size)                      \
-    {                                                  \
-        (buffer) = realloc((buffer), BUFFER_MIN_SIZE); \
-        if (!buffer)                                   \
-            return WALK_NOT_ENOUGH_MEMORY;             \
-        (max_size) += BUFFER_MIN_SIZE;                 \
+#define REALLOC(buffer, current_size, max_size)                       \
+    {                                                                 \
+        (buffer) = realloc((buffer), current_size + BUFFER_MIN_SIZE); \
+        if (!buffer)                                                  \
+            return WALK_NOT_ENOUGH_MEMORY;                            \
+        (max_size) += BUFFER_MIN_SIZE;                                \
     }
 
 static int code_image_max_size;
@@ -81,7 +81,7 @@ walk_status handle_define_directive(command cmd, unsigned char **data_image, uns
 
     /* Make sure that the buffer is big enough */
     while (*dc_p + size * cmd.number_of_operands > data_image_max_size)
-        REALLOC(*data_image, data_image_max_size);
+        REALLOC(*data_image, *dc_p, data_image_max_size);
 
     /* Do each operand */
     for (i = 0; i < cmd.number_of_operands; i++)
@@ -111,7 +111,7 @@ walk_status handle_asciz_directive(command cmd, unsigned char **data_image, unsi
 
     /* Is the buffer big enough? */
     while (*dc_p + count > data_image_max_size)
-        REALLOC(*data_image, data_image_max_size);
+        REALLOC(*data_image, *dc_p, data_image_max_size);
 
     for (i = 0; i < count; i++)
         (*data_image)[(*dc_p)++] = (unsigned char)cmd.operands[0][i + 1]; /* +1 Because [0] contains the first quote. */
@@ -156,23 +156,26 @@ static walk_status handle_directive(command cmd, unsigned char **data_image, uns
  */
 walk_status add_instruction_to_externs_table(command cmd, unsigned long ic, symbols_table st)
 {
-    instruction* inst;
-    char* label_name;
-    symbol* symbol_p;
+    instruction *inst;
+    char *label_name;
+    symbol *symbol_p;
     unsigned long *value_p;
 
     instructions_table_get_instruction(cmd.command_name, &inst);
-    
+
     /* Is it J? */
-    if (inst->type != J) return WALK_OK;
+    if (inst->type != J)
+        return WALK_OK;
 
     /* Ok, it is J. The only J instruction that does not use a label is "stop". */
-    if (strcmp(cmd.command_name, "stop") == 0) return WALK_OK;
-    
+    if (strcmp(cmd.command_name, "stop") == 0)
+        return WALK_OK;
+
     label_name = cmd.operands[J_INSTRUCTIONS_LABEL_OPERAND_INDEX];
 
     /* JMP instruction can take a register instead. Make sure that this is not a register. */
-    if (label_name[0] == '$') return WALK_OK;
+    if (label_name[0] == '$')
+        return WALK_OK;
 
     /* Make sure that the label is extern. */
     symbol_p = find_symbol(label_name, st); /* The label surely exist, because it passed translation */
@@ -203,16 +206,19 @@ walk_status handle_instruction(command cmd, symbols_table st, unsigned char **co
     machine_instruction m;
     walk_status status;
     translator_status t_status;
+    int index; /* The index in the code image, IN BYTES */
+
+    index = *ic_p - IC_DEFAULT_VALUE;
 
     t_status = translator_translate(cmd, st, *ic_p, line, &m);
     if (t_status != TRANSLATOR_OK)
         return WALK_PROBLEM_WITH_CODE; /* Do not need to log; The translator already logged. */
 
     /* Is the buffer big enough? */
-    while (*ic_p + sizeof(machine_instruction) > code_image_max_size)
-        REALLOC(*code_image, code_image_max_size);
+    while (index + sizeof(machine_instruction) > code_image_max_size)
+        REALLOC(*code_image, index, code_image_max_size);
 
-    ((machine_instruction*) (*code_image))[*ic_p / sizeof(machine_instruction)] = m;
+    ((machine_instruction *)(*code_image))[index / sizeof(machine_instruction)] = m;
     status = add_instruction_to_externs_table(cmd, *ic_p, st);
     *ic_p += INSTRUCTION_SIZE;
 
