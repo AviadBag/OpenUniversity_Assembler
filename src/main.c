@@ -126,6 +126,9 @@ void compile(char *file_name)
     }
     printf("\n");
 
+    if (write_entries_file(file_name, st) != FILE_WRITER_OK)
+        return;
+
     /* Clean up */
     linked_list_free(st);
     free(data_image);
