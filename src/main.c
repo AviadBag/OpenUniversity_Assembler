@@ -126,7 +126,7 @@ void compile(char *file_name)
     }
     printf("\n");
 
-    if (write_entries_file(file_name, st) != FILE_WRITER_OK)
+    if (write_entries_file(file_name, st) != FILE_WRITER_OK || write_externals_file(file_name, st) != FILE_WRITER_OK)
         return;
 
     /* Clean up */

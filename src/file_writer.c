@@ -38,6 +38,33 @@ char* change_extension(char* original_file_name, char* new_ext)
     return new_file_name;
 }
 
+file_writer_status write_externals_file(char* original_file_name, symbols_table st)
+{
+    int i, j;
+    char* new_file_name = change_extension(original_file_name, EXTERNALS_EXT);
+    FILE* file = fopen(new_file_name, "w");
+    if (!file)
+    {
+        printf("Error: Cannot open file \"%s\". Skipping.\n", new_file_name);
+        return FILE_WRITER_IO_ERROR;
+    }
+
+    for (i = 0; i < linked_list_length(st); i++)
+    {
+        symbol* symbol_p = linked_list_get(st, i);
+        if (symbol_p->type == EXTERNAL)
+        {
+            for (j = 0; j < linked_list_length(symbol_p->instructions_using_me); j++)
+            {
+                fprintf(file, "%s %04lu\n", symbol_p->name, *((unsigned long*) linked_list_get(symbol_p->instructions_using_me, j)));
+            }
+        }
+    }
+
+    free(new_file_name);
+    return FILE_WRITER_OK;
+}
+
 file_writer_status write_entries_file(char* original_file_name, symbols_table st)
 {
     int i;
