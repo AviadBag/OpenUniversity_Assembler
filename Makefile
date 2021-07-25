@@ -30,3 +30,4 @@ ${BIN}/${EXECUTABLE}: ${SOURCES} ${HEADERS}
 clean:
 	rm -f ${BIN}/*
 	rm -rf ${DOXYGEN_OUTPUT}
+	rm -f *.ob *.ext *.ent
