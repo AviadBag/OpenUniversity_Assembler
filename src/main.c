@@ -8,8 +8,8 @@
 #include "linked_list.h"
 #include "symbol.h"
 #include "boolean.h"
-#include "walk.h"
 #include "second_walk.h"
+#include "file_writer.h"
 
 #define DESIRED_INPUT_FILE_EXT "as"
 
