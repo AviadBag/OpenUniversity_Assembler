@@ -22,6 +22,6 @@
  * @param icf_p           A pointer to where to store the icf after the second walk.
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_IO_ERROR or WALK_PROBLEM_WITH_CODE or WALK_OK.
  */
-walk_status second_walk(char* file_name, symbols_table *symbols_table_p, unsigned char **data_image, int *dcf_p, unsigned char **code_image, int *icf_p);
+walk_status second_walk(char* file_name, symbols_table *symbols_table_p, unsigned char **data_image, unsigned long *dcf_p, unsigned char **code_image, unsigned long *icf_p);
 
 #endif

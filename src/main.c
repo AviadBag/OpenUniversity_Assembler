@@ -79,7 +79,8 @@ void compile(char *file_name)
 {
     symbols_table st;
     unsigned char *code_image, *data_image;
-    int dcf, icf, i;
+    unsigned long dcf, icf;
+    int i;
     walk_status fw_status;
     walk_status sw_status;
 

@@ -61,7 +61,7 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
  * @param dc_p         A pointer to the DCF.
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-walk_status handle_define_directive(command cmd, unsigned char **data_image, int *dc_p)
+walk_status handle_define_directive(command cmd, unsigned char **data_image, unsigned long *dc_p)
 {
     int size, i;
     switch (cmd.command_name[1]) /* 'b' for byte, 'h' for half, 'w' for word */
@@ -90,7 +90,7 @@ walk_status handle_define_directive(command cmd, unsigned char **data_image, int
         long num = strtol(operand, 0, 10);
         put_in_char_array(*data_image, num, size, *dc_p);
 
-        *dcf_p += size;
+        *dc_p += size;
     }
 
     return WALK_OK;
@@ -104,7 +104,7 @@ walk_status handle_define_directive(command cmd, unsigned char **data_image, int
  * @param dc_p         A pointer to the DCF.
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-walk_status handle_asciz_directive(command cmd, unsigned char **data_image, int *dc_p)
+walk_status handle_asciz_directive(command cmd, unsigned char **data_image, unsigned long *dc_p)
 {
     int count = strlen(cmd.operands[0]) - 2; /* Dont include the quotes */
     int i;
@@ -131,7 +131,7 @@ walk_status handle_asciz_directive(command cmd, unsigned char **data_image, int 
  * @param line            On what line is this label?
  * @return walk_status    WALK_PROBLEM_WITH_CODE or WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-static walk_status handle_directive(command cmd, unsigned char **data_image, int *dc_p, symbols_table *symbols_table_p, int line)
+static walk_status handle_directive(command cmd, unsigned char **data_image, unsigned long *dc_p, symbols_table *symbols_table_p, int line)
 {
     if (strcmp(cmd.command_name, "entry") == 0)
         return handle_entry_directive(cmd, symbols_table_p, line);
@@ -154,7 +154,7 @@ static walk_status handle_directive(command cmd, unsigned char **data_image, int
  * @param st           The symbol table.
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_PROBLEM_WITH_CODE or WALK_OK.
  */
-walk_status add_instruction_to_externs_table(command cmd, int ic, symbols_table st)
+walk_status add_instruction_to_externs_table(command cmd, unsigned long ic, symbols_table st)
 {
     instruction* inst;
     char* label_name;
@@ -198,7 +198,7 @@ walk_status add_instruction_to_externs_table(command cmd, int ic, symbols_table 
  * @param line         On what line this instruction is?
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_PROBLEM_WITH_CODE or WALK_OK.
  */
-walk_status handle_instruction(command cmd, symbols_table st, unsigned char **code_image, int *ic_p, int line)
+walk_status handle_instruction(command cmd, symbols_table st, unsigned char **code_image, unsigned long *ic_p, int line)
 {
     machine_instruction m;
     walk_status status;
@@ -219,7 +219,7 @@ walk_status handle_instruction(command cmd, symbols_table st, unsigned char **co
     return status;
 }
 
-walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigned char **data_image, int *dcf_p, unsigned char **code_image, int *icf_p)
+walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigned char **data_image, unsigned long *dcf_p, unsigned char **code_image, unsigned long *icf_p)
 {
     FILE *file;
     command cmd;
