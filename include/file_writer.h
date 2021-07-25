@@ -21,7 +21,7 @@ typedef enum e_file_writer_status
  * @param icf_p               The ICF
  * @return file_writer_status FILE_WRITER_IO_ERROR or FILE_WRITER_OK.
  */
-file_writer_status write_object_file(char* original_file_name, unsigned char *data_image, unsigned long *dcf_p, unsigned char code_image, unsigned long icf_p);
+file_writer_status write_object_file(char* original_file_name, unsigned char *data_image, unsigned long dcf, unsigned char *code_image, unsigned long icf);
 
 /**
  * @brief Creates an entries files.
