@@ -203,16 +203,19 @@ walk_status handle_instruction(command cmd, symbols_table st, unsigned char **co
     machine_instruction m;
     walk_status status;
     translator_status t_status;
+    int index; /* The index in the code image, IN BYTES */
+
+    index = *ic_p - IC_DEFAULT_VALUE;
 
     t_status = translator_translate(cmd, st, *ic_p, line, &m);
     if (t_status != TRANSLATOR_OK)
         return WALK_PROBLEM_WITH_CODE; /* Do not need to log; The translator already logged. */
 
     /* Is the buffer big enough? */
-    while (*ic_p + sizeof(machine_instruction) > code_image_max_size)
+    while (index + sizeof(machine_instruction) > code_image_max_size)
         REALLOC(*code_image, code_image_max_size);
 
-    ((machine_instruction*) (*code_image))[*ic_p / sizeof(machine_instruction)] = m;
+    ((machine_instruction*) (*code_image))[index / sizeof(machine_instruction)] = m;
     status = add_instruction_to_externs_table(cmd, *ic_p, st);
     *ic_p += INSTRUCTION_SIZE;
 

@@ -105,17 +105,17 @@ file_writer_status write_object_file(char* original_file_name, unsigned char *da
     fprintf(file, "%lu %lu\n", icf - IC_DEFAULT_VALUE, dcf);
 
     /* Write code image */
-    for (i = IC_DEFAULT_VALUE; i < icf; i++)
+    for (i = 0; i < icf - IC_DEFAULT_VALUE; i++)
     {
         if ((i + 1) % 4 == 1)
-            fprintf(file, "%04lu ", i); /* Print the adderss only with the first in the row */
+            fprintf(file, "%04lu ", i + IC_DEFAULT_VALUE); /* Print the adderss only with the first in the row */
         fprintf(file, "%-2.2X ", code_image[i]);
         if ((i + 1) % 4 == 0)
             fprintf(file, "\n");
     }
 
     /* Write data image */
-    for (i = DC_DEFAULT_VALUE; i < dcf; i++)
+    for (i = 0; i < dcf; i++)
     {
         if ((i + 1) % 4 == 1)
             fprintf(file, "%04lu ", icf + i); /* Print the adderss only with the first in the row */
