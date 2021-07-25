@@ -29,47 +29,6 @@ boolean has_legal_extension(char *file_name)
     return strcmp(dot, DESIRED_INPUT_FILE_EXT) == 0;
 }
 
-void print_symbol(void *data)
-{
-    int i;
-    symbol *s = (symbol *)(data);
-    printf("Symbol name: %s", s->name);
-    printf(", Symbol type: ");
-    switch (s->type)
-    {
-    case CODE:
-        printf("CODE");
-        break;
-    case DATA:
-        printf("DATA");
-        break;
-    case EXTERNAL:
-        printf("EXTERNAL");
-        break;
-    }
-    printf(", symbol value: %lu", s->value);
-    printf(", symbol is %s", s->is_entry ? "entry" : "not entry");
-
-    for (i = 0; i < linked_list_length(s->instructions_using_me); i++)
-    {
-        if (i == 0)
-            printf(", Instructions Using Me: %lu", *((unsigned long *)linked_list_get(s->instructions_using_me, i)));
-        else
-            printf(", %lu", *((unsigned long *)linked_list_get(s->instructions_using_me, i)));
-    }
-
-    printf("\n");
-}
-
-void print_symbols_table(symbols_table st)
-{
-    int i;
-    for (i = 0; i < linked_list_length(st); i++)
-    {
-        print_symbol(linked_list_get(st, i));
-    }
-}
-
 /**
  * @brief Compiles the given assembly file.
  * 
@@ -106,8 +65,6 @@ void compile(char *file_name)
     }
     if (sw_status != WALK_OK) /* If it another error, I already logged it */
         return;
-
-    print_symbols_table(st);
 
     if (write_entries_file(file_name, st) != FILE_WRITER_OK || write_externals_file(file_name, st) != FILE_WRITER_OK || write_object_file(file_name, data_image, dcf, code_image, icf) != FILE_WRITER_OK)
         return;
