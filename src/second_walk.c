@@ -56,12 +56,12 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
 /**
  * @brief Handles the given "define" directive. ('db' or 'dh' or 'dw').
  *  
- * @param cmd        The "define" directive. MUST BE VALIDATED.
- * @param data_image A pointer to where to put the address of the data image, already containing a data image.
- * @param line       On what line is this label?
+ * @param cmd          The "define" directive. MUST BE VALIDATED.
+ * @param data_image   A pointer to where to put the address of the data image, already containing a data image.
+ * @param dc_p         A pointer to the DCF.
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-walk_status handle_define_directive(command cmd, unsigned char **data_image, int *dcf_p)
+walk_status handle_define_directive(command cmd, unsigned char **data_image, int *dc_p)
 {
     int size, i;
     switch (cmd.command_name[1]) /* 'b' for byte, 'h' for half, 'w' for word */
@@ -80,7 +80,7 @@ walk_status handle_define_directive(command cmd, unsigned char **data_image, int
     }
 
     /* Make sure that the buffer is big enough */
-    while (*dcf_p + size * cmd.number_of_operands > data_image_max_size)
+    while (*dc_p + size * cmd.number_of_operands > data_image_max_size)
         REALLOC(*data_image, data_image_max_size);
 
     /* Do each operand */
@@ -88,7 +88,7 @@ walk_status handle_define_directive(command cmd, unsigned char **data_image, int
     {
         char *operand = cmd.operands[i];
         long num = strtol(operand, 0, 10);
-        put_in_char_array(*data_image, num, size, *dcf_p);
+        put_in_char_array(*data_image, num, size, *dc_p);
 
         *dcf_p += size;
     }
@@ -99,24 +99,24 @@ walk_status handle_define_directive(command cmd, unsigned char **data_image, int
 /**
  * @brief Handles the given "asciz" directive.
  *  
- * @param cmd        The "asciz" directive. MUST BE VALIDATED.
- * @param data_image A pointer to where to put the address of the data image, already containing a data image.
- * @param line       On what line is this label?
+ * @param cmd          The "asciz" directive. MUST BE VALIDATED.
+ * @param data_image   A pointer to where to put the address of the data image, already containing a data image.
+ * @param dc_p         A pointer to the DCF.
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-walk_status handle_asciz_directive(command cmd, unsigned char **data_image, int *dcf_p)
+walk_status handle_asciz_directive(command cmd, unsigned char **data_image, int *dc_p)
 {
     int count = strlen(cmd.operands[0]) - 2; /* Dont include the quotes */
     int i;
 
     /* Is the buffer big enough? */
-    while (*dcf_p + count > data_image_max_size)
+    while (*dc_p + count > data_image_max_size)
         REALLOC(*data_image, data_image_max_size);
 
     for (i = 0; i < count; i++)
-        (*data_image)[(*dcf_p)++] = (unsigned char)cmd.operands[0][i + 1]; /* +1 Because [0] contains the first quote. */
+        (*data_image)[(*dc_p)++] = (unsigned char)cmd.operands[0][i + 1]; /* +1 Because [0] contains the first quote. */
 
-    (*data_image)[(*dcf_p)++] = '\0';
+    (*data_image)[(*dc_p)++] = '\0';
 
     return WALK_OK;
 }
@@ -126,19 +126,19 @@ walk_status handle_asciz_directive(command cmd, unsigned char **data_image, int 
  * 
  * @param cmd             The directive. MUST BE VALIDATED.
  * @param data_image      A pointer to where to put the address of the data image.
- * @param dcf_p           A pointer to the DCF.
+ * @param dc_p            A pointer to the DC.
  * @param symbols_table_p A pointer to the symbols table.
  * @param line            On what line is this label?
  * @return walk_status    WALK_PROBLEM_WITH_CODE or WALK_NOT_ENOUGH_MEMORY or WALK_OK
  */
-static walk_status handle_directive(command cmd, unsigned char **data_image, int *dcf_p, symbols_table *symbols_table_p, int line)
+static walk_status handle_directive(command cmd, unsigned char **data_image, int *dc_p, symbols_table *symbols_table_p, int line)
 {
     if (strcmp(cmd.command_name, "entry") == 0)
         return handle_entry_directive(cmd, symbols_table_p, line);
     else if (*cmd.command_name == 'd') /* 'db' or 'dh' or 'dw'. */
-        return handle_define_directive(cmd, data_image, dcf_p);
+        return handle_define_directive(cmd, data_image, dc_p);
     else if (strcmp(cmd.command_name, "asciz") == 0)
-        return handle_asciz_directive(cmd, data_image, dcf_p);
+        return handle_asciz_directive(cmd, data_image, dc_p);
     else if (strcmp(cmd.command_name, "extern") == 0)
         return WALK_OK; /* There is nothing to do; The first walk already treated this case */
 
@@ -194,27 +194,27 @@ walk_status add_instruction_to_externs_table(command cmd, int ic, symbols_table 
  * @param cmd          The directive. MUST BE VALIDATED.
  * @param st           The symbols table.
  * @param code_image   A pointer to where to put the address of the code image.
- * @param dcf_p        A pointer to the DCF.
- * @param line                 On what line this instruction is?
+ * @param dc_p         A pointer to the DC.
+ * @param line         On what line this instruction is?
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_PROBLEM_WITH_CODE or WALK_OK.
  */
-walk_status handle_instruction(command cmd, symbols_table st, unsigned char **code_image, int *icf_p, int line)
+walk_status handle_instruction(command cmd, symbols_table st, unsigned char **code_image, int *ic_p, int line)
 {
     machine_instruction m;
     walk_status status;
     translator_status t_status;
 
-    t_status = translator_translate(cmd, st, *icf_p, line, &m);
+    t_status = translator_translate(cmd, st, *ic_p, line, &m);
     if (t_status != TRANSLATOR_OK)
         return WALK_PROBLEM_WITH_CODE; /* Do not need to log; The translator already logged. */
 
     /* Is the buffer big enough? */
-    while (*icf_p + sizeof(machine_instruction) > code_image_max_size)
+    while (*ic_p + sizeof(machine_instruction) > code_image_max_size)
         REALLOC(*code_image, code_image_max_size);
 
-    ((machine_instruction*) (*code_image))[*icf_p / sizeof(machine_instruction)] = m;
-    status = add_instruction_to_externs_table(cmd, *icf_p, st);
-    *icf_p += INSTRUCTION_SIZE;
+    ((machine_instruction*) (*code_image))[*ic_p / sizeof(machine_instruction)] = m;
+    status = add_instruction_to_externs_table(cmd, *ic_p, st);
+    *ic_p += INSTRUCTION_SIZE;
 
     return status;
 }
