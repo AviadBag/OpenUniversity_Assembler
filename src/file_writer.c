@@ -1,6 +1,7 @@
 #include "file_writer.h"
 #include "linked_list.h"
 #include "symbol.h"
+#include "walk.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -83,6 +84,44 @@ file_writer_status write_entries_file(char* original_file_name, symbols_table st
         {
             fprintf(file, "%s %04lu\n", symbol_p->name, symbol_p->value);
         }
+    }
+
+    free(new_file_name);
+    return FILE_WRITER_OK;
+}
+
+file_writer_status write_object_file(char* original_file_name, unsigned char *data_image, unsigned long dcf, unsigned char *code_image, unsigned long icf)
+{
+    unsigned long i;
+    char* new_file_name = change_extension(original_file_name, OBJECT_EXT);
+    FILE* file = fopen(new_file_name, "w");
+    if (!file)
+    {
+        printf("Error: Cannot open file \"%s\". Skipping.\n", new_file_name);
+        return FILE_WRITER_IO_ERROR;
+    }
+
+    /* Write ICF and DCF */
+    fprintf(file, "%lu %lu\n", icf - IC_DEFAULT_VALUE, dcf);
+
+    /* Write code image */
+    for (i = IC_DEFAULT_VALUE; i < icf; i++)
+    {
+        if ((i + 1) % 4 == 1)
+            fprintf(file, "%04lu ", i); /* Print the adderss only with the first in the row */
+        fprintf(file, "%-2.2X ", code_image[i]);
+        if ((i + 1) % 4 == 0)
+            fprintf(file, "\n");
+    }
+
+    /* Write data image */
+    for (i = DC_DEFAULT_VALUE; i < dcf; i++)
+    {
+        if ((i + 1) % 4 == 1)
+            fprintf(file, "%04lu ", icf + i); /* Print the adderss only with the first in the row */
+        fprintf(file, "%-2.2X ", data_image[i]);
+        if ((i + 1) % 4 == 0)
+            fprintf(file, "\n");
     }
 
     free(new_file_name);

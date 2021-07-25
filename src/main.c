@@ -80,7 +80,6 @@ void compile(char *file_name)
     symbols_table st;
     unsigned char *code_image, *data_image;
     unsigned long dcf, icf;
-    int i;
     walk_status fw_status;
     walk_status sw_status;
 
@@ -110,23 +109,7 @@ void compile(char *file_name)
 
     print_symbols_table(st);
 
-    for (i = IC_DEFAULT_VALUE; i < icf; i++)
-    {
-        printf("%-2.2X ", code_image[i]);
-        if ((i + 1) % 4 == 0)
-            printf("\n");
-    }
-    printf("\n");
-
-    for (i = DC_DEFAULT_VALUE; i < dcf; i++)
-    {
-        printf("%-2.2X ", data_image[i]);
-        if ((i + 1) % 4 == 0)
-            printf("\n");
-    }
-    printf("\n");
-
-    if (write_entries_file(file_name, st) != FILE_WRITER_OK || write_externals_file(file_name, st) != FILE_WRITER_OK)
+    if (write_entries_file(file_name, st) != FILE_WRITER_OK || write_externals_file(file_name, st) != FILE_WRITER_OK || write_object_file(file_name, data_image, dcf, code_image, icf) != FILE_WRITER_OK)
         return;
 
     /* Clean up */
