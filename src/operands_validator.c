@@ -20,6 +20,29 @@
 #define BITS_PER_BYTE 8
 
 /**
+ * @brief Returnes the required number of operands for the the given command.
+ * 
+ * @param command  The command. MUST EXIST.
+ * @return int     The required number of operands.
+ */
+int get_required_number_of_operands(command cmd)
+{
+    instruction* inst;
+    directive* dir;
+
+    if (cmd.type == INSTRUCTION)
+    {
+        instructions_table_get_instruction(cmd.command_name, &inst);
+        return inst->number_of_operands;
+    }
+    else /* A directive */
+    {
+        directives_table_get_directive(cmd.command_name, &dir);
+        return dir->number_of_operands;
+    }
+}
+
+/**
  * Checks if the operands length of the given command is valid.
  * @param cmd  The commnad to check. The command name must exist.
  * @param line On what line these operands are?
@@ -27,20 +50,7 @@
  */
 validator_status validate_operands_length(command cmd, int line)
 {
-    instruction* inst;
-    directive* dir;
-    int required_number_of_operands;
-
-    if (cmd.type == INSTRUCTION)
-    {
-        instructions_table_get_instruction(cmd.command_name, &inst);
-        required_number_of_operands = inst->number_of_operands;
-    }
-    else /* Directive */
-    {
-        directives_table_get_directive(cmd.command_name, &dir);
-        required_number_of_operands = dir->number_of_operands;
-    }
+    int required_number_of_operands = get_required_number_of_operands(cmd);
 
     if (required_number_of_operands == DT_INFINITY)
     {
@@ -234,7 +244,7 @@ validator_status validate_operand_type(char* operand, operand_type type, int lin
 validator_status validate_operands_type(command cmd, int line)
 {
     operand_type* operands_types;
-    int i;
+    int i, required_number_of_operands = get_required_number_of_operands(cmd);
     validator_status status;
 
     /* First, We will have to get the operands types */
@@ -243,7 +253,7 @@ validator_status validate_operands_type(command cmd, int line)
     /* Now, check every operand */
     for (i = 0; i < cmd.number_of_operands; i++)
     {
-        if ((status = validate_operand_type(cmd.operands[i], operands_types[i], line)) != VALIDATOR_OK)
+        if ((status = validate_operand_type(cmd.operands[i], required_number_of_operands == DT_INFINITY ? operands_types[0] : operands_types[i], line)) != VALIDATOR_OK)
             return status;
     }
 

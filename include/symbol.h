@@ -21,7 +21,7 @@ typedef struct s_symbol
     symbol_type type;                  /**< The type of the symbol */
     unsigned long value;               /**< The address of the symbol */
     boolean is_entry;                  /**< Is this symbol defined as entry? */
-    linked_list instructions_using_me; /**< What instructions are using me? ONLY USED WHEN type=EXTERNAL */
+    linked_list instructions_using_me; /**< What instructions are using me (Type is like value's type)? ONLY USED WHEN type=EXTERNAL */
 } symbol;
 
 #endif
