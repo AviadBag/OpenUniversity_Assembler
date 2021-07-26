@@ -37,10 +37,17 @@ linked_list linked_list_create();
 linked_list_status linked_list_append(linked_list *d, void *data);
 
 /**
- * Releases the memory taken by the given linked_list. (Doesn't realese the data.)
+ * Free's the memory taken by the given linked_list. (Doesn't realese the data.)
  * @param l The linked_list to realese.
  */
 void linked_list_free(linked_list l);
+
+/**
+ * @brief Free's the elements inside of the array. (Runs free() on everyone of them).
+ * 
+ * @param l The linked list to release it's elements.
+ */
+void linked_list_free_elements(linked_list l);
 
 /**
  * @brief Returns the length of the given linked list
