@@ -130,11 +130,12 @@ validator_status validate_register_operand(char* operand, int line)
 
     /* Make sure that the register name is valid */
     operand++; /* Point to the register number itself */
-    if (sscanf(operand, "%d", &register_value) != 1)
+    if (!is_number(operand))
     {
         logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "The register value must be a number");
         return VALIDATOR_INVALID;
     }
+    register_value = atoi(operand);
 
     if (register_value < FIRST_REGISTER || register_value > LAST_REGISTER)
     {
