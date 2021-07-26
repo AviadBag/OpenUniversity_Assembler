@@ -52,6 +52,15 @@ void linked_list_free(node *nod)
     }
 }
 
+void linked_list_free_elements(node *nod) 
+{
+    while (nod != NULL)
+    {
+        free(nod->data);
+        nod = nod->next;
+    }
+}
+
 int linked_list_length(node* nod)
 {
     int count = 0;

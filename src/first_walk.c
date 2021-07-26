@@ -6,6 +6,7 @@
 #include "boolean.h"
 #include "walk.h"
 #include "utils.h"
+#include "command.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -192,6 +193,7 @@ static walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
             final_status = put_symbol_status;
 
         next_counter(&pc, &dc, cmd);
+        free_command(cmd);
     }
 
     /* Update the data symbols' values to be AFTER the code */

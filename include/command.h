@@ -39,4 +39,11 @@ char* command_type_to_string(command_type type);
  */
 boolean command_has_label(command cmd);
 
+/**
+ * @brief Frees the command's allocated memory. (Some of the command's fields are dynamically allocated..)
+ * 
+ * @param cmd The command to free.
+ */
+void free_command(command cmd);
+
 #endif

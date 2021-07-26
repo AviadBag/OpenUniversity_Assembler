@@ -70,7 +70,7 @@ void compile(char *file_name)
         return;
 
     /* Clean up */
-    linked_list_free(st);
+    free_symbols_table(st);
     free(data_image);
     free(code_image);
 }

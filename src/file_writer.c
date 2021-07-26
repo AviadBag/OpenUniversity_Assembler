@@ -63,6 +63,8 @@ file_writer_status write_externals_file(char* original_file_name, symbols_table 
     }
 
     free(new_file_name);
+    fclose(file);
+    
     return FILE_WRITER_OK;
 }
 
@@ -87,6 +89,8 @@ file_writer_status write_entries_file(char* original_file_name, symbols_table st
     }
 
     free(new_file_name);
+    fclose(file);
+
     return FILE_WRITER_OK;
 }
 
@@ -125,5 +129,7 @@ file_writer_status write_object_file(char* original_file_name, unsigned char *da
     }
 
     free(new_file_name);
+    fclose(file);
+
     return FILE_WRITER_OK;
 }

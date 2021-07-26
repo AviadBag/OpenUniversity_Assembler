@@ -2,6 +2,8 @@
 #include "parser.h"
 #include "validator.h"
 #include "logger.h"
+#include "linked_list.h"
+#include "symbol.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -114,4 +116,18 @@ read_line:
     }
 
     return WALK_OK;
+}
+
+void free_symbols_table(symbols_table st) 
+{
+    int i;
+    for (i = 0; i < linked_list_length(st); i++)
+    {
+        symbol* symbol_t = linked_list_get(st, i);
+        linked_list_free_elements(symbol_t->instructions_using_me);
+        linked_list_free(symbol_t->instructions_using_me);
+    }
+
+    linked_list_free_elements(st);
+    linked_list_free(st);
 }

@@ -51,4 +51,12 @@ void next_counter(unsigned long *pc, unsigned long *dc, command cmd);
  */
 walk_status get_next_command(FILE* f, command* cmd, int line_number, boolean validate);
 
+/**
+ * @brief Frees the memory allocated in the symbols table by the both walks. 
+ *        MSUT ONLY BE CALLED AFTER BOTH OF THE CALLS WERE DONE!
+ * 
+ * @param st The symbols table.
+ */
+void free_symbols_table(symbols_table st);
+
 #endif 
