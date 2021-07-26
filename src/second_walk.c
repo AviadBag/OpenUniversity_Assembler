@@ -266,6 +266,8 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
             if ((status = handle_instruction(cmd, *symbols_table_p, code_image, icf_p, line_number)) != WALK_OK)
                 return status;
         }
+
+        free_command(cmd);
     }
 
     return WALK_OK;
