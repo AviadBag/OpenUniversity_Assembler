@@ -23,6 +23,11 @@ typedef struct s_command
     int number_of_operands;           /**< The length of the operands array */
     char *command_name;               /**< The name of the command (For example - "addi") */
     char label[LABEL_MAX_LENGTH + 1]; /**< The label of that line; Empty string if there is no label. */
+
+    /**< The parser might exit early, with errors. These variables indicate what memory was allready allocated and needs
+     *   to be freed, and what should not be freed - because it was never allocated */
+    boolean operands_array_allocated, command_name_allocated;
+    int number_of_operands_allocated;
 } command;
 
 /**
