@@ -24,8 +24,8 @@ void free_command(command cmd)
 {
     int i;
 
-    free(cmd.command_name);
-    for (i = 0; i < cmd.number_of_operands; i++)
+    if (cmd.command_name_allocated) free(cmd.command_name);
+    for (i = 0; i < cmd.number_of_operands_allocated; i++)
         free(cmd.operands[i]);
-    free(cmd.operands);
+    if (cmd.operands_array_allocated) free(cmd.operands);
 }
