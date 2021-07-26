@@ -270,5 +270,6 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
         free_command(cmd);
     }
 
+    fclose(file);
     return WALK_OK;
 }
