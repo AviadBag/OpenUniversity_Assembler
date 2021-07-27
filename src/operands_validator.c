@@ -6,7 +6,6 @@
 #include "utils.h"
 
 #include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <errno.h>
