@@ -235,7 +235,7 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
     /* Initialize data image and code image */
     *data_image = malloc(BUFFER_MIN_SIZE);
     *code_image = malloc(BUFFER_MIN_SIZE);
-    if (!data_image || !code_image)
+    if (!*data_image || !*code_image)
         return WALK_NOT_ENOUGH_MEMORY;
     code_image_max_size = data_image_max_size = BUFFER_MIN_SIZE;
 
