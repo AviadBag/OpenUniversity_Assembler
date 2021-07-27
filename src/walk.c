@@ -9,7 +9,7 @@
 #include <string.h>
 
 #define WALK "Walk"
-#define PROBLEM_WITH_CODE "PromblemWithCode"
+#define PROBLEM_WITH_CODE "ProblemWithCode"
 
 /**
  * @brief This method reads the next line from file. Every line must be at most LINE_MAX_LENGTH chars.
