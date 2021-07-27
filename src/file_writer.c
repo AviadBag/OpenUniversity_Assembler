@@ -44,6 +44,8 @@ file_writer_status write_externals_file(char* original_file_name, symbols_table 
 {
     int i, j;
     char* new_file_name = change_extension(original_file_name, EXTERNALS_EXT);
+    if (!new_file_name)
+        return FILE_WRITER_NOT_ENOUGH_MEMORY;
     FILE* file = fopen(new_file_name, "w");
     if (!file)
     {
@@ -73,6 +75,8 @@ file_writer_status write_entries_file(char* original_file_name, symbols_table st
 {
     int i;
     char* new_file_name = change_extension(original_file_name, ENTRIES_EXT);
+    if (!new_file_name)
+        return FILE_WRITER_NOT_ENOUGH_MEMORY;
     FILE* file = fopen(new_file_name, "w");
     if (!file)
     {
@@ -99,6 +103,8 @@ file_writer_status write_object_file(char* original_file_name, unsigned char *da
 {
     unsigned long i;
     char* new_file_name = change_extension(original_file_name, OBJECT_EXT);
+    if (!new_file_name)
+        return FILE_WRITER_NOT_ENOUGH_MEMORY;
     FILE* file = fopen(new_file_name, "w");
     if (!file)
     {
