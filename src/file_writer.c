@@ -16,7 +16,7 @@
 #define FILE_WRITER_PROLOGUE(original_file_name, new_ext) { \
     new_file_name = change_extension(original_file_name, new_ext); \
     if (!new_file_name) \
-    return FILE_WRITER_NOT_ENOUGH_MEMORY; \
+        return FILE_WRITER_NOT_ENOUGH_MEMORY; \
     file = fopen(new_file_name, "w"); \
     if (!file) \
     { \
