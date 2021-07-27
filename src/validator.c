@@ -3,7 +3,6 @@
 #include "instructions_table.h"
 #include "directives_table.h"
 #include "str_helper.h"
-#include "boolean.h"
 #include "operands_validator.h"
 #include "logger.h"
 #include <ctype.h>
