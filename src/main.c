@@ -1,12 +1,8 @@
-#include "linked_list.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 #include "first_walk.h"
-#include "linked_list.h"
-#include "symbol.h"
 #include "boolean.h"
 #include "second_walk.h"
 #include "file_writer.h"
