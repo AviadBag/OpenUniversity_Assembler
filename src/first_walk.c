@@ -70,6 +70,7 @@ static walk_status put_extern_symbol(command cmd, symbols_table *symbols_table_p
     symbol_t = malloc(sizeof(symbol));
     if (!symbol_t)
         return WALK_NOT_ENOUGH_MEMORY;
+    memset(symbol_t, 0, sizeof(symbol));
 
     symbol_t->is_entry = false;
     symbol_t->type = EXTERNAL;
@@ -118,6 +119,7 @@ static walk_status put_label_symbol(command cmd, symbols_table *symbols_table_p,
     symbol_t = malloc(sizeof(symbol));
     if (!symbol_t)
         return WALK_NOT_ENOUGH_MEMORY;
+    memset(symbol_t, 0, sizeof(symbol));
 
     symbol_t->is_entry = false; /* Will be filled during the second walk */
     symbol_t->type = (cmd.type == INSTRUCTION) ? CODE : DATA;

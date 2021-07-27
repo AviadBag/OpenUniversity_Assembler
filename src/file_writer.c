@@ -30,6 +30,7 @@ char* change_extension(char* original_file_name, char* new_ext)
     char* new_file_name = (char*) malloc(new_file_name_length + 1);
     if (!new_file_name)
         return NULL;
+    memset(new_file_name, 0, new_file_name_length + 1);
 
     strncpy(new_file_name, original_file_name, new_file_name_length);
     dot = strrchr(new_file_name, '.');
