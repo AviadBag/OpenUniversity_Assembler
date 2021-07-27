@@ -44,9 +44,10 @@ file_writer_status write_externals_file(char* original_file_name, symbols_table 
 {
     int i, j;
     char* new_file_name = change_extension(original_file_name, EXTERNALS_EXT);
+    FILE* file;
     if (!new_file_name)
         return FILE_WRITER_NOT_ENOUGH_MEMORY;
-    FILE* file = fopen(new_file_name, "w");
+    file = fopen(new_file_name, "w");
     if (!file)
     {
         printf("Error: Cannot open file \"%s\". Skipping.\n", new_file_name);
@@ -76,9 +77,10 @@ file_writer_status write_entries_file(char* original_file_name, symbols_table st
 {
     int i;
     char* new_file_name = change_extension(original_file_name, ENTRIES_EXT);
+    FILE* file;
     if (!new_file_name)
         return FILE_WRITER_NOT_ENOUGH_MEMORY;
-    FILE* file = fopen(new_file_name, "w");
+    file = fopen(new_file_name, "w");
     if (!file)
     {
         printf("Error: Cannot open file \"%s\". Skipping.\n", new_file_name);
@@ -104,10 +106,11 @@ file_writer_status write_entries_file(char* original_file_name, symbols_table st
 file_writer_status write_object_file(char* original_file_name, unsigned char *data_image, unsigned long dcf, unsigned char *code_image, unsigned long icf)
 {
     unsigned long i;
+    FILE* file;
     char* new_file_name = change_extension(original_file_name, OBJECT_EXT);
     if (!new_file_name)
         return FILE_WRITER_NOT_ENOUGH_MEMORY;
-    FILE* file = fopen(new_file_name, "r");
+    file = fopen(new_file_name, "r");
     if (!file)
     {
         printf("Error: Cannot open file \"%s\". Skipping.\n", new_file_name);
