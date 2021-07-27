@@ -45,11 +45,11 @@ void next_counter(unsigned long *pc, unsigned long *dc, command cmd);
  * 
  * @param f              The file to read from. Returns WALK_EOF when reaching EOF.
  * @param cmd            A pointer to where to insert the command into.
- * @param line           What line is it?
+ * @param line           A pointer to what line is it. Will be automatically incremented. MUST BE 0 ON THE FIRST CALL!
  * @param validate       Should I validate this command as well?
  * @return walk_status - WALK_NOT_ENOUGH_MEMORY or WALK_PROBLEM_WITH_CODE or WALK_EOF or WALK_OK. If the returned value is not WALK_OK, then DON'T use cmd. It is invalid.
  */
-walk_status get_next_command(FILE* f, command* cmd, int line_number, boolean validate);
+walk_status get_next_command(FILE* f, command* cmd, int* line_number, boolean validate);
 
 /**
  * @brief Frees the memory allocated in the symbols table by the both walks. 
