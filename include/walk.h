@@ -59,4 +59,4 @@ walk_status get_next_command(FILE* f, command* cmd, int line_number, boolean val
  */
 void free_symbols_table(symbols_table st);
 
-#endif 
+#endif

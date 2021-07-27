@@ -186,7 +186,10 @@ walk_status add_instruction_to_externs_table(command cmd, unsigned long ic, symb
     value_p = malloc(sizeof(unsigned long));
     *value_p = ic;
     if (linked_list_append(&symbol_p->instructions_using_me, value_p) == LINKED_LIST_NOT_ENOUGH_MEMORY)
+    {
+        free(value_p);
         return WALK_NOT_ENOUGH_MEMORY;
+    }
 
     return WALK_OK;
 }

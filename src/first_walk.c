@@ -127,11 +127,15 @@ static walk_status put_label_symbol(command cmd, symbols_table *symbols_table_p,
     if (find_symbol(symbol_t->name, *symbols_table_p) != NULL)
     {
         logger_log(FIRST_WALK, PROBLEM_WITH_CODE, line, "Label \"%s\" was already defined", symbol_t->name);
+        free(symbol_t);
         return WALK_PROBLEM_WITH_CODE;
     }
 
     if (linked_list_append(symbols_table_p, symbol_t) == LINKED_LIST_NOT_ENOUGH_MEMORY)
+    {
+        free(symbol_t);
         return WALK_NOT_ENOUGH_MEMORY;
+    }
 
     return WALK_OK;
 }
