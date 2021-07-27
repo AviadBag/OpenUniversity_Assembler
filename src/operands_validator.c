@@ -19,6 +19,9 @@
 
 #define BITS_PER_BYTE 8
 
+#define REGISTER_STR_MIN_LENGTH 2
+#define REGISTER_STR_MAX_LENGTH 3
+
 /**
  * @brief Returnes the required number of operands for the the given command.
  * 
@@ -122,7 +125,7 @@ validator_status validate_register_operand(char* operand, int line)
     }
 
     length = strlen(operand);
-    if (length < 2 || length > 3)
+    if (length < REGISTER_STR_MIN_LENGTH || length > REGISTER_STR_MAX_LENGTH)
     {
         logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "The register length must be between 2 and 3");
         return VALIDATOR_INVALID;

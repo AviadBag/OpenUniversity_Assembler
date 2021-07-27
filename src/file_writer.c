@@ -12,6 +12,8 @@
 #define EXTERNALS_EXT "ext"
 #define ENTRIES_EXT   "ent"
 
+#define OBJECT_FILE_BYTES_PER_LINE 4
+
 /* The prologue of every writer function - opens a new file */
 #define FILE_WRITER_PROLOGUE(original_file_name, new_ext) { \
     new_file_name = change_extension(original_file_name, new_ext); \
@@ -118,20 +120,20 @@ file_writer_status write_object_file(char* original_file_name, unsigned char *da
     /* Write code image */
     for (i = 0; i < icf - IC_DEFAULT_VALUE; i++)
     {
-        if ((i + 1) % 4 == 1)
+        if ((i + 1) % OBJECT_FILE_BYTES_PER_LINE == 1)
             fprintf(file, "%04lu ", i + IC_DEFAULT_VALUE); /* Print the adderss only with the first in the row */
         fprintf(file, "%-2.2X ", code_image[i]);
-        if ((i + 1) % 4 == 0)
+        if ((i + 1) % OBJECT_FILE_BYTES_PER_LINE == 0)
             fprintf(file, "\n");
     }
 
     /* Write data image */
     for (i = 0; i < dcf; i++)
     {
-        if ((i + 1) % 4 == 1)
+        if ((i + 1) % OBJECT_FILE_BYTES_PER_LINE == 1)
             fprintf(file, "%04lu ", icf + i); /* Print the adderss only with the first in the row */
         fprintf(file, "%-2.2X ", data_image[i]);
-        if ((i + 1) % 4 == 0)
+        if ((i + 1) % OBJECT_FILE_BYTES_PER_LINE == 0)
             fprintf(file, "\n");
     }
 
