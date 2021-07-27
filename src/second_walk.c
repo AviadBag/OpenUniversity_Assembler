@@ -254,7 +254,7 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
     }
 
     /* Start! */
-    while ((status = get_next_command(file, &cmd, ++line_number, false)) != WALK_EOF)
+    while ((status = get_next_command(file, &cmd, &line_number, false)) != WALK_EOF)
     {
         if (status == WALK_NOT_ENOUGH_MEMORY)
             return status;

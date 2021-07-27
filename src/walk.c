@@ -77,7 +77,7 @@ void next_counter(unsigned long *pc, unsigned long *dc, command cmd)
     }
 }
 
-walk_status get_next_command(FILE *f, command *cmd, int line_number, boolean validate)
+walk_status get_next_command(FILE *f, command *cmd, int* line_number, boolean validate)
 {
     char line[LINE_MAX_LENGTH + 1]; /* +1 for the last '\0'. */
     parser_status p_status;
@@ -85,16 +85,17 @@ walk_status get_next_command(FILE *f, command *cmd, int line_number, boolean val
     walk_status status;
 
 read_line:
+    (*line_number)++;
     status = read_next_line(f, line);
     if (status == WALK_PROBLEM_WITH_CODE)
     {
-        logger_log(WALK, PROBLEM_WITH_CODE, line_number, "A line must be at most %d chars, including whitespaces", LINE_MAX_LENGTH);
+        logger_log(WALK, PROBLEM_WITH_CODE, *line_number, "A line must be at most %d chars, including whitespaces", LINE_MAX_LENGTH);
         return WALK_PROBLEM_WITH_CODE;
     }
     else if (status == WALK_EOF)
         return status;
 
-    p_status = parser_parse(line, cmd, line_number);
+    p_status = parser_parse(line, cmd, *line_number);
     switch (p_status)
     {
     case PARSER_OVERFLOW:
@@ -114,7 +115,7 @@ read_line:
 
     if (validate)
     {
-        v_status = validator_validate(*cmd, line_number);
+        v_status = validator_validate(*cmd, *line_number);
         if (v_status == VALIDATOR_INVALID)
         {
             free_command(*cmd);
