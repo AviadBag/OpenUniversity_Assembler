@@ -16,9 +16,9 @@
  * 
  * @param file_name       The name of the input file.
  * @param symbols_table_p A pointer to the given symbols table. For every extern symbol, st->instructions_using_me shuold be freed using linked_list_free, and it's items should be freed.
- * @param data_image      A pointer to where to put the address of the data image. SHOULD BE FREED AFTER USAGE.
+ * @param data_image      A pointer to where to put the address of the data image. SHOULD BE FREED AFTER USAGE, unless it is NULL.
  * @param dcf_p           A pointer to where to store the dcf after the second walk.
- * @param code_image      A pointer to where to put the address of the code image. SHOULD BE FREED AFTER USAGE.
+ * @param code_image      A pointer to where to put the address of the code image. SHOULD BE FREED AFTER USAGE, unless it is NULL.
  * @param icf_p           A pointer to where to store the icf after the second walk.
  * @return walk_status WALK_NOT_ENOUGH_MEMORY or WALK_IO_ERROR or WALK_PROBLEM_WITH_CODE or WALK_OK.
  */

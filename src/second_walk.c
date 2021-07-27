@@ -186,7 +186,10 @@ walk_status add_instruction_to_externs_table(command cmd, unsigned long ic, symb
     value_p = malloc(sizeof(unsigned long));
     *value_p = ic;
     if (linked_list_append(&symbol_p->instructions_using_me, value_p) == LINKED_LIST_NOT_ENOUGH_MEMORY)
+    {
+        free(value_p);
         return WALK_NOT_ENOUGH_MEMORY;
+    }
 
     return WALK_OK;
 }
@@ -235,7 +238,7 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
     /* Initialize data image and code image */
     *data_image = malloc(BUFFER_MIN_SIZE);
     *code_image = malloc(BUFFER_MIN_SIZE);
-    if (!data_image || !code_image)
+    if (!*data_image || !*code_image)
         return WALK_NOT_ENOUGH_MEMORY;
     code_image_max_size = data_image_max_size = BUFFER_MIN_SIZE;
 
@@ -259,12 +262,18 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
         if (cmd.type == DIRECTIVE)
         {
             if ((status = handle_directive(cmd, data_image, dcf_p, symbols_table_p, line_number)) != WALK_OK)
+            {
+                free_command(cmd);
                 return status;
+            }
         }
         else /* Instruction */
         {
             if ((status = handle_instruction(cmd, *symbols_table_p, code_image, icf_p, line_number)) != WALK_OK)
+            {
+                free_command(cmd);
                 return status;
+            }
         }
 
         free_command(cmd);

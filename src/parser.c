@@ -151,6 +151,7 @@ static parser_status parse_command_name(char **str, command *cmd, int line)
     cmd->command_name = malloc((command_name_length + 1) * sizeof(char));
     if (cmd->command_name == NULL)
         return PARSER_NOT_ENOUGH_MEMORY;
+    cmd->command_name_allocated = true;
 
     /* Fill! */
     if (cmd->type == DIRECTIVE)
@@ -281,19 +282,18 @@ static parser_status get_number_of_operands(char *str, int *number_of_operands, 
 
 /**
  * Fills the operand of the given string in the given array.
+ * @param cmd                The current command.
  * @param str                The string to parse. MUST BEGIN RIGHT FROM THE 
  *                           OPERANDS. IT'S SYNTAX MUST BE OK!
- * @param number_of_operands How many operands there are?
- * @param operands           The array to fill in.
  * @return PARSER_NOT_ENOUGH_MEMORY or PARSER_OK;
  */
-static parser_status fill_operands(char *str, int number_of_operands, char **operands_array)
+static parser_status fill_operands(command* cmd, char *str)
 {
     int i, j, operand_length;
     char *ptr, *operand; /* An helping pointer */
     boolean inside_quotes;
 
-    for (i = 0; i < number_of_operands; i++)
+    for (i = 0; i < cmd->number_of_operands; i++)
     {
         ptr = str; /* Back up the string pointer */
 
@@ -316,6 +316,7 @@ static parser_status fill_operands(char *str, int number_of_operands, char **ope
         operand = malloc((operand_length+1) * sizeof(char));
         if (operand == NULL)
             return PARSER_NOT_ENOUGH_MEMORY;
+        cmd->number_of_operands_allocated++;
 
         str = ptr; /* Go back to the beginning of the operand */
         j = 0;
@@ -335,7 +336,7 @@ static parser_status fill_operands(char *str, int number_of_operands, char **ope
         }
         operand[j] = '\0';
 
-        operands_array[i] = operand;
+        cmd->operands[i] = operand;
 
         if (*str)
             str++; /* To skip the comma */
@@ -371,9 +372,10 @@ static parser_status parse_operands(char *str, command *cmd, int line)
     cmd->operands = malloc(cmd->number_of_operands * sizeof(char *));
     if (cmd->operands == NULL)
         return PARSER_NOT_ENOUGH_MEMORY;
+    cmd->operands_array_allocated = true;
 
     /* Fill the operands in the array */
-    if ((status = fill_operands(str, cmd->number_of_operands, cmd->operands)) != PARSER_OK)
+    if ((status = fill_operands(cmd, str)) != PARSER_OK)
         return status;
 
     return PARSER_OK;
@@ -382,6 +384,10 @@ static parser_status parse_operands(char *str, command *cmd, int line)
 parser_status parser_parse(char *str, command *cmd, int line)
 {
     parser_status status;
+
+    cmd->command_name_allocated = false;
+    cmd->operands_array_allocated = false;
+    cmd->number_of_operands_allocated = 0;
 
     if (is_empty(str))
         return PARSER_EMPTY;

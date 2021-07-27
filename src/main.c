@@ -52,27 +52,32 @@ void compile(char *file_name)
     if (fw_status == WALK_NOT_ENOUGH_MEMORY)
     {
         printf("Error: Not enough memory!\n");
-        return;
+        goto first_walk_free;
     }
     if (fw_status != WALK_OK) /* If it another error, I already logged it */
-        return;
+        goto first_walk_free;
 
     sw_status = second_walk(file_name, &st, &data_image, &dcf, &code_image, &icf);
     if (sw_status == WALK_NOT_ENOUGH_MEMORY)
     {
         printf("Error: Not enough memory!\n");
-        return;
+        goto second_walk_free;
     }
     if (sw_status != WALK_OK) /* If it another error, I already logged it */
-        return;
+        goto second_walk_free;
 
     if (write_entries_file(file_name, st) != FILE_WRITER_OK || write_externals_file(file_name, st) != FILE_WRITER_OK || write_object_file(file_name, data_image, dcf, code_image, icf) != FILE_WRITER_OK)
         return;
 
     /* Clean up */
-    free_symbols_table(st);
-    free(data_image);
-    free(code_image);
+    second_walk_free:
+    if (data_image) /* If it is null, it was not allocated! */
+        free(data_image);
+    if (code_image) /* If it is null, it was not allocated! */
+        free(code_image);
+
+    first_walk_free:
+    free_symbols_table(st); /* Nothing will happen if it was not allocated */
 }
 
 int main(int argc, char *argv[])

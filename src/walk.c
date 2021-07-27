@@ -99,9 +99,13 @@ read_line:
     {
     case PARSER_OVERFLOW:
     case PARSER_SYNTAX_ERROR:
+        free_command(*cmd);
         return WALK_PROBLEM_WITH_CODE;
+    case PARSER_NOT_ENOUGH_MEMORY:
+        return WALK_NOT_ENOUGH_MEMORY;
 
     case PARSER_EMPTY:
+        free_command(*cmd);
         goto read_line; /* Try the next line */
 
     default:
@@ -112,7 +116,10 @@ read_line:
     {
         v_status = validator_validate(*cmd, line_number);
         if (v_status == VALIDATOR_INVALID)
+        {
+            free_command(*cmd);
             return WALK_PROBLEM_WITH_CODE;
+        }
     }
 
     return WALK_OK;

@@ -47,7 +47,7 @@ void next_counter(unsigned long *pc, unsigned long *dc, command cmd);
  * @param cmd            A pointer to where to insert the command into.
  * @param line           What line is it?
  * @param validate       Should I validate this command as well?
- * @return walk_status - WALK_NOT_ENOUGH_MEMORY or WALK_PROBLEM_WITH_CODE or WALK_EOF or WALK_OK.
+ * @return walk_status - WALK_NOT_ENOUGH_MEMORY or WALK_PROBLEM_WITH_CODE or WALK_EOF or WALK_OK. If the returned value is not WALK_OK, then DON'T use cmd. It is invalid.
  */
 walk_status get_next_command(FILE* f, command* cmd, int line_number, boolean validate);
 
@@ -59,4 +59,4 @@ walk_status get_next_command(FILE* f, command* cmd, int line_number, boolean val
  */
 void free_symbols_table(symbols_table st);
 
-#endif 
+#endif
