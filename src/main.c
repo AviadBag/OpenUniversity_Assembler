@@ -66,8 +66,12 @@ void compile(char *file_name)
     if (sw_status != WALK_OK) /* If it another error, I already logged it */
         goto second_walk_free;
 
-    if (write_entries_file(file_name, st) != FILE_WRITER_OK || write_externals_file(file_name, st) != FILE_WRITER_OK || write_object_file(file_name, data_image, dcf, code_image, icf) != FILE_WRITER_OK)
-        return;
+    if (write_entries_file(file_name, st) != FILE_WRITER_OK)
+        goto second_walk_free;
+    if (write_externals_file(file_name, st) != FILE_WRITER_OK)
+        goto second_walk_free;
+    if (write_object_file(file_name, data_image, dcf, code_image, icf) != FILE_WRITER_OK)
+        goto second_walk_free;
 
     /* Clean up */
     second_walk_free:

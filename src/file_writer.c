@@ -50,6 +50,7 @@ file_writer_status write_externals_file(char* original_file_name, symbols_table 
     if (!file)
     {
         printf("Error: Cannot open file \"%s\". Skipping.\n", new_file_name);
+        free(new_file_name);
         return FILE_WRITER_IO_ERROR;
     }
 
@@ -81,6 +82,7 @@ file_writer_status write_entries_file(char* original_file_name, symbols_table st
     if (!file)
     {
         printf("Error: Cannot open file \"%s\". Skipping.\n", new_file_name);
+        free(new_file_name);
         return FILE_WRITER_IO_ERROR;
     }
 
@@ -105,10 +107,11 @@ file_writer_status write_object_file(char* original_file_name, unsigned char *da
     char* new_file_name = change_extension(original_file_name, OBJECT_EXT);
     if (!new_file_name)
         return FILE_WRITER_NOT_ENOUGH_MEMORY;
-    FILE* file = fopen(new_file_name, "w");
+    FILE* file = fopen(new_file_name, "r");
     if (!file)
     {
         printf("Error: Cannot open file \"%s\". Skipping.\n", new_file_name);
+        free(new_file_name);
         return FILE_WRITER_IO_ERROR;
     }
 
