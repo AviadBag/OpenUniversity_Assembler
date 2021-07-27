@@ -12,6 +12,27 @@
 #define EXTERNALS_EXT "ext"
 #define ENTRIES_EXT   "ent"
 
+/* The prologue of every writer function - opens a new file */
+#define FILE_WRITER_PROLOGUE(original_file_name, new_ext) { \
+    new_file_name = change_extension(original_file_name, new_ext); \
+    if (!new_file_name) \
+    return FILE_WRITER_NOT_ENOUGH_MEMORY; \
+    file = fopen(new_file_name, "w"); \
+    if (!file) \
+    { \
+        printf("Error: Cannot open file \"%s\". Skipping.\n", new_file_name); \
+        free(new_file_name); \
+        return FILE_WRITER_IO_ERROR; \
+    } \
+}
+
+/* The epilogue of every writer function - closes the opened file, free's the allocated file name and returns OK. */
+#define FILE_WRITER_EPILOGUE() { \
+    free(new_file_name); \
+    fclose(file); \
+    return FILE_WRITER_OK; \
+}
+
 /**
  * @brief Changes the extension of <file_name> to <new_ext>.
  * 
@@ -43,17 +64,10 @@ char* change_extension(char* original_file_name, char* new_ext)
 file_writer_status write_externals_file(char* original_file_name, symbols_table st)
 {
     int i, j;
-    char* new_file_name = change_extension(original_file_name, EXTERNALS_EXT);
+    char* new_file_name;
     FILE* file;
-    if (!new_file_name)
-        return FILE_WRITER_NOT_ENOUGH_MEMORY;
-    file = fopen(new_file_name, "w");
-    if (!file)
-    {
-        printf("Error: Cannot open file \"%s\". Skipping.\n", new_file_name);
-        free(new_file_name);
-        return FILE_WRITER_IO_ERROR;
-    }
+
+    FILE_WRITER_PROLOGUE(original_file_name, EXTERNALS_EXT);
 
     for (i = 0; i < linked_list_length(st); i++)
     {
@@ -67,26 +81,16 @@ file_writer_status write_externals_file(char* original_file_name, symbols_table 
         }
     }
 
-    free(new_file_name);
-    fclose(file);
-    
-    return FILE_WRITER_OK;
+    FILE_WRITER_EPILOGUE();
 }
 
 file_writer_status write_entries_file(char* original_file_name, symbols_table st)
 {
     int i;
-    char* new_file_name = change_extension(original_file_name, ENTRIES_EXT);
+    char* new_file_name;
     FILE* file;
-    if (!new_file_name)
-        return FILE_WRITER_NOT_ENOUGH_MEMORY;
-    file = fopen(new_file_name, "w");
-    if (!file)
-    {
-        printf("Error: Cannot open file \"%s\". Skipping.\n", new_file_name);
-        free(new_file_name);
-        return FILE_WRITER_IO_ERROR;
-    }
+
+    FILE_WRITER_PROLOGUE(original_file_name, ENTRIES_EXT);
 
     for (i = 0; i < linked_list_length(st); i++)
     {
@@ -97,26 +101,16 @@ file_writer_status write_entries_file(char* original_file_name, symbols_table st
         }
     }
 
-    free(new_file_name);
-    fclose(file);
-
-    return FILE_WRITER_OK;
+    FILE_WRITER_EPILOGUE();
 }
 
 file_writer_status write_object_file(char* original_file_name, unsigned char *data_image, unsigned long dcf, unsigned char *code_image, unsigned long icf)
 {
     unsigned long i;
+    char* new_file_name;
     FILE* file;
-    char* new_file_name = change_extension(original_file_name, OBJECT_EXT);
-    if (!new_file_name)
-        return FILE_WRITER_NOT_ENOUGH_MEMORY;
-    file = fopen(new_file_name, "r");
-    if (!file)
-    {
-        printf("Error: Cannot open file \"%s\". Skipping.\n", new_file_name);
-        free(new_file_name);
-        return FILE_WRITER_IO_ERROR;
-    }
+
+    FILE_WRITER_PROLOGUE(original_file_name, OBJECT_EXT);
 
     /* Write ICF and DCF */
     fprintf(file, "%lu %lu\n", icf - IC_DEFAULT_VALUE, dcf);
@@ -141,8 +135,5 @@ file_writer_status write_object_file(char* original_file_name, unsigned char *da
             fprintf(file, "\n");
     }
 
-    free(new_file_name);
-    fclose(file);
-
-    return FILE_WRITER_OK;
+    FILE_WRITER_EPILOGUE();
 }
