@@ -21,6 +21,7 @@ linked_list_status linked_list_append(node **nod, void *data)
     node *new_node = malloc(sizeof(node));
     if (new_node == NULL)
         return LINKED_LIST_NOT_ENOUGH_MEMORY;
+    memset(new_node, 0, sizeof(node));
 
     new_node->data = data;
     new_node->next = NULL;

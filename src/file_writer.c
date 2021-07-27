@@ -30,6 +30,7 @@ char* change_extension(char* original_file_name, char* new_ext)
     char* new_file_name = (char*) malloc(new_file_name_length + 1);
     if (!new_file_name)
         return NULL;
+    memset(new_file_name, 0, new_file_name_length + 1);
 
     strncpy(new_file_name, original_file_name, new_file_name_length);
     dot = strrchr(new_file_name, '.');
@@ -43,6 +44,8 @@ file_writer_status write_externals_file(char* original_file_name, symbols_table 
 {
     int i, j;
     char* new_file_name = change_extension(original_file_name, EXTERNALS_EXT);
+    if (!new_file_name)
+        return FILE_WRITER_NOT_ENOUGH_MEMORY;
     FILE* file = fopen(new_file_name, "w");
     if (!file)
     {
@@ -72,6 +75,8 @@ file_writer_status write_entries_file(char* original_file_name, symbols_table st
 {
     int i;
     char* new_file_name = change_extension(original_file_name, ENTRIES_EXT);
+    if (!new_file_name)
+        return FILE_WRITER_NOT_ENOUGH_MEMORY;
     FILE* file = fopen(new_file_name, "w");
     if (!file)
     {
@@ -98,6 +103,8 @@ file_writer_status write_object_file(char* original_file_name, unsigned char *da
 {
     unsigned long i;
     char* new_file_name = change_extension(original_file_name, OBJECT_EXT);
+    if (!new_file_name)
+        return FILE_WRITER_NOT_ENOUGH_MEMORY;
     FILE* file = fopen(new_file_name, "w");
     if (!file)
     {

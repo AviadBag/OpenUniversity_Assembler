@@ -8,6 +8,7 @@
 typedef enum e_file_writer_status
 {
     FILE_WRITER_IO_ERROR,
+    FILE_WRITER_NOT_ENOUGH_MEMORY,
     FILE_WRITER_OK
 } file_writer_status;
 
