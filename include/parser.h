@@ -21,7 +21,7 @@ typedef enum e_parser_status
  * @param str  The string to parse.
  * @param cmd  A pointer to a command struct to store inside the data. After usage, should be freed using command.h:free_command()
  * @param line On what line is this string?
- * @return PARSER_SYNTAX_ERROR or PARSER_EMPTY or PARSER_OVERFLOW or PARSER_OK.
+ * @return PARSER_SYNTAX_ERROR or PARSER_EMPTY or PARSER_OVERFLOW or PARSER_NOT_ENOUGH_MEMORY or PARSER_OK.
  */
 parser_status parser_parse(char *str, command *cmd, int line);
 

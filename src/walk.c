@@ -101,6 +101,8 @@ read_line:
     case PARSER_SYNTAX_ERROR:
         free_command(*cmd);
         return WALK_PROBLEM_WITH_CODE;
+    case PARSER_NOT_ENOUGH_MEMORY:
+        return WALK_NOT_ENOUGH_MEMORY;
 
     case PARSER_EMPTY:
         free_command(*cmd);
