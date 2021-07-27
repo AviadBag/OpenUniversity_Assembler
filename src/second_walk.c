@@ -254,17 +254,26 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
     while ((status = get_next_command(file, &cmd, ++line_number, false)) != WALK_EOF)
     {
         if (status == WALK_NOT_ENOUGH_MEMORY)
+        {
+            free_command(cmd);
             return status;
+        }
 
         if (cmd.type == DIRECTIVE)
         {
             if ((status = handle_directive(cmd, data_image, dcf_p, symbols_table_p, line_number)) != WALK_OK)
+            {
+                free_command(cmd);
                 return status;
+            }
         }
         else /* Instruction */
         {
             if ((status = handle_instruction(cmd, *symbols_table_p, code_image, icf_p, line_number)) != WALK_OK)
+            {
+                free_command(cmd);
                 return status;
+            }
         }
 
         free_command(cmd);
