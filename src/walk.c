@@ -103,6 +103,7 @@ read_line:
         free_command(*cmd);
         return WALK_PROBLEM_WITH_CODE;
     case PARSER_NOT_ENOUGH_MEMORY:
+        free_command(*cmd);
         return WALK_NOT_ENOUGH_MEMORY;
 
     case PARSER_EMPTY:

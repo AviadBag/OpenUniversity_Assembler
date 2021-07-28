@@ -193,7 +193,10 @@ static walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
 
         status = put_symbol(cmd, symbols_table_p, pc, dc, line_number);
         if (status == WALK_NOT_ENOUGH_MEMORY)
+        {
+            free_command(cmd);
             return status;
+        }
         else if (status == WALK_PROBLEM_WITH_CODE)
             final_status = status;
 
