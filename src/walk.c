@@ -39,7 +39,7 @@ walk_status read_next_line(FILE *f, char *buf)
             return WALK_PROBLEM_WITH_CODE;
         }
 
-        *buf++ = c;
+        *buf++ = (char) c;
     }
     *buf = '\0';
     
@@ -56,7 +56,7 @@ void next_counter(unsigned long *pc, unsigned long *dc, command cmd)
     else
     {
         int unit_size; /* In bytes */
-        int n;         /* How many data? */
+        size_t n;      /* How many data? */
 
         if (strcmp(cmd.command_name, "entry") == 0 || strcmp(cmd.command_name, "extern") == 0)
             return; /* There is nothing to do */
@@ -71,7 +71,7 @@ void next_counter(unsigned long *pc, unsigned long *dc, command cmd)
         if (strcmp(cmd.command_name, "asciz") == 0)
             n = strlen(cmd.operands[0]) - 2 + 1; /* -2 - so it will not count the quotes. +1 - for the null terminator. */
         else
-            n = cmd.number_of_operands;
+            n = (size_t) cmd.number_of_operands;
 
         *dc += n * unit_size;
     }

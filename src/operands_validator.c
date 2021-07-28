@@ -113,7 +113,7 @@ operand_type* get_operands_types(command cmd)
  */
 validator_status validate_register_operand(char* operand, int line)
 {
-    int length;
+    size_t length;
     int register_value;
 
     /* Make sure that the register is written well */

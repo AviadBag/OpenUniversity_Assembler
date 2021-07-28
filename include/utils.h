@@ -23,7 +23,7 @@ boolean is_in_range_2_complement(long num, int bits);
  * @param size  How many bytes of the number to put? (Little endian!)
  * @param index From what index to start?
  */
-void put_in_char_array(unsigned char *arr, long num, int size, int index);
+void put_in_char_array(unsigned char *arr, long num, int size, unsigned long index);
 
 /**
  * @brief Finds a symbol in the symbols table, according to it's name.

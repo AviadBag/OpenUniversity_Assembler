@@ -10,18 +10,18 @@
 
 boolean is_in_range_2_complement(long num, int bits)
 {
-    long max = pow(2, bits-1) - 1;
-    long min = -pow(2, bits-1);
+    long max = (long) (pow(2, bits - 1) - 1);
+    long min = (long) -pow(2, bits - 1);
 
     return (num <= max && num >= min);
 }
 
-void put_in_char_array(unsigned char *arr, long num, int size, int index)
+void put_in_char_array(unsigned char *arr, long num, int size, unsigned long index)
 {
     int byte;
     for (byte = 0; byte < size; byte++) /* Iterate on every required byte */
     {
-        arr[index] = (char)(num & FIRST_BYTE_MASK);
+        arr[index] = (unsigned char)(num & FIRST_BYTE_MASK);
         index++;
         num >>= BITS_IN_BYTE;
     }

@@ -24,6 +24,6 @@ typedef enum e_translator_status
  * @param m                    A pointer to a machine_instruction; Will be filled with the instruction.
  * @return translator_status   TRANSLATOR_OK or TRANSLATOR_LABEL_DOES_NOT_EXIST or TRANSLATOR_OVERFLOW
  */
-translator_status translator_translate(command cmd, symbols_table st, int ic, int line, machine_instruction* m);
+translator_status translator_translate(command cmd, symbols_table st, unsigned long ic, int line, machine_instruction* m);
 
 #endif

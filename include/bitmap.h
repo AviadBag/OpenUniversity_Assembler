@@ -3,8 +3,6 @@
 
 /* This module holds utility methods for bit manipulations */
 
-typedef unsigned char bit;
-
 /**
  * @brief Puts <data> in <bitmap>, from bit <from> to bit <to>.
  * 

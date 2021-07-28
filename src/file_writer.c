@@ -46,10 +46,10 @@ char* change_extension(char* original_file_name, char* new_ext)
 {
     /* Create the result buffer */
     char* dot; /* Will point to the dot of the extension */
-    int original_file_name_len = strlen(original_file_name);
-    int original_ext_len = strlen(SOURCE_EXT);
-    int new_ext_len = strlen(new_ext);
-    int new_file_name_length = original_file_name_len - original_ext_len + new_ext_len;
+    size_t original_file_name_len = strlen(original_file_name);
+    size_t original_ext_len = strlen(SOURCE_EXT);
+    size_t new_ext_len = strlen(new_ext);
+    size_t new_file_name_length = original_file_name_len - original_ext_len + new_ext_len;
     char* new_file_name = (char*) malloc(new_file_name_length + 1);
     if (!new_file_name)
         return NULL;
@@ -69,7 +69,7 @@ file_writer_status write_externals_file(char* original_file_name, symbols_table 
     char* new_file_name;
     FILE* file;
 
-    FILE_WRITER_PROLOGUE(original_file_name, EXTERNALS_EXT);
+    FILE_WRITER_PROLOGUE(original_file_name, EXTERNALS_EXT)
 
     for (i = 0; i < linked_list_length(st); i++)
     {
@@ -83,7 +83,7 @@ file_writer_status write_externals_file(char* original_file_name, symbols_table 
         }
     }
 
-    FILE_WRITER_EPILOGUE();
+    FILE_WRITER_EPILOGUE()
 }
 
 file_writer_status write_entries_file(char* original_file_name, symbols_table st)
@@ -92,7 +92,7 @@ file_writer_status write_entries_file(char* original_file_name, symbols_table st
     char* new_file_name;
     FILE* file;
 
-    FILE_WRITER_PROLOGUE(original_file_name, ENTRIES_EXT);
+    FILE_WRITER_PROLOGUE(original_file_name, ENTRIES_EXT)
 
     for (i = 0; i < linked_list_length(st); i++)
     {
@@ -103,7 +103,7 @@ file_writer_status write_entries_file(char* original_file_name, symbols_table st
         }
     }
 
-    FILE_WRITER_EPILOGUE();
+    FILE_WRITER_EPILOGUE()
 }
 
 file_writer_status write_object_file(char* original_file_name, unsigned char *data_image, unsigned long dcf, unsigned char *code_image, unsigned long icf)
@@ -112,7 +112,7 @@ file_writer_status write_object_file(char* original_file_name, unsigned char *da
     char* new_file_name;
     FILE* file;
 
-    FILE_WRITER_PROLOGUE(original_file_name, OBJECT_EXT);
+    FILE_WRITER_PROLOGUE(original_file_name, OBJECT_EXT)
 
     /* Write ICF and DCF */
     fprintf(file, "%lu %lu\n", icf - IC_DEFAULT_VALUE, dcf);
@@ -137,5 +137,5 @@ file_writer_status write_object_file(char* original_file_name, unsigned char *da
             fprintf(file, "\n");
     }
 
-    FILE_WRITER_EPILOGUE();
+    FILE_WRITER_EPILOGUE()
 }

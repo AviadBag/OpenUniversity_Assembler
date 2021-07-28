@@ -81,7 +81,7 @@ walk_status handle_define_directive(command cmd, unsigned char **data_image, uns
 
     /* Make sure that the buffer is big enough */
     while (*dc_p + size * cmd.number_of_operands > data_image_max_size)
-        REALLOC(*data_image, *dc_p, data_image_max_size);
+        REALLOC(*data_image, *dc_p, data_image_max_size)
 
     /* Do each operand */
     for (i = 0; i < cmd.number_of_operands; i++)
@@ -106,12 +106,12 @@ walk_status handle_define_directive(command cmd, unsigned char **data_image, uns
  */
 walk_status handle_asciz_directive(command cmd, unsigned char **data_image, unsigned long *dc_p)
 {
-    int count = strlen(cmd.operands[0]) - 2; /* Dont include the quotes */
+    size_t count = strlen(cmd.operands[0]) - 2; /* Dont include the quotes */
     int i;
 
     /* Is the buffer big enough? */
     while (*dc_p + count > data_image_max_size)
-        REALLOC(*data_image, *dc_p, data_image_max_size);
+        REALLOC(*data_image, *dc_p, data_image_max_size)
 
     for (i = 0; i < count; i++)
         (*data_image)[(*dc_p)++] = (unsigned char)cmd.operands[0][i + 1]; /* +1 Because [0] contains the first quote. */
@@ -209,7 +209,7 @@ walk_status handle_instruction(command cmd, symbols_table st, unsigned char **co
     machine_instruction m;
     walk_status status;
     translator_status t_status;
-    int index; /* The index in the code image, IN BYTES */
+    unsigned long index; /* The index in the code image, IN BYTES */
 
     index = *ic_p - IC_DEFAULT_VALUE;
 
@@ -219,7 +219,7 @@ walk_status handle_instruction(command cmd, symbols_table st, unsigned char **co
 
     /* Is the buffer big enough? */
     while (index + sizeof(machine_instruction) > code_image_max_size)
-        REALLOC(*code_image, index, code_image_max_size);
+        REALLOC(*code_image, index, code_image_max_size)
 
     ((machine_instruction *)(*code_image))[index / sizeof(machine_instruction)] = m;
     status = add_instruction_to_externs_table(cmd, *ic_p, st);

@@ -5,6 +5,8 @@
 #define OFFSET_IN_BITMAP(i) (((index) / (sizeof(char) * BITS_PER_BYTE)))
 #define OFFSET_IN_BYTE(i) (((index) % (sizeof(char) * BITS_PER_BYTE)))
 
+typedef unsigned char bit;
+
 /**
  * @brief Get <bitmap>[<index>]
  * 
@@ -12,7 +14,7 @@
  * @param index   What bit?
  * @return char   The bit at <bitmap>[<index>]
  */
-static char get_bit(void* _bitmap, int index)
+static bit get_bit(void* _bitmap, int index)
 {
     char* bitmap = (char*) _bitmap;
     bitmap += OFFSET_IN_BITMAP(index); /* Go the the right byte */

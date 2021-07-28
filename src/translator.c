@@ -36,7 +36,6 @@
 #define ADDRESS_END 24
 
 #define I_INSTRUCTION_IMMED_SIZE_BITS (IMMED_END - IMMED_START + 1)
-#define J_INSTRUCTION_ADDRESS_SIZE_BITS (ADDRESS_END - ADDRESS_START + 1)
 
 #define TRANSLATOR "Translator"
 #define PROBLEM_WITH_CODE "ProblemWithCode"
@@ -97,7 +96,7 @@ void translate_R_instruction(machine_instruction *m, command cmd, instruction in
  * @param line                 On what line this instruction is?
  * @return translator_status TRANSLATOR_OK or TRANSLATOR_LABEL_DOES_NOT_EXIST or TRANSLATOR_OVERFLOW.
  */
-static translator_status translate_I_instruction(machine_instruction *m, command cmd, instruction inst, symbols_table st, int ic, int line)
+static translator_status translate_I_instruction(machine_instruction *m, command cmd, instruction inst, symbols_table st, unsigned long ic, int line)
 {
 	int rs, rt;
 	int immed;
@@ -122,7 +121,7 @@ static translator_status translate_I_instruction(machine_instruction *m, command
 			return TRANSLATOR_LABEL_DOES_NOT_EXIST;
 		}
 
-		offset = symbol_p->value - ic;
+		offset = (int) (symbol_p->value - ic);
 		if (!is_in_range_2_complement(offset, I_INSTRUCTION_IMMED_SIZE_BITS))
 		{
 			logger_log(TRANSLATOR, OVERFLOW, line, "Label \"%s\" is too far!", cmd.operands[2]);
@@ -155,9 +154,10 @@ static translator_status translate_I_instruction(machine_instruction *m, command
  * @param line               On what line this instruction is?
  * @return translator_status TRANSLATOR_OK or TRANSLATOR_LABEL_DOES_NOT_EXIST or TRANSLATOR_OVERFLOW.
  */
-static machine_instruction translate_J_instruction(machine_instruction *m, command cmd, instruction inst, symbols_table st, int line)
+static translator_status translate_J_instruction(machine_instruction *m, command cmd, instruction inst, symbols_table st, int line)
 {
-	int reg = 0, address;
+	int reg = 0;
+	unsigned long address;
 	symbol *symbol_p;
 	char* label;
 
@@ -198,7 +198,7 @@ static machine_instruction translate_J_instruction(machine_instruction *m, comma
 	return TRANSLATOR_OK;
 }
 
-translator_status translator_translate(command cmd, symbols_table st, int ic, int line, machine_instruction *m)
+translator_status translator_translate(command cmd, symbols_table st, unsigned long ic, int line, machine_instruction *m)
 {
 	instruction *inst;
 	instructions_table_get_instruction(cmd.command_name, &inst);
