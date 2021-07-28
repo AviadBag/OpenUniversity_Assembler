@@ -133,7 +133,6 @@ static walk_status put_label_symbol(command cmd, symbols_table *symbols_table_p,
 
     if (linked_list_append(symbols_table_p, symbol_t) == LINKED_LIST_NOT_ENOUGH_MEMORY)
     {
-        free(symbol_t);
         return WALK_NOT_ENOUGH_MEMORY;
     }
 
@@ -173,7 +172,7 @@ static walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
 {
     int line_number, i;
     unsigned long pc, dc;
-    walk_status status, put_symbol_status, final_status = WALK_OK;
+    walk_status status, final_status = WALK_OK;
     command cmd;
 
     line_number = 0;
@@ -192,8 +191,11 @@ static walk_status fill_symbols_table(FILE *f, symbols_table *symbols_table_p)
         else if (status == WALK_NOT_ENOUGH_MEMORY)
             return status;
 
-        if ((put_symbol_status = put_symbol(cmd, symbols_table_p, pc, dc, line_number)) != WALK_OK)
-            final_status = put_symbol_status;
+        status = put_symbol(cmd, symbols_table_p, pc, dc, line_number);
+        if (status == WALK_NOT_ENOUGH_MEMORY)
+            return status;
+        else if (status == WALK_PROBLEM_WITH_CODE)
+            final_status = status;
 
         next_counter(&pc, &dc, cmd);
         free_command(cmd);
