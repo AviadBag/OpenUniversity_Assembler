@@ -38,6 +38,8 @@ void compile(char *file_name)
     walk_status fw_status;
     walk_status sw_status;
 
+    file_writer_status object_status, entries_status, externals_status;
+
     if (!has_legal_extension(file_name))
     {
         printf("Error: File \"%s\" has no \".%s\" extension. Skipping.\n", file_name, DESIRED_INPUT_FILE_EXT);
@@ -62,12 +64,12 @@ void compile(char *file_name)
     if (sw_status != WALK_OK) /* If it another error, I already logged it */
         goto second_walk_free;
 
-    if (write_entries_file(file_name, st) != FILE_WRITER_OK)
-        goto second_walk_free;
-    if (write_externals_file(file_name, st) != FILE_WRITER_OK)
-        goto second_walk_free;
-    if (write_object_file(file_name, data_image, dcf, code_image, icf) != FILE_WRITER_OK)
-        goto second_walk_free;
+    object_status = write_object_file(file_name, data_image, dcf, code_image, icf);
+    entries_status = write_entries_file(file_name, st);
+    externals_status = write_externals_file(file_name, st);
+    if (object_status == FILE_WRITER_NOT_ENOUGH_MEMORY || entries_status == FILE_WRITER_NOT_ENOUGH_MEMORY || externals_status == FILE_WRITER_NOT_ENOUGH_MEMORY)
+        printf("Error: Not enough memory!\n");
+    /* If there is another error, I already logged it, and we can continue to clean up. Else, we can continue to clean up... */
 
     /* Clean up */
     second_walk_free:
