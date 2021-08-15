@@ -25,11 +25,4 @@ typedef enum e_parser_status
  */
 parser_status parser_parse(char *str, command *cmd, int line);
 
-/**
- * Converts a parser_status object to it's string representation. 
- * @param  status The status to convert
- * @return The string representation
- */
-char* parser_status_to_string(parser_status status);
-
 #endif

@@ -12,11 +12,4 @@ typedef enum e_operand_type
     STRING
 } operand_type;
 
-/**
- * @brief Converts an operand_type object to it's string representation.
- * @param o The operand_type object.
- * @return char* The string representation.
- */
-char* operand_type_to_string(operand_type o);
-
 #endif

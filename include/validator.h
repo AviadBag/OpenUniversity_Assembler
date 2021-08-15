@@ -21,11 +21,4 @@ typedef enum e_validator_status
  */
 validator_status validator_validate(command cmd, int line);
 
-/**
- * Converts a status object to it's string representation.
- * @param status The status to convert.
- * @return It's string representation.
- */
-char* validator_status_to_string(validator_status status);
-
 #endif

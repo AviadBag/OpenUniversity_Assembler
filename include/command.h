@@ -31,13 +31,6 @@ typedef struct s_command
 } command;
 
 /**
- * Converts a command_type object to it's string representation. 
- * @param  type The type to convert
- * @return The string representation
- */
-char* command_type_to_string(command_type type);
-
-/**
  * Checks if the given command has a label.
  * @param cmd The command to check.
  * @return true if there is a label. Else - false.
