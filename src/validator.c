@@ -35,11 +35,16 @@ validator_status validate_label(char *label, int line)
         return VALIDATOR_INVALID;
     }
 
-    /* There cannot be a whitespace in the label */
-    if (has_whitespaces(label))
+    /* The label must have only chars and digits */
+    while (*label)
     {
-        logger_log(VALIDATOR, INVALID_COMMAND, line, "A label cannot contain whitespaces");
-        return VALIDATOR_INVALID;
+        if (!isalnum(*label) && !isdigit(*label))
+        {
+            logger_log(VALIDATOR, INVALID_COMMAND, line, "A label cannot contain other than chars and digits");
+            return VALIDATOR_INVALID;
+        }
+        
+        label++;
     }
 
     return VALIDATOR_OK;

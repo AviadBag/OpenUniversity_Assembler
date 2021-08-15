@@ -14,13 +14,6 @@
 void skip_whitespaces(char** ptr);
 
 /**
- * @brief Cheks if the given string has whitespaces inside.
- * @param str The string to check;
- * @return true if it has; else - false.
- */
-boolean has_whitespaces(char* str);
-
-/**
  * @brief Checks if the given string is really a number.
  * @param str The string to check.
  * @return true if it is a number; else - false.

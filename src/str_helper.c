@@ -7,19 +7,6 @@ void skip_whitespaces(char **ptr)
         (*ptr)++;
 }
 
-boolean has_whitespaces(char *str)
-{
-    while (*str)
-    {
-        if (isspace(*str))
-            return true;
-
-        str++;
-    }
-
-    return false;
-}
-
 boolean is_number(char* str)
 {
     /* A number cannot be empty */
