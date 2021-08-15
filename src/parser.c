@@ -26,7 +26,7 @@ static boolean has_label(char *str)
     {
         if (*str == '"')
             inside_quotes = !inside_quotes;
-        else if (*str == ':')
+        else if (*str == ':' && !inside_quotes)
             return true;
 
         str++;
