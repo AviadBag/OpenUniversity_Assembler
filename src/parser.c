@@ -52,7 +52,7 @@ static parser_status parse_label(char **str, command *cmd, int line)
 
         if (**str == ':')
         {
-            logger_log(PARSER, SYNTAX_ERROR, line, "A label cannot be empty!");
+            logger_log(PARSER, SYNTAX_ERROR, line, "A label cannot be empty");
             return PARSER_SYNTAX_ERROR;
         }
 
