@@ -18,6 +18,10 @@
 
 #define BITS_PER_BYTE 8
 
+#define BYTE_SIZE 1
+#define HALF_SIZE 2
+#define WORD_SIZE 4
+
 #define REGISTER_STR_MIN_LENGTH 2
 #define REGISTER_STR_MAX_LENGTH 3
 
@@ -171,7 +175,7 @@ validator_status validate_constant_operand(char* operand, int width, int line)
     /* Check the range */
     if (!is_in_range_2_complement(num, width * BITS_PER_BYTE) || (num == LONG_MIN && errno == ERANGE) || (num == LONG_MAX && errno == ERANGE))
     {
-        logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "The number %ld must fit to %d bytes in 2's complement", num, width);
+        logger_log(OPERANDS_VALIDATOR, INVALID_OPERANDS, line, "The number %ld must fit into %d bytes in 2's complement", num, width);
         return VALIDATOR_INVALID;
     }
 
@@ -224,11 +228,11 @@ validator_status validate_operand_type(char* operand, operand_type type, int lin
         case REGISTER:
             return validate_register_operand(operand, line);
         case CONSTANT_BYTE:
-            return validate_constant_operand(operand, 1, line);
+            return validate_constant_operand(operand, BYTE_SIZE, line);
         case CONSTANT_HALF:
-            return validate_constant_operand(operand, 2, line);
+            return validate_constant_operand(operand, HALF_SIZE, line);
         case CONSTANT_WORD:
-            return validate_constant_operand(operand, 4, line);
+            return validate_constant_operand(operand, WORD_SIZE, line);
         case LABEL_OR_REGISTER:
             return validate_label_or_register(operand, line);
         case LABEL:

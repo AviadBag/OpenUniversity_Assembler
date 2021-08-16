@@ -120,20 +120,20 @@ file_writer_status write_object_file(char* original_file_name, unsigned char *da
     /* Write code image */
     for (i = 0; i < icf - IC_DEFAULT_VALUE; i++)
     {
-        if ((i + 1) % OBJECT_FILE_BYTES_PER_LINE == 1)
-            fprintf(file, "%04lu ", i + IC_DEFAULT_VALUE); /* Print the adderss only with the first in the row */
-        fprintf(file, "%-2.2X ", code_image[i]);
-        if ((i + 1) % OBJECT_FILE_BYTES_PER_LINE == 0)
+        if ((i + 1) % OBJECT_FILE_BYTES_PER_LINE == 1) /* This is first */
+            fprintf(file, "%04lu", i + IC_DEFAULT_VALUE); /* Print the adderss only with the first in the row */
+        fprintf(file, " %-2.2X", code_image[i]);
+        if ((i + 1) % OBJECT_FILE_BYTES_PER_LINE == 0) /* This is last */
             fprintf(file, "\n");
     }
 
     /* Write data image */
     for (i = 0; i < dcf; i++)
     {
-        if ((i + 1) % OBJECT_FILE_BYTES_PER_LINE == 1)
-            fprintf(file, "%04lu ", icf + i); /* Print the adderss only with the first in the row */
-        fprintf(file, "%-2.2X ", data_image[i]);
-        if ((i + 1) % OBJECT_FILE_BYTES_PER_LINE == 0)
+        if ((i + 1) % OBJECT_FILE_BYTES_PER_LINE == 1) /* This is first */
+            fprintf(file, "%04lu", icf + i); /* Print the adderss only with the first in the row */
+        fprintf(file, " %-2.2X", data_image[i]);
+        if ((i + 1) % OBJECT_FILE_BYTES_PER_LINE == 0) /* This is last */
             fprintf(file, "\n");
     }
 

@@ -13,8 +13,8 @@ boolean is_number(char* str)
     if (!*str)
         return false;
 
-    /* There can be a minus sign at the beginning */
-    if (*str == '-')
+    /* There can be a minus or plus sign at the beginning */
+    if (*str == '-' || *str == '+')
         str++;
 
     while (*str)
