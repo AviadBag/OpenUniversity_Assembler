@@ -79,11 +79,6 @@ static parser_status parse_label(char **str, command *cmd, int line)
         cmd->label[label_length] = '\0';
 
         (*str)++; /* Point to after the label */
-        if (!isspace(**str))
-        {
-            logger_log(PARSER, SYNTAX_ERROR, line, "There must be a space after the label");
-            return PARSER_SYNTAX_ERROR;
-        }
     }
     else
         cmd->label[0] = '\0';
