@@ -23,7 +23,7 @@
 #define WORD_SIZE 4
 
 #define REGISTER_STR_MIN_LENGTH 2
-#define REGISTER_STR_MAX_LENGTH 3
+#define REGISTER_STR_MAX_LENGTH 4 /* For example - $+31 */
 
 /**
  * @brief Returnes the required number of operands for the the given command.

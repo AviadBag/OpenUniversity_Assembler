@@ -4,7 +4,7 @@ SRC     := src
 INCLUDE := include
 
 CC       := gcc
-CC_FLAG  := -Wall -ansi -pedantic -ggdb -I${INCLUDE} -I${SRC} -lm
+CC_FLAG  := -Wall -ansi -pedantic -ggdb -I${INCLUDE} -I${SRC} -lm 
 
 SOURCES := $(shell find ${SRC} -type f -name '*.c')
 HEADERS := $(shell find ${ROOT} -type f -name '*.h')

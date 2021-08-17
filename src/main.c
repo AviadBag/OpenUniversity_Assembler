@@ -32,7 +32,7 @@ boolean has_legal_extension(char *file_name)
  */
 void compile(char *file_name)
 {
-    symbols_table st;
+    symbols_table st = linked_list_create();
     unsigned char *code_image, *data_image;
     unsigned long dcf, icf;
     walk_status fw_status;

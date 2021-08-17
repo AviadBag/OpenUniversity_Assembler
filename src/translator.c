@@ -120,6 +120,11 @@ static translator_status translate_I_instruction(machine_instruction *m, command
 			logger_log(TRANSLATOR, PROBLEM_WITH_CODE, line, "Label \"%s\" does not exist", cmd.operands[2]);
 			return TRANSLATOR_LABEL_DOES_NOT_EXIST;
 		}
+		if (symbol_p->type == EXTERNAL)
+		{
+			logger_log(TRANSLATOR, PROBLEM_WITH_CODE, line, "Conditional jumps cannot get external labels as an argument");
+			return TRANSLATOR_LABEL_DOES_NOT_EXIST;
+		}
 
 		offset = (int) (symbol_p->value - ic);
 		if (!is_in_range_2_complement(offset, I_INSTRUCTION_IMMED_SIZE_BITS))

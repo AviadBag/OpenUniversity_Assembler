@@ -227,7 +227,6 @@ walk_status first_walk(char *file_name, symbols_table *symbols_table_p)
         return WALK_IO_ERROR;
     }
 
-    *symbols_table_p = linked_list_create();
     status = fill_symbols_table(file, symbols_table_p);
 
     fclose(file);

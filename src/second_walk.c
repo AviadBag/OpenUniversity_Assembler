@@ -48,6 +48,11 @@ static walk_status handle_entry_directive(command cmd, symbols_table *symbols_ta
         logger_log(SECOND_WALK, PROBLEM_WITH_CODE, line, "Cannot mark label \"%s\" as entry, because it does not exist", cmd.operands[0]);
         return WALK_PROBLEM_WITH_CODE;
     }
+    if (symbol_p->type == EXTERNAL)
+    {
+        logger_log(SECOND_WALK, PROBLEM_WITH_CODE, line, "Cannot mark label \"%s\" as entry, because it defined external", cmd.operands[0]);
+        return WALK_PROBLEM_WITH_CODE;
+    }
     symbol_p->is_entry = true;
 
     return WALK_OK;
@@ -234,6 +239,7 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
     command cmd;
     int line_number = 0;
     walk_status status;
+    walk_status final_status = WALK_OK;
 
     /* Initialize data image and code image */
     *data_image = malloc(BUFFER_MIN_SIZE);
@@ -264,21 +270,23 @@ walk_status second_walk(char *file_name, symbols_table *symbols_table_p, unsigne
             if ((status = handle_directive(cmd, data_image, dcf_p, symbols_table_p, line_number)) != WALK_OK)
             {
                 free_command(cmd);
-                return status;
-            }
+                if (status == WALK_PROBLEM_WITH_CODE)
+                    final_status = status;
+                else return status;
+            } else free_command(cmd);
         }
         else /* Instruction */
         {
             if ((status = handle_instruction(cmd, *symbols_table_p, code_image, icf_p, line_number)) != WALK_OK)
             {
                 free_command(cmd);
-                return status;
-            }
+                if (status == WALK_PROBLEM_WITH_CODE)
+                    final_status = status;
+                else return status;
+            } else free_command(cmd);
         }
-
-        free_command(cmd);
     }
 
     fclose(file);
-    return WALK_OK;
+    return final_status;
 }
